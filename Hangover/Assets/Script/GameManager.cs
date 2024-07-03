@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    /*#region Singleton
+    #region Singleton
 
     public static GameManager instance;
 
@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    #endregion*/
+    #endregion
    
     
     private void Start()
