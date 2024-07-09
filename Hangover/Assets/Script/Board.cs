@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class Board : MonoBehaviour
 {
+    [Header("Tamanho do tabulheiro")]
     public int width;
     public int height;
     public GameObject[] piecePrefab;
     public Piece[,] pieces;
     private Piece selectedPiece;
-    public Vector3 vector3Base;
+    Vector3 vector3Base;
     private bool canSwap = true;
     public Transform cam;
 
