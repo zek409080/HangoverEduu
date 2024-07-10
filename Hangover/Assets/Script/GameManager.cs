@@ -26,8 +26,13 @@ public class GameManager : MonoBehaviour
     }
 
     #endregion
-   
-    
+
+
+    public int scorePlayer;
+    int scoreMultiplier;
+
+    UIManager managerUI;
+
     private void Start()
     {
         Initialize();
@@ -46,6 +51,7 @@ public class GameManager : MonoBehaviour
     private void InitializeBase()
     {
         FindButtons();
+        managerUI = FindObjectOfType<UIManager>();
         Time.timeScale = 1;
     }
 
@@ -85,5 +91,11 @@ public class GameManager : MonoBehaviour
     public void ExitGame()
     {
         Application.Quit();
+    }
+
+    public void AddScore(int scoreValue)
+    {
+        scorePlayer += scoreValue * scoreMultiplier;
+        managerUI.UpdateScore(scorePlayer);
     }
 }

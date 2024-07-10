@@ -7,15 +7,14 @@ public class Board : MonoBehaviour
     [Header("Tamanho do tabulheiro")]
     public int width;
     public int height;
+
     public GameObject[] piecePrefab;
     public Piece[,] pieces;
     private Piece selectedPiece;
     Vector3 vector3Base;
     private bool canSwap = true;
     public Transform cam;
-
-
-    int t;
+    int score;
     void Start()
     {
         vector3Base = new Vector3(0.8f, 0.8f, 0);
@@ -188,6 +187,7 @@ public class Board : MonoBehaviour
                         for (int k = 0; k < matchLength; k++)
                         {
                             piecesToDestroy.Add(pieces[x + k, y]);
+                            GameManager.instance.AddScore(score);
                         }
                     }
                 }
@@ -213,6 +213,7 @@ public class Board : MonoBehaviour
                         for (int k = 0; k < matchLength; k++)
                         {
                             piecesToDestroy.Add(pieces[x, y + k]);
+                            GameManager.instance.AddScore(score);
                         }
                     }
                 }
