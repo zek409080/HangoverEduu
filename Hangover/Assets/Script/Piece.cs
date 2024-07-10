@@ -39,12 +39,6 @@ public class Piece : MonoBehaviour
         }
 
         transform.localScale = targetScale; // Garante que a escala final seja exatamente a desejada
-
-        // Verifica se a escala ficou zero e ajusta para um valor mínimo
-        if (transform.localScale == Vector3.zero)
-        {
-            transform.localScale = board.vector3Base;
-        }
     }
 }
 

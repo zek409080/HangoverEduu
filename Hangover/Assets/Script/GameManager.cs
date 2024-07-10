@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -57,12 +58,12 @@ public class GameManager : MonoBehaviour
             GameObject.Find("Exit").GetComponent<Button>().onClick.AddListener(ExitGame);
         }
 
-        else if (SceneManager.GetActiveScene().name == "seleçãoDeFase")
+        if (SceneManager.GetActiveScene().name == "seleçãoDeFase")
         {
             GameObject.Find("Return_button").GetComponent<Button>().onClick.AddListener(() => LoadScene("Menu"));
             FindButtonFase();
         }
-        else if (SceneManager.GetActiveScene().name == "Jogo")
+        if (SceneManager.GetActiveScene().name == "Jogo")
         {
             GameObject.Find("Play").GetComponent<Button>().onClick.AddListener(() => LoadScene("Jogo"));
             GameObject.Find("Exit").GetComponent<Button>().onClick.AddListener(() => LoadScene("Menu"));
