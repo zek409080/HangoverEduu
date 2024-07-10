@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6537397828508923098}
   - component: {fileID: 8403945221927078634}
   - component: {fileID: -6788621184468282573}
+  - component: {fileID: 4256119314808537848}
   m_Layer: 0
   m_Name: urva
   m_TagString: Untagged
@@ -148,6 +149,27 @@ MonoBehaviour:
   x: 0
   y: 0
   board: {fileID: 0}
+--- !u!95 &4256119314808537848
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5018873714049314917}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &6336036430423996463
 GameObject:
   m_ObjectHideFlags: 0

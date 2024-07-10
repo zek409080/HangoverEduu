@@ -96,6 +96,7 @@ GameObject:
   - component: {fileID: 7281612996144113153}
   - component: {fileID: 7779358727076920527}
   - component: {fileID: -8440889253070446917}
+  - component: {fileID: 7683724898638276074}
   m_Layer: 0
   m_Name: "ma\xE7inha2"
   m_TagString: Untagged
@@ -232,3 +233,24 @@ MonoBehaviour:
   x: 0
   y: 0
   board: {fileID: 0}
+--- !u!95 &7683724898638276074
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9057235646182911196}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
