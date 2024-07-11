@@ -7,13 +7,9 @@ public class Piece : MonoBehaviour
     public int x; // Posição X da peça no tabuleiro
     public int y; // Posição Y da peça no tabuleiro
     public Board board; // Referência ao tabuleiro
-    public int valorFrut;
-    public Animator animator;
 
     public void Init(int x, int y, Board board) // Inicializa a peça com posição e referência ao tabuleiro
     {
-        animator = GetComponent<Animator>();
-        animator.SetTrigger(valorFrut);
         this.x = x;
         this.y = y;
         this.board = board;

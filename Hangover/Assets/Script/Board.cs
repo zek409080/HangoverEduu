@@ -187,7 +187,7 @@ public class Board : MonoBehaviour
                         for (int k = 0; k < matchLength; k++)
                         {
                             piecesToDestroy.Add(pieces[x + k, y]);
-                            GameManager.instance.AddScore(score);
+                            //GameManager.instance.AddScore(score);
                         }
                     }
                 }
@@ -213,7 +213,7 @@ public class Board : MonoBehaviour
                         for (int k = 0; k < matchLength; k++)
                         {
                             piecesToDestroy.Add(pieces[x, y + k]);
-                            GameManager.instance.AddScore(score);
+                            //GameManager.instance.AddScore(score);
                         }
                     }
                 }
