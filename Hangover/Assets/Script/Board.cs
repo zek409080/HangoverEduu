@@ -189,11 +189,9 @@ public class Board : MonoBehaviour
                     }
                     if (matchLength >= 3)
                     {
-                        Instantiate(particle_popMagic, new Vector3(x, y, 0), Quaternion.identity);
                         for (int k = 0; k < matchLength; k++)
                         {
                             piecesToDestroy.Add(pieces[x + k, y]);
-                            //Instantiate(particle_popMagic, new Vector3(x, y, 0), Quaternion.identity);
                             GameManager.instance.AddScore(10);
                         }
                     }
@@ -217,11 +215,9 @@ public class Board : MonoBehaviour
                     }
                     if (matchLength >= 3)
                     {
-                        Instantiate(particle_popMagic, new Vector3(x, y, 0), Quaternion.identity);
                         for (int k = 0; k < matchLength; k++)
                         {
                             piecesToDestroy.Add(pieces[x, y + k]);
-                            //Instantiate(particle_popMagic, new Vector3(x, y, 0), Quaternion.identity);
                             GameManager.instance.AddScore(10);
                         }
                     }
@@ -234,6 +230,7 @@ public class Board : MonoBehaviour
             if (piece != null)
             {
                 pieces[piece.x, piece.y] = null;
+                Instantiate(particle_popMagic, new Vector3(piece.x, piece.y), Quaternion.identity);
                 Destroy(piece.gameObject);
             }
         }
@@ -266,16 +263,16 @@ public class Board : MonoBehaviour
             }
 
             for (int y = height - emptyCount; y < height; y++)
-            {
-                
+            { 
                 GameObject newPiece = Instantiate(piecePrefab[RandomFrut()], new Vector3(x, y, 0), Quaternion.identity);
                 StartCoroutine(MovePiece(pieces[x, y], new Vector3(x, y, 0)));
                 pieces[x, y] = newPiece.GetComponent<Piece>();
                 pieces[x, y].Init(x, y, this);
             }
         }
-        yield return new WaitForSeconds(0.5f);
         CheckForMatches();
+        yield return new WaitForSeconds(0.5f);
+        
     }
 
 
