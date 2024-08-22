@@ -29,7 +29,6 @@ public class GameManager : MonoBehaviour
 
 
     public int scorePlayer;
-    int scoreMultiplier;
 
     UIManager managerUI;
 
@@ -95,7 +94,7 @@ public class GameManager : MonoBehaviour
 
     public void AddScore(int scoreValue)
     {
-        scorePlayer += scoreValue * scoreMultiplier;
+        scorePlayer += scoreValue;
         managerUI.UpdateScore(scorePlayer);
     }
 }

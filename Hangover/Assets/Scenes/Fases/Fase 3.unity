@@ -231,6 +231,10 @@ PrefabInstance:
       propertyPath: cam
       value: 
       objectReference: {fileID: 1032095336}
+    - target: {fileID: 5653086171243154531, guid: db76c244efaf5044f97e47d9be74a612, type: 3}
+      propertyPath: particle_popMagic
+      value: 
+      objectReference: {fileID: 5653956943498294196, guid: d741206eb23cda94fb1dc6acffbfa15c, type: 3}
     - target: {fileID: 5832218963569578393, guid: db76c244efaf5044f97e47d9be74a612, type: 3}
       propertyPath: m_LocalPosition.x
       value: 433.03333

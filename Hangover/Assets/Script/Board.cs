@@ -14,7 +14,8 @@ public class Board : MonoBehaviour
     Vector3 vector3Base;
     private bool canSwap = true;
     public Transform cam;
-    int score;
+
+    [SerializeField] GameObject particle_popMagic;
     void Start()
     {
         vector3Base = new Vector3(0.8f, 0.8f, 0);
@@ -45,6 +46,8 @@ public class Board : MonoBehaviour
             }
         }
         cam.transform.position = new Vector3((float)width / 2 - 0.5f, (float)height / 2 - 0.5f, -10);
+
+       
         CheckForMatches();
     }
 
@@ -187,7 +190,8 @@ public class Board : MonoBehaviour
                         for (int k = 0; k < matchLength; k++)
                         {
                             piecesToDestroy.Add(pieces[x + k, y]);
-                            //GameManager.instance.AddScore(score);
+                            Instantiate(particle_popMagic, new Vector3(x, y, 0), Quaternion.identity);
+                            GameManager.instance.AddScore(10);
                         }
                     }
                 }
@@ -213,7 +217,8 @@ public class Board : MonoBehaviour
                         for (int k = 0; k < matchLength; k++)
                         {
                             piecesToDestroy.Add(pieces[x, y + k]);
-                            //GameManager.instance.AddScore(score);
+                            Instantiate(particle_popMagic, new Vector3(x, y, 0), Quaternion.identity);
+                            GameManager.instance.AddScore(10);
                         }
                     }
                 }

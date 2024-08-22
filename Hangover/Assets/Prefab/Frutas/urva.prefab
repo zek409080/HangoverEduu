@@ -149,6 +149,7 @@ MonoBehaviour:
   x: 0
   y: 0
   board: {fileID: 0}
+  ParticleSystem: {fileID: 0}
 --- !u!95 &4256119314808537848
 Animator:
   serializedVersion: 5
