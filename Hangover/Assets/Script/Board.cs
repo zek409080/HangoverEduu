@@ -187,10 +187,11 @@ public class Board : MonoBehaviour
                     }
                     if (matchLength >= 3)
                     {
+                        Instantiate(particle_popMagic, new Vector3(x, y, 0), Quaternion.identity);
                         for (int k = 0; k < matchLength; k++)
                         {
                             piecesToDestroy.Add(pieces[x + k, y]);
-                            Instantiate(particle_popMagic, new Vector3(x, y, 0), Quaternion.identity);
+                            //Instantiate(particle_popMagic, new Vector3(x, y, 0), Quaternion.identity);
                             GameManager.instance.AddScore(10);
                         }
                     }
@@ -214,10 +215,11 @@ public class Board : MonoBehaviour
                     }
                     if (matchLength >= 3)
                     {
+                        Instantiate(particle_popMagic, new Vector3(x, y, 0), Quaternion.identity);
                         for (int k = 0; k < matchLength; k++)
                         {
                             piecesToDestroy.Add(pieces[x, y + k]);
-                            Instantiate(particle_popMagic, new Vector3(x, y, 0), Quaternion.identity);
+                            //Instantiate(particle_popMagic, new Vector3(x, y, 0), Quaternion.identity);
                             GameManager.instance.AddScore(10);
                         }
                     }
@@ -264,9 +266,8 @@ public class Board : MonoBehaviour
             for (int y = height - emptyCount; y < height; y++)
             {
                 
-                
-                StartCoroutine(MovePiece(pieces[x, y], new Vector3(x, y, 0)));
                 GameObject newPiece = Instantiate(piecePrefab[RandomFrut()], new Vector3(x, y, 0), Quaternion.identity);
+                StartCoroutine(MovePiece(pieces[x, y], new Vector3(x, y, 0)));
                 pieces[x, y] = newPiece.GetComponent<Piece>();
                 pieces[x, y].Init(x, y, this);
             }
@@ -275,6 +276,23 @@ public class Board : MonoBehaviour
         CheckForMatches();
     }
 
+
+    IEnumerator MovePiece(Piece piece, Vector3 newPosition)
+    {
+        float timeToMove = 0.1f;
+        float elapsedTime = 0f;
+        Vector3 startingPosition = piece.transform.position;
+
+        while (elapsedTime < timeToMove)
+        {
+            piece.transform.position = Vector3.Lerp(startingPosition, newPosition, elapsedTime / timeToMove);
+            elapsedTime += Time.deltaTime;
+            yield return null;  // Continues in the next frame
+        }
+
+        piece.transform.position = newPosition;  // Ensure the piece ends exactly at the target position
+    }
+    /*
     IEnumerator MovePiece(Piece piece, Vector3 newPosition)
     {
         float timeToMove = 0.1f;
@@ -284,14 +302,10 @@ public class Board : MonoBehaviour
         {
             piece.transform.position = Vector3.MoveTowards(piece.transform.position, newPosition, (Time.deltaTime / timeToMove) * Vector3.Distance(piece.transform.position, newPosition));
             elapsedTime += Time.deltaTime;
-            yield return null;
+            yield return new WaitForSeconds(0.4f);
         }
         piece.transform.position = newPosition;
-    }
-
-
-
-
+    }*/
 
     bool CanMatchBeMade(int x1, int y1, int x2, int y2)
     {
