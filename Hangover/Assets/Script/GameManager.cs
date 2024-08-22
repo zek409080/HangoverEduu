@@ -1,7 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -28,7 +24,7 @@ public class GameManager : MonoBehaviour
     #endregion
 
 
-    public int scorePlayer;
+    public int scorePlayer, jogadas;
 
     UIManager managerUI;
 
@@ -96,5 +92,12 @@ public class GameManager : MonoBehaviour
     {
         scorePlayer += scoreValue;
         managerUI.UpdateScore(scorePlayer);
+    }
+
+
+    public void UpdateJogadas(int jogadasValue)
+    {
+        jogadas += jogadasValue;
+        managerUI.UpdateJogadas(jogadas);
     }
 }

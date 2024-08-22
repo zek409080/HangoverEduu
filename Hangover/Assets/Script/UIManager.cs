@@ -5,18 +5,13 @@ using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
-    public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI scoreText, jogadasText;
 
-    private void Start()
+
+    public void UpdateJogadas(int jogadas)
     {
-        Initialize();
+        jogadasText.text = jogadas.ToString(); ;
     }
-
-    void Initialize()
-    {
-        scoreText = GameObject.Find("Text_Score").GetComponent<TextMeshProUGUI>();
-    }
-
 
     public void UpdateScore(int valueScoore)
     {

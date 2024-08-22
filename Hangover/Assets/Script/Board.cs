@@ -19,6 +19,7 @@ public class Board : MonoBehaviour
     void Start()
     {
         vector3Base = new Vector3(0.8f, 0.8f, 0);
+        GameManager.instance.UpdateJogadas(10);
         pieces = new Piece[width, height];
         InitializeBoard();
     }
@@ -104,6 +105,7 @@ public class Board : MonoBehaviour
         }
         else
         {
+            GameManager.instance.UpdateJogadas(-1);
             CheckForMatches();
         }
 
