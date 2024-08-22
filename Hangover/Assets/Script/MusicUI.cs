@@ -5,12 +5,30 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class FundoMusica : MonoBehaviour
+public class MusicUI : MonoBehaviour
 {
+    #region Singleton
+
+    public static MusicUI instance;
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(instance);
+        }
+        else if (instance != this)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    #endregion
+
     private bool estadoDoSom = true;
     [SerializeField] private AudioSource fundoMusical;
     [SerializeField] private Sprite somLigado, somDesligado;
-    [SerializeField] private AudioSource fundoMusica;
 
     public void LigarOuDesligarMusica()
     {

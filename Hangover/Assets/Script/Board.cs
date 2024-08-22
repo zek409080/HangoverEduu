@@ -95,7 +95,7 @@ public class Board : MonoBehaviour
 
         SwapPieces(piece1, piece2);
 
-        yield return new WaitForSeconds(0.8f);
+        yield return null;
 
         if (!HasMatches())
         {
