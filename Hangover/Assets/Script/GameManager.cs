@@ -46,6 +46,7 @@ public class GameManager : MonoBehaviour
     private void InitializeBase()
     {
         FindButtons();
+        jogadas = 0;
         managerUI = FindObjectOfType<UIManager>();
         Time.timeScale = 1;
     }
@@ -79,6 +80,7 @@ public class GameManager : MonoBehaviour
         GameObject.Find("Fase4_button").GetComponent<Button>().onClick.AddListener(() => LoadScene("Fase 4"));
         GameObject.Find("Fase5_button").GetComponent<Button>().onClick.AddListener(() => LoadScene("Fase 5"));
     }
+
     public void LoadScene(string sceneName)
     {
         SceneManager.LoadScene(sceneName);
@@ -94,7 +96,10 @@ public class GameManager : MonoBehaviour
         managerUI.UpdateScore(scorePlayer);
     }
 
-
+    public void UpdateGameOver(string textGameover)
+    {
+        managerUI.UpdateTextGameOver(textGameover);
+    }
     public void UpdateJogadas(int jogadasValue)
     {
         jogadas += jogadasValue;

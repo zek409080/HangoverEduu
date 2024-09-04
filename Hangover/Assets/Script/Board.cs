@@ -8,6 +8,7 @@ public class Board : MonoBehaviour
     public int width;
     public int height;
 
+    [SerializeField ]int jogodas;
     public GameObject[] piecePrefab;
     public Piece[,] pieces;
     private Piece selectedPiece;
@@ -19,7 +20,7 @@ public class Board : MonoBehaviour
     void Start()
     {
         vector3Base = new Vector3(0.8f, 0.8f, 0);
-        GameManager.instance.UpdateJogadas(10);
+        GameManager.instance.UpdateJogadas(jogodas);
         pieces = new Piece[width, height];
         InitializeBoard();
     }
@@ -27,6 +28,7 @@ public class Board : MonoBehaviour
     private void Update()
     {
         print(HasPossibleMatches());
+        GameOver();
     }
 
     void InitializeBoard()
@@ -354,4 +356,14 @@ public class Board : MonoBehaviour
         }
         return false;
     }
+
+    void GameOver()
+    {
+        if (GameManager.instance.jogadas == 0)
+        {
+            GameManager.instance.UpdateGameOver("Game Over");
+        }
+    }
+
+    
 }
