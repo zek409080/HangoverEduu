@@ -293,21 +293,6 @@ public class Board : MonoBehaviour
 
         piece.transform.position = newPosition;  // Ensure the piece ends exactly at the target position
     }
-    /*
-    IEnumerator MovePiece(Piece piece, Vector3 newPosition)
-    {
-        float timeToMove = 0.1f;
-        float elapsedTime = 0;
-
-        while (elapsedTime < timeToMove)
-        {
-            piece.transform.position = Vector3.MoveTowards(piece.transform.position, newPosition, (Time.deltaTime / timeToMove) * Vector3.Distance(piece.transform.position, newPosition));
-            elapsedTime += Time.deltaTime;
-            yield return new WaitForSeconds(0.4f);
-        }
-        piece.transform.position = newPosition;
-    }*/
-
     bool CanMatchBeMade(int x1, int y1, int x2, int y2)
     {
         // Verifica se as coordenadas estão dentro dos limites do tabuleiro
