@@ -6,11 +6,17 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    public TextMeshProUGUI scoreText, jogadasText, gameoverText;
-    [SerializeField]Button buttonExit, buttonRestart, buttonclose;
+    [SerializeField]TextMeshProUGUI scoreText, jogadasText, gameoverText;
+    [SerializeField]Button  buttonclose;
     [SerializeField]GameObject menuPanel;
 
-    public void LoadScene(string sceneName)
+    public void RedtartScene(string sceneName)
+    {
+        menuPanel.SetActive(false);
+        GameManager.instance.LoadScene(sceneName);
+    }
+
+    public void QuitGame(string sceneName)
     {
         GameManager.instance.LoadScene(sceneName);
     }

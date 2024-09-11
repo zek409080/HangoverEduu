@@ -376,6 +376,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scorePlayer: 0
   jogadas: 0
+  jogadasBase: 2
 --- !u!1 &659746821
 GameObject:
   m_ObjectHideFlags: 0

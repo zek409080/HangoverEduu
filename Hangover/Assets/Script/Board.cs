@@ -17,10 +17,11 @@ public class Board : MonoBehaviour
     private bool canSwap = true;
     public Transform cam;
     [SerializeField] GameObject particle_popMagic;
+
+
     void Start()
     {
         vector3Base = new Vector3(0.8f, 0.8f, 0);
-        GameManager.instance.UpdateJogadas(jogodas);
         pieces = new Piece[width, height];
         InitializeBoard();
     }
