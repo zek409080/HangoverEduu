@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -31,22 +31,47 @@ public class Board : MonoBehaviour
         print(HasPossibleMatches());
         StartCoroutine(GameOver());
     }
+    /*Piece CreateEmptyPiece(int x, int y)
+    {
+        GameObject emptyObject = new GameObject("EmptyPiece");
+        Piece emptyPiece = emptyObject.AddComponent<Piece>();
+        emptyPiece.frutType = FrutType.Vazio;
+        emptyPiece.Init(x, y, this);
+        emptyPiece.SetVisibility(false); // Peï¿½a invisï¿½vel
+        return emptyPiece;
+    }*/
 
     void InitializeBoard()
     {
+        //rodrigo
+        binaryArray binaryArray = GetComponent<binaryArray>(); // Obtï¿½m o componente do BinaryArrayTest
+        bool[] initialBools = binaryArray.GetInitialBools(); // Obtï¿½m a matriz binï¿½ria
+        //
+
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                GameObject newPiece = Instantiate(piecePrefab[RandomFrut()], new Vector3(x, y, 0), Quaternion.identity);
-                if (newPiece != null)
-                {
-                    pieces[x, y] = newPiece.GetComponent<Piece>();
-                    if (pieces[x, y] != null)
+                //rodrigo
+                //int index = x + y * width;
+               // if (index < initialBools.Length && initialBools[index])
+               // {
+                    // Se a matriz binï¿½ria indica que hï¿½ um espaï¿½o vazio aqui
+                    //pieces[x, y] = CreateEmptyPiece(x, y);
+               // }
+                //rodrigo
+                //else
+                //{
+                    GameObject newPiece = Instantiate(piecePrefab[RandomFrut()], new Vector3(x, y, 0), Quaternion.identity);
+                    if (newPiece != null)
                     {
-                        pieces[x, y].Init(x, y, this);
+                        pieces[x, y] = newPiece.GetComponent<Piece>();
+                        if (pieces[x, y] != null)
+                        {
+                            pieces[x, y].Init(x, y, this);
+                        }
                     }
-                }
+                //}
             }
         }
         cam.transform.position = new Vector3((float)width / 2 - 0.5f, (float)height / 2 - 0.5f, -10);
@@ -244,43 +269,53 @@ public class Board : MonoBehaviour
         {
             yield return new WaitForSeconds(0.5f);
 
-            // Reposiciona e gera novas peças
-            for (int x = 0; x < width; x++)
-            {
-                int emptyCount = 0;
-                for (int y = 0; y < height; y++)
-                {
-                    if (pieces[x, y] == null)
-                    {
-                        emptyCount++;
-                    }
-                    else if (emptyCount > 0)
-                    {
-                        pieces[x, y - emptyCount] = pieces[x, y];
-                        pieces[x, y].Init(x, y - emptyCount, this);
-                        StartCoroutine(MovePiece(pieces[x, y], new Vector3(x, y - emptyCount, 0)));
-                        pieces[x, y] = null;
-                    }
-                }
+            //binaryArray binaryArray = GetComponent<binaryArray>();
+            //bool[] initialBools = binaryArray.GetInitialBools();
+        // Reposiciona e gera novas peÃ§as
+        for (int x = 0; x < width; x++)
+        {
+            int emptyCount = 0;
 
-                for (int y = height - emptyCount; y < height; y++)
+            for (int y = 0; y < height; y++)
+            {
+                //int index = x + y * width;
+                if (pieces[x, y] == null)// && !initialBools[index])
                 {
-                    GameObject newPiece = Instantiate(piecePrefab[RandomFrut()], new Vector3(x, y, 0), Quaternion.identity);
-                    pieces[x, y] = newPiece.GetComponent<Piece>();
-                    StartCoroutine(MovePiece(pieces[x, y], new Vector3(x, y, 0)));
-                    pieces[x, y].Init(x, y, this);
+                    emptyCount++;
+                }
+                else if (emptyCount > 0)
+                {
+                    pieces[x, y - emptyCount] = pieces[x, y];
+                    pieces[x, y].Init(x, y - emptyCount, this);
+                    StartCoroutine(MovePiece(pieces[x, y], new Vector3(x, y - emptyCount, 0)));
+                    pieces[x, y] = null;
                 }
             }
 
+            for (int y = height - emptyCount; y < height; y++)
+            {
+                //int index = x + y * width;
+                //if (pieces[x, y] == null && !initialBools[index])
+                //{
+                    GameObject newPiece = Instantiate(piecePrefab[RandomFrut()], new Vector3(x, y, 0), Quaternion.identity);
+                    //if (newPiece != null)
+                    //{
+                        pieces[x, y] = newPiece.GetComponent<Piece>();
+                        StartCoroutine(MovePiece(pieces[x, y], new Vector3(x, y, 0)));
+                        pieces[x, y].Init(x, y, this);
+                    //}
+
+               //}
+            }
+        }
             CheckForMatches();
-        yield return new WaitForSeconds(1f); // Tempo adicional para aguardar que tudo se resolva      
 
         }
     IEnumerator MovePiece(Piece piece, Vector3 newPosition, float duration = 0.2f)
     {
         if (piece == null || piece.transform == null)
         {
-            yield break;  // Sai da função se a peça foi destruída
+            yield break;  // Sai da funÃ§Ã£o se a peÃ§a foi destruÃ­da
         }
 
         Vector3 startingPosition = piece.transform.position;
@@ -290,32 +325,32 @@ public class Board : MonoBehaviour
         {
             if (piece == null || piece.transform == null)
             {
-                yield break;  // Sai da função se a peça foi destruída durante o movimento
+                yield break;  // Sai da funÃ§Ã£o se a peÃ§a foi destruÃ­da durante o movimento
             }
 
             float t = elapsedTime / duration;  // Normaliza o tempo
-            t = t * t * (3f - 2f * t);  // Interpolação suave
+            t = t * t * (3f - 2f * t);  // InterpolaÃ§Ã£o suave
             piece.transform.position = Vector3.Lerp(startingPosition, newPosition, t);
 
             elapsedTime += Time.deltaTime;
-            yield return null;  // Aguarda o próximo quadro
+            yield return null;  // Aguarda o prÃ³ximo quadro
         }
     }
         bool CanMatchBeMade(int x1, int y1, int x2, int y2)
     {
-        // Verifica se as coordenadas estão dentro dos limites do tabuleiro
+        // Verifica se as coordenadas estÃ£o dentro dos limites do tabuleiro
         if (x1 < 0 || x1 >= width || y1 < 0 || y1 >= height ||
             x2 < 0 || x2 >= width || y2 < 0 || y2 >= height)
         {
             return false;
         }
-        // Verifica se as peças estão adjacentes
+        // Verifica se as peÃ§as estÃ£o adjacentes
         if (Mathf.Abs(x1 - x2) + Mathf.Abs(y1 - y2) != 1)
         {
-            return false; // Não são adjacentes
+            return false; // NÃ£o sÃ£o adjacentes
         }
 
-        // Troca as peças temporariamente
+        // Troca as peÃ§as temporariamente
         Piece temp = pieces[x1, y1];
         pieces[x1, y1] = pieces[x2, y2];
         pieces[x2, y2] = temp;
@@ -331,7 +366,7 @@ public class Board : MonoBehaviour
     }
 
 
-    // Novo método para verificar se existem possíveis matches no tabuleiro
+    // Novo mÃ©todo para verificar se existem possÃ­veis matches no tabuleiro
     public bool HasPossibleMatches()
     {
         for (int x = 0; x < width; x++)

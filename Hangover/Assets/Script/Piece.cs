@@ -1,56 +1,77 @@
-using System.Collections;
+ï»¿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Piece : MonoBehaviour
 {
-    public FrutType frutType; // Tipo da fruta da peça
-    public int x; // Posição X da peça no tabuleiro
-    public int y; // Posição Y da peça no tabuleiro
-    public Board board; // Referência ao tabuleiro
 
-    public void Init(int x, int y, Board board) // Inicializa a peça com posição e referência ao tabuleiro
+    public FrutType frutType; // Tipo da fruta da peï¿½a
+    public int x; // Posiï¿½ï¿½o X da peï¿½a no tabuleiro
+    public int y; // Posiï¿½ï¿½o Y da peï¿½a no tabuleiro
+    public Board board; // Referï¿½ncia ao tabuleiro
+    public bool isInvisible; // Determina se a peï¿½a ï¿½ invisï¿½vel
+
+    public void Init(int x, int y, Board board)
     {
         this.x = x;
         this.y = y;
         this.board = board;
-       // transform.localScale = board.vector3Base; // Inicializa a escala da peça para o valor base definido pelo tabuleiro
+        SetVisibility(!isInvisible); // Define a visibilidade ao inicializar
     }
 
-    void OnMouseDown() // Chamado quando a peça é clicada
-    {
-        board.SelectPiece(this); // Seleciona a peça no tabuleiro
-    }
 
-    public void AnimateScale(Vector3 targetScale, float duration) // Anima a escala da peça
-    {
-        StartCoroutine(ScaleCoroutine(targetScale, duration)); // Inicia a rotina de animação de escala
-    }
 
-    private IEnumerator ScaleCoroutine(Vector3 targetScale, float duration) // Rotina de animação de escala
+    void OnMouseDown()
     {
-        Vector3 startScale = transform.localScale; // Escala inicial da peça
-        float time = 0; // Tempo de animação
-
-        while (time < duration) // Enquanto o tempo de animação não atingir a duração
+        if (!isInvisible && frutType != FrutType.Vazio) // Impede a seleï¿½ï¿½o de peï¿½as vazias
         {
-            transform.localScale = Vector3.Lerp(startScale, targetScale, time / duration); // Interpola a escala da peça
+            board.SelectPiece(this);
+        }
+    }
+
+    public void SetVisibility(bool isVisible)
+    {
+        Renderer renderer = GetComponent<Renderer>();
+        if (renderer != null)
+        {
+            renderer.enabled = isVisible;
+        }
+    }
+
+
+
+    public void AnimateScale(Vector3 targetScale, float duration) // Anima a escala da peï¿½a
+    {
+        StartCoroutine(ScaleCoroutine(targetScale, duration)); // Inicia a rotina de animaï¿½ï¿½o de escala
+    }
+
+    private IEnumerator ScaleCoroutine(Vector3 targetScale, float duration) // Rotina de animaï¿½ï¿½o de escala
+    {
+        Vector3 startScale = transform.localScale; // Escala inicial da peï¿½a
+        float time = 0; // Tempo de animaï¿½ï¿½o
+
+        while (time < duration) // Enquanto o tempo de animaï¿½ï¿½o nï¿½o atingir a duraï¿½ï¿½o
+        {
+            transform.localScale = Vector3.Lerp(startScale, targetScale, time / duration); // Interpola a escala da peï¿½a
             time += Time.deltaTime; // Incrementa o tempo com base no tempo real do jogo
-            yield return null; // Aguarda o próximo quadro
+            yield return null; // Aguarda o prï¿½ximo quadro
         }
 
         transform.localScale = targetScale; // Garante que a escala final seja exatamente a desejada
     }
 }
 
-// Enumeração para os tipos de frutas disponíveis
+// Enumeraï¿½ï¿½o para os tipos de frutas disponï¿½veis
 public enum FrutType
 {
     Abacaxi,
-    banana,
-    manga,
-    maça,
-    melancia,
-    pinha,
-    uva,
-    poder
+    Banana,
+    Manga,
+    Maca,
+    Melancia,
+    Pinha,
+    Uva,
+    Poder,
+    Obstacle,
+    Vazio
 }

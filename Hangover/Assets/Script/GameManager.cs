@@ -43,7 +43,11 @@ public class GameManager : MonoBehaviour
         InitializeBase();
         scorePlayer = 0;
         jogadas = jogadasBase;
-        UpdateJogadas(jogadas);
+        if (SceneManager.GetActiveScene().name == "Fase 1") 
+        {
+            UpdateJogadas(jogadas);
+        }
+        
     }
 
     private void InitializeBase()
