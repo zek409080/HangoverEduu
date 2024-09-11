@@ -2,35 +2,37 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
     public TextMeshProUGUI scoreText, jogadasText, gameoverText;
-    [SerializeField]Button buttonExit, buttonRestart, buttonclose, buttonConfig;
+    [SerializeField]Button buttonExit, buttonRestart, buttonclose;
     [SerializeField]GameObject menuPanel;
-
-    public void SetMenuPanel()
-    {
-        menuPanel.active = true;
-        Time.timeScale = 0f;
-    }
-
-    public void OffMenuPanel()
-    {
-        menuPanel.active = false;
-        Time.timeScale = 1f;
-    }
 
     public void LoadScene(string sceneName)
     {
-        SceneManager.LoadScene(sceneName);
+        GameManager.instance.LoadScene(sceneName);
+    }
+
+    public void ActiveMenu(bool ativo)
+    {
+        if (ativo)
+        {
+          menuPanel.SetActive(true);
+          Time.timeScale = 0f;
+        }
+        else
+        {
+          menuPanel.SetActive(false);
+          Time.timeScale = 1f;
+        }
     }
     public void UpdateTextGameOver(string textGameover)
     {
         gameoverText.text = textGameover;
-        SetMenuPanel();
+        menuPanel.SetActive(true);
+        Time.timeScale = 0f;
         buttonclose.enabled = false;
     }
     public void UpdateJogadas(int jogadas)

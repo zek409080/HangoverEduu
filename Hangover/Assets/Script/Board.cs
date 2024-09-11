@@ -1,21 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Board : MonoBehaviour
 {
-    [Header("Tamanho do tabulheiro")]
+    [Header("Tamanho do tabuleiro")]
     public int width;
     public int height;
 
-    [SerializeField ]int jogodas;
+    [SerializeField] int jogodas;
     public GameObject[] piecePrefab;
     public Piece[,] pieces;
     private Piece selectedPiece;
     Vector3 vector3Base;
     private bool canSwap = true;
     public Transform cam;
-
     [SerializeField] GameObject particle_popMagic;
     void Start()
     {
@@ -28,7 +28,7 @@ public class Board : MonoBehaviour
     private void Update()
     {
         print(HasPossibleMatches());
-        GameOver();
+        StartCoroutine(GameOver());
     }
 
     void InitializeBoard()
@@ -49,8 +49,6 @@ public class Board : MonoBehaviour
             }
         }
         cam.transform.position = new Vector3((float)width / 2 - 0.5f, (float)height / 2 - 0.5f, -10);
-
-       
         CheckForMatches();
     }
 
@@ -97,7 +95,7 @@ public class Board : MonoBehaviour
 
         SwapPieces(piece1, piece2);
 
-        yield return null;
+        yield return new WaitForSeconds(0.1f);
 
         if (!HasMatches())
         {
@@ -107,10 +105,9 @@ public class Board : MonoBehaviour
         }
         else
         {
-            GameManager.instance.UpdateJogadas(-1);
             CheckForMatches();
         }
-
+        GameManager.instance.UpdateJogadas(-1);
         selectedPiece = null;
         canSwap = true;
     }
@@ -242,58 +239,68 @@ public class Board : MonoBehaviour
             StartCoroutine(RefillBoard());
         }
     }
-
-    IEnumerator RefillBoard()
-    {
-        yield return new WaitForSeconds(0.5f);
-        for (int x = 0; x < width; x++)
+        IEnumerator RefillBoard()
         {
-            int emptyCount = 0;
-            for (int y = 0; y < height; y++)
+            yield return new WaitForSeconds(0.5f);
+
+            // Reposiciona e gera novas peças
+            for (int x = 0; x < width; x++)
             {
-                if (pieces[x, y] == null)
+                int emptyCount = 0;
+                for (int y = 0; y < height; y++)
                 {
-                    emptyCount++;
+                    if (pieces[x, y] == null)
+                    {
+                        emptyCount++;
+                    }
+                    else if (emptyCount > 0)
+                    {
+                        pieces[x, y - emptyCount] = pieces[x, y];
+                        pieces[x, y].Init(x, y - emptyCount, this);
+                        StartCoroutine(MovePiece(pieces[x, y], new Vector3(x, y - emptyCount, 0)));
+                        pieces[x, y] = null;
+                    }
                 }
-                else if (emptyCount > 0)
+
+                for (int y = height - emptyCount; y < height; y++)
                 {
-                    pieces[x, y - emptyCount] = pieces[x, y];
-                    pieces[x, y].Init(x, y - emptyCount, this);
-                    StartCoroutine(MovePiece(pieces[x, y], new Vector3(x, y - emptyCount, 0)));
-                    pieces[x, y] = null;
+                    GameObject newPiece = Instantiate(piecePrefab[RandomFrut()], new Vector3(x, y, 0), Quaternion.identity);
+                    pieces[x, y] = newPiece.GetComponent<Piece>();
+                    StartCoroutine(MovePiece(pieces[x, y], new Vector3(x, y, 0)));
+                    pieces[x, y].Init(x, y, this);
                 }
             }
 
-            for (int y = height - emptyCount; y < height; y++)
-            { 
-                GameObject newPiece = Instantiate(piecePrefab[RandomFrut()], new Vector3(x, y, 0), Quaternion.identity);
-                StartCoroutine(MovePiece(pieces[x, y], new Vector3(x, y, 0)));
-                pieces[x, y] = newPiece.GetComponent<Piece>();
-                pieces[x, y].Init(x, y, this);
-            }
+            CheckForMatches();
+        yield return new WaitForSeconds(1f); // Tempo adicional para aguardar que tudo se resolva      
+
         }
-        CheckForMatches();
-        yield return new WaitForSeconds(0.5f);
-        
-    }
-
-
-    IEnumerator MovePiece(Piece piece, Vector3 newPosition)
+    IEnumerator MovePiece(Piece piece, Vector3 newPosition, float duration = 0.2f)
     {
-        float timeToMove = 0.1f;
-        float elapsedTime = 0f;
-        Vector3 startingPosition = piece.transform.position;
-
-        while (elapsedTime < timeToMove)
+        if (piece == null || piece.transform == null)
         {
-            piece.transform.position = Vector3.Lerp(startingPosition, newPosition, elapsedTime / timeToMove);
-            elapsedTime += Time.deltaTime;
-            yield return null;  // Continues in the next frame
+            yield break;  // Sai da função se a peça foi destruída
         }
 
-        piece.transform.position = newPosition;  // Ensure the piece ends exactly at the target position
+        Vector3 startingPosition = piece.transform.position;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < duration)
+        {
+            if (piece == null || piece.transform == null)
+            {
+                yield break;  // Sai da função se a peça foi destruída durante o movimento
+            }
+
+            float t = elapsedTime / duration;  // Normaliza o tempo
+            t = t * t * (3f - 2f * t);  // Interpolação suave
+            piece.transform.position = Vector3.Lerp(startingPosition, newPosition, t);
+
+            elapsedTime += Time.deltaTime;
+            yield return null;  // Aguarda o próximo quadro
+        }
     }
-    bool CanMatchBeMade(int x1, int y1, int x2, int y2)
+        bool CanMatchBeMade(int x1, int y1, int x2, int y2)
     {
         // Verifica se as coordenadas estão dentro dos limites do tabuleiro
         if (x1 < 0 || x1 >= width || y1 < 0 || y1 >= height ||
@@ -342,13 +349,12 @@ public class Board : MonoBehaviour
         return false;
     }
 
-    void GameOver()
+    IEnumerator GameOver()
     {
         if (GameManager.instance.jogadas == 0)
         {
+            yield return new WaitForSeconds(1f);
             GameManager.instance.UpdateGameOver("Game Over");
         }
     }
-
-    
 }

@@ -45,6 +45,7 @@ public class GameManager : MonoBehaviour
 
     private void InitializeBase()
     {
+        scorePlayer = 0;
         FindButtons();
         jogadas = 0;
         managerUI = FindObjectOfType<UIManager>();
