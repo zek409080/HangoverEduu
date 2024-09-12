@@ -88,6 +88,8 @@ public class Board : MonoBehaviour
 
     public void SelectPiece(Piece piece)
     {
+        if (piece == null || !piece.gameObject.activeInHierarchy) return; // Verifica se a peça é válida
+
         if (!canSwap || selectedPiece == piece) return;
 
         if (selectedPiece == null)

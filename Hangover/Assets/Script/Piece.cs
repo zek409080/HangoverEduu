@@ -1,15 +1,22 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class Piece : MonoBehaviour
 {
+    public FrutType frutType; // Tipo da fruta da peça
+    public int x; // Posição X da peça no tabuleiro
+    public int y; // Posição Y da peça no tabuleiro
+    public Board board; // Referência ao tabuleiro
+    public bool isInvisible; // Determina se a peça é invisível
 
-    public FrutType frutType; // Tipo da fruta da pe�a
-    public int x; // Posi��o X da pe�a no tabuleiro
-    public int y; // Posi��o Y da pe�a no tabuleiro
-    public Board board; // Refer�ncia ao tabuleiro
-    public bool isInvisible; // Determina se a pe�a � invis�vel
+    private Renderer pieceRenderer;
+
+    void Awake()
+    {
+        // Obtém o componente Renderer apenas uma vez durante a inicialização
+        pieceRenderer = GetComponent<Renderer>();
+    }
 
     public void Init(int x, int y, Board board)
     {
@@ -19,11 +26,9 @@ public class Piece : MonoBehaviour
         SetVisibility(!isInvisible); // Define a visibilidade ao inicializar
     }
 
-
-
     void OnMouseDown()
     {
-        if (!isInvisible && frutType != FrutType.Vazio) // Impede a sele��o de pe�as vazias
+        if (!isInvisible && frutType != FrutType.Vazio) // Impede a seleção de peças invisíveis ou vazias
         {
             board.SelectPiece(this);
         }
@@ -31,37 +36,20 @@ public class Piece : MonoBehaviour
 
     public void SetVisibility(bool isVisible)
     {
-        Renderer renderer = GetComponent<Renderer>();
-        if (renderer != null)
+        if (pieceRenderer != null)
         {
-            renderer.enabled = isVisible;
+            pieceRenderer.enabled = isVisible;
         }
     }
 
-
-
-    public void AnimateScale(Vector3 targetScale, float duration) // Anima a escala da pe�a
+    public void AnimateScale(Vector3 targetScale, float duration)
     {
-        StartCoroutine(ScaleCoroutine(targetScale, duration)); // Inicia a rotina de anima��o de escala
-    }
-
-    private IEnumerator ScaleCoroutine(Vector3 targetScale, float duration) // Rotina de anima��o de escala
-    {
-        Vector3 startScale = transform.localScale; // Escala inicial da pe�a
-        float time = 0; // Tempo de anima��o
-
-        while (time < duration) // Enquanto o tempo de anima��o n�o atingir a dura��o
-        {
-            transform.localScale = Vector3.Lerp(startScale, targetScale, time / duration); // Interpola a escala da pe�a
-            time += Time.deltaTime; // Incrementa o tempo com base no tempo real do jogo
-            yield return null; // Aguarda o pr�ximo quadro
-        }
-
-        transform.localScale = targetScale; // Garante que a escala final seja exatamente a desejada
+        // Usando DOTween para animação de escala
+        transform.DOScale(targetScale, duration).SetEase(Ease.InOutQuad);
     }
 }
 
-// Enumera��o para os tipos de frutas dispon�veis
+// Enumeração para os tipos de frutas disponíveis
 public enum FrutType
 {
     Abacaxi,
