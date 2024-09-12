@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 using DG.Tweening;
 
 public class Piece : MonoBehaviour
@@ -46,6 +45,22 @@ public class Piece : MonoBehaviour
     {
         // Usando DOTween para animação de escala
         transform.DOScale(targetScale, duration).SetEase(Ease.InOutQuad);
+    }
+
+    public void IncreaseScale(Vector3 scaleIncrease, float duration, bool returnToOriginal = true)
+    {
+        // Armazena a escala original
+        Vector3 originalScale = transform.localScale;
+
+        // Aumenta a escala
+        transform.DOScale(originalScale + scaleIncrease, duration).SetEase(Ease.OutBack).OnComplete(() =>
+        {
+            if (returnToOriginal)
+            {
+                // Opcionalmente, retorna à escala original após o aumento
+                transform.DOScale(originalScale, duration).SetEase(Ease.InBack);
+            }
+        });
     }
 }
 

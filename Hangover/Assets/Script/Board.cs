@@ -13,7 +13,6 @@ public class Board : MonoBehaviour
     public GameObject[] piecePrefab;
     public Piece[,] pieces;
     private Piece selectedPiece;
-    private Vector3 vector3Base = new Vector3(0.8f, 0.8f, 0);
     private bool canSwap = true;
     public Transform cam;
     [SerializeField] GameObject particle_popMagic;
@@ -88,28 +87,29 @@ public class Board : MonoBehaviour
 
     public void SelectPiece(Piece piece)
     {
-        if (piece == null || !piece.gameObject.activeInHierarchy) return; // Verifica se a peça é válida
-
         if (!canSwap || selectedPiece == piece) return;
 
         if (selectedPiece == null)
         {
+            // Seleciona a peça pela primeira vez
             selectedPiece = piece;
-            selectedPiece.AnimateScale(vector3Base * 1.2f, 0.2f);
+            selectedPiece.IncreaseScale(new Vector3(0.8f, 0.8f), 0.2f);
         }
         else
         {
+            // Verifica se a peça selecionada é adjacente à peça atual
             if (IsAdjacent(selectedPiece, piece))
             {
-                selectedPiece.AnimateScale(vector3Base, 0.2f);
-                piece.AnimateScale(vector3Base, 0.2f);
+                selectedPiece.IncreaseScale(new Vector3(-0.4f, -0.4f, 0), 0.2f);
+                piece.IncreaseScale(new Vector3(0.4f, 0.4f, 0), 0.2f);
                 StartCoroutine(TrySwapPieces(selectedPiece, piece));
             }
             else
             {
-                selectedPiece.AnimateScale(vector3Base, 0.2f);
+                // A peça não é adjacente, então apenas atualiza a seleção
+                selectedPiece.IncreaseScale(new Vector3(-0.4f, -0.4f, 0), 0.2f);
                 selectedPiece = piece;
-                selectedPiece.AnimateScale(vector3Base * 1.2f, 0.2f);
+                selectedPiece.IncreaseScale(new Vector3(0.4f, 0.4f, 0), 0.2f);
             }
         }
     }
@@ -130,8 +130,8 @@ public class Board : MonoBehaviour
         if (!HasMatches())
         {
             SwapPieces(piece1, piece2);
-            piece1.AnimateScale(vector3Base, 0.2f);
-            piece2.AnimateScale(vector3Base, 0.2f);
+            selectedPiece.IncreaseScale(new Vector3(0.4f, 0.4f, 0), 0.2f);
+            selectedPiece.IncreaseScale(new Vector3(0.4f, 0.4f, 0), 0.2f);
         }
         else
         {
