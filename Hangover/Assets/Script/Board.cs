@@ -93,26 +93,28 @@ public class Board : MonoBehaviour
         {
             // Seleciona a peça pela primeira vez
             selectedPiece = piece;
-            selectedPiece.IncreaseScale(new Vector3(0.8f, 0.8f), 0.2f);
+            selectedPiece.IncreaseScale(new Vector3(0.8f, 0.8f), 0.4f); // Cresce a peça com overshoot
         }
         else
         {
             // Verifica se a peça selecionada é adjacente à peça atual
             if (IsAdjacent(selectedPiece, piece))
             {
-                selectedPiece.IncreaseScale(new Vector3(-0.4f, -0.4f, 0), 0.2f);
-                piece.IncreaseScale(new Vector3(0.4f, 0.4f, 0), 0.2f);
+                selectedPiece.IncreaseScale(new Vector3(-0.8f, -0.8f), 0.3f, true); // Volta ao tamanho normal com overshoot reverso
+                piece.IncreaseScale(new Vector3(0.8f, 0.8f), 0.4f); // Cresce a nova peça selecionada
                 StartCoroutine(TrySwapPieces(selectedPiece, piece));
             }
             else
             {
                 // A peça não é adjacente, então apenas atualiza a seleção
-                selectedPiece.IncreaseScale(new Vector3(-0.4f, -0.4f, 0), 0.2f);
+                selectedPiece.IncreaseScale(new Vector3(-0.8f, -0.8f), 0.3f, true); // Volta ao tamanho normal
                 selectedPiece = piece;
-                selectedPiece.IncreaseScale(new Vector3(0.4f, 0.4f, 0), 0.2f);
+                selectedPiece.IncreaseScale(new Vector3(0.8f, 0.8f), 0.4f); // Cresce a nova peça
             }
         }
+
     }
+
 
     bool IsAdjacent(Piece piece1, Piece piece2)
     {
@@ -130,8 +132,8 @@ public class Board : MonoBehaviour
         if (!HasMatches())
         {
             SwapPieces(piece1, piece2);
-            selectedPiece.IncreaseScale(new Vector3(0.4f, 0.4f, 0), 0.2f);
-            selectedPiece.IncreaseScale(new Vector3(0.4f, 0.4f, 0), 0.2f);
+            selectedPiece.IncreaseScale(new Vector3(-0.8f, -0.8f), 0.3f, true);
+            selectedPiece.IncreaseScale(new Vector3(-0.8f, -0.8f), 0.3f, true);
         }
         else
         {
@@ -220,13 +222,19 @@ public class Board : MonoBehaviour
 
         foreach (Piece piece in piecesToDestroy)
         {
-            pieces[piece.x, piece.y] = null;
-            if (piece.frutType != FrutType.Vazio)
+            if (piece != null && piece.gameObject != null)
             {
-                Instantiate(particle_popMagic, new Vector3(piece.x, piece.y), Quaternion.identity);
+                pieces[piece.x, piece.y] = null;
+                if (piece.frutType != FrutType.Vazio)
+                {
+                    Instantiate(particle_popMagic, new Vector3(piece.x, piece.y), Quaternion.identity);
+                }
+                // Cancela os Tweens associados ao objeto antes de destruí-lo
+                piece.transform.DOKill();
+                Destroy(piece.gameObject);
             }
-            Destroy(piece.gameObject);
         }
+
 
         StartCoroutine(RefillBoard());
         return piecesToDestroy;
@@ -309,9 +317,10 @@ public class Board : MonoBehaviour
 
     void MovePiece(Piece piece, Vector3 newPosition, float duration)
     {
-        if (piece == null) return;
+        if (piece == null || piece.gameObject == null) return;  // Verifica se a peça não foi destruída
         piece.transform.DOMove(newPosition, duration).SetEase(Ease.InOutQuad);
     }
+    
 
     bool CanMatchBeMade(int x1, int y1, int x2, int y2)
     {

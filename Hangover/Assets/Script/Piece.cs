@@ -43,24 +43,48 @@ public class Piece : MonoBehaviour
 
     public void AnimateScale(Vector3 targetScale, float duration)
     {
-        // Usando DOTween para animação de escala
-        transform.DOScale(targetScale, duration).SetEase(Ease.InOutQuad);
+        // Usando uma animação com overshoot (OutBack) para dar um efeito de "crescimento elástico"
+        transform.DOScale(targetScale, duration)
+            .SetEase(Ease.OutBack) // Ajusta o Ease para OutBack, criando um pequeno overshoot
+            .SetEase(Ease.OutElastic, 1.5f, 0.5f) // Ou Use OutElastic para efeito mais "elástico"
+            .OnComplete(() =>
+            {
+                // Após a animação, pode adicionar mais efeitos, como uma pequena rotação para adicionar estilo
+                if (targetScale == new Vector3(1.2f, 1.2f, 1.2f))
+                {
+                    // Adiciona uma rotação sutil para a peça ao crescer
+                    transform.DORotate(new Vector3(0, 0, 10), 0.1f)
+                            .SetLoops(2, LoopType.Yoyo) // Vai e volta na rotação
+                            .SetEase(Ease.InOutSine);
+                }
+            });
     }
 
-    public void IncreaseScale(Vector3 scaleIncrease, float duration, bool returnToOriginal = true)
+
+
+    public void IncreaseScale(Vector3 targetScale, float duration, bool returnToOriginal = false)
     {
         // Armazena a escala original
         Vector3 originalScale = transform.localScale;
 
-        // Aumenta a escala
-        transform.DOScale(originalScale + scaleIncrease, duration).SetEase(Ease.OutBack).OnComplete(() =>
-        {
-            if (returnToOriginal)
+        // Aumenta a escala com overshoot e elasticidade
+        transform.DOScale(originalScale + targetScale, duration)
+            .SetEase(Ease.OutBack, 1f) // OutBack cria o efeito de overshoot
+            .OnComplete(() =>
             {
-                // Opcionalmente, retorna à escala original após o aumento
-                transform.DOScale(originalScale, duration).SetEase(Ease.InBack);
-            }
-        });
+                if (returnToOriginal)
+                {
+                    // Se necessário, retorna à escala original com overshoot reverso
+                    transform.DOScale(originalScale, duration)
+                        .SetEase(Ease.InBack); // Animação de retorno com efeito de inback
+                }
+            });
+    }
+
+    void OnDestroy()
+    {
+        // Cancela qualquer Tween ativo associado a este transform
+        transform.DOKill();
     }
 }
 
