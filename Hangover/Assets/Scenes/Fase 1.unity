@@ -2293,6 +2293,10 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5653086171243154531, guid: db76c244efaf5044f97e47d9be74a612, type: 3}
+      propertyPath: caixaDaFruta
+      value: 
+      objectReference: {fileID: 4747793043071865097, guid: 9c02a76f76e6d0245a0d152aeb9be6a2, type: 3}
+    - target: {fileID: 5653086171243154531, guid: db76c244efaf5044f97e47d9be74a612, type: 3}
       propertyPath: particle_popMagic
       value: 
       objectReference: {fileID: 5653956943498294196, guid: d741206eb23cda94fb1dc6acffbfa15c, type: 3}
@@ -2395,7 +2399,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 5
   size: 30
-  initialBools: 000000000000000000000000000000000000000000000000000000000000
+  initialBools: 010100010101000000010000000000000000000001000000010101000101
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

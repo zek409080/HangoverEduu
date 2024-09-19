@@ -15,7 +15,7 @@ public class Board : MonoBehaviour
     private Piece selectedPiece;
     private bool canSwap = true;
     public Transform cam;
-    [SerializeField] GameObject particle_popMagic;
+    [SerializeField] GameObject particle_popMagic, caixaDaFruta;
 
     private binaryArray binaryArray;
 
@@ -52,10 +52,12 @@ public class Board : MonoBehaviour
                 if (index < initialBools.Length && initialBools[index])
                 {
                     pieces[x, y] = CreateEmptyPiece(x, y);
+                    
                 }
                 else
                 {
                     SpawnPiece(x, y);
+                    Instantiate(caixaDaFruta, new Vector3(x, y), Quaternion.identity);
                 }
             }
         }
