@@ -65,11 +65,11 @@ public class GameManager : MonoBehaviour
         {
             GameObject.Find("Play").GetComponent<Button>().onClick.AddListener(() => LoadScene("seleçãoDeFase"));
             GameObject.Find("Exit").GetComponent<Button>().onClick.AddListener(ExitGame);
-            GameObject.Find("Config").GetComponent<Button>().onClick.AddListener(FindButton);
         }
 
         if (SceneManager.GetActiveScene().name == "seleçãoDeFase")
         {
+            GameObject.Find("Return_button").GetComponent<Button>().onClick.AddListener(() => LoadScene("Menu"));
             FindButtonFase();
         }
         if (SceneManager.GetActiveScene().name == "Jogo")
@@ -86,18 +86,6 @@ public class GameManager : MonoBehaviour
         GameObject.Find("Fase3_button").GetComponent<Button>().onClick.AddListener(() => LoadScene("Fase 3"));
         GameObject.Find("Fase4_button").GetComponent<Button>().onClick.AddListener(() => LoadScene("Fase 4"));
         GameObject.Find("Fase5_button").GetComponent<Button>().onClick.AddListener(() => LoadScene("Fase 5"));
-        GameObject.Find("Return_button").GetComponent<Button>().onClick.AddListener(() => LoadScene("Menu"));
-        GameObject.Find("Config").GetComponent<Button>().onClick.AddListener(FindButton);
-
-    }
-
-    public void FindButton()
-    {
-        GameObject.Find("ShareBt").GetComponent<Button>().onClick.AddListener(() => OpenWebSite("https://www.instagram.com/hangover_farmerss?igsh=MWswNWM4ejNseHExcg==\n"));
-    }
-    public void OpenWebSite(string url)
-    { 
-        Application.OpenURL(url);
     }
 
     public void LoadScene(string sceneName)
