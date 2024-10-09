@@ -70,22 +70,12 @@ public class GameManager : MonoBehaviour
         if (SceneManager.GetActiveScene().name == "seleçãoDeFase")
         {
             GameObject.Find("Return_button").GetComponent<Button>().onClick.AddListener(() => LoadScene("Menu"));
-            FindButtonFase();
         }
         if (SceneManager.GetActiveScene().name == "Jogo")
         {
             GameObject.Find("Play").GetComponent<Button>().onClick.AddListener(() => LoadScene("Jogo"));
             GameObject.Find("Exit").GetComponent<Button>().onClick.AddListener(() => LoadScene("Menu"));
         }
-    }
-
-    void FindButtonFase()
-    {
-        GameObject.Find("Fase1_button").GetComponent<Button>().onClick.AddListener(() => LoadScene("Fase 1"));
-        GameObject.Find("Fase2_button").GetComponent<Button>().onClick.AddListener(() => LoadScene("Fase 2"));
-        GameObject.Find("Fase3_button").GetComponent<Button>().onClick.AddListener(() => LoadScene("Fase 3"));
-        GameObject.Find("Fase4_button").GetComponent<Button>().onClick.AddListener(() => LoadScene("Fase 4"));
-        GameObject.Find("Fase5_button").GetComponent<Button>().onClick.AddListener(() => LoadScene("Fase 5"));
     }
 
     public void LoadScene(string sceneName)
