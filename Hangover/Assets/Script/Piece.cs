@@ -6,7 +6,7 @@ public class Piece : MonoBehaviour
     public FrutType frutType; // Tipo da fruta da peça
     public int x; // Posição X da peça no tabuleiro
     public int y; // Posição Y da peça no tabuleiro
-    public Board board; // Referência ao tabuleiro
+    public GridManager gridManager; // Referência ao GridManager
     public bool isInvisible; // Determina se a peça é invisível
 
     private Renderer pieceRenderer;
@@ -17,19 +17,19 @@ public class Piece : MonoBehaviour
         pieceRenderer = GetComponent<Renderer>();
     }
 
-    public void Init(int x, int y, Board board)
+    public void Init(int x, int y, GridManager gridManager)
     {
         this.x = x;
         this.y = y;
-        this.board = board;
+        this.gridManager = gridManager;
         SetVisibility(!isInvisible); // Define a visibilidade ao inicializar
     }
-
-    void OnMouseDown()
+    
+  void OnMouseDown()
     {
         if (!isInvisible && frutType != FrutType.Vazio) // Impede a seleção de peças invisíveis ou vazias
         {
-            board.SelectPiece(this);
+            gridManager.SelectPiece(this); // Atualizado para usar o GridManager
         }
     }
 

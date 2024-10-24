@@ -5,6 +5,7 @@ using DG.Tweening;
 
 public class Board : MonoBehaviour
 {
+    /*
     [Header("Tamanho do tabuleiro")]
     public int width;
     public int height;
@@ -358,4 +359,5 @@ public class Board : MonoBehaviour
         yield return new WaitForSeconds(1f);
         GameManager.instance.UpdateGameOver("Game Over");
     }
+    */
 }
