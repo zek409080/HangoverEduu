@@ -15,7 +15,7 @@ public class Board : MonoBehaviour
     private Piece selectedPiece;
     private bool canSwap = true;
     public Transform cam;
-    [SerializeField] GameObject particle_popMagic;
+    [SerializeField] GameObject particle_popMagic, caixaDaGrid;
 
     private binaryArray binaryArray;
 
@@ -56,6 +56,7 @@ public class Board : MonoBehaviour
                 else
                 {
                     SpawnPiece(x, y);
+                    Instantiate(caixaDaGrid, new Vector3(x, y, 0), Quaternion.identity);
                 }
             }
         }
