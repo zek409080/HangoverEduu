@@ -17,12 +17,12 @@ public class Board : MonoBehaviour
     public Transform cam;
     [SerializeField] GameObject particle_popMagic, caixaDaGrid;
 
-    private binaryArray binaryArray;
+    private binaryArrayBoard binaryArray;
 
     void Start()
     {
         pieces = new Piece[width, height];
-        binaryArray = GetComponent<binaryArray>();
+        binaryArray = GetComponent<binaryArrayBoard>();
         InitializeBoard();
         CenterCamera();
     }

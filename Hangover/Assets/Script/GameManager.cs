@@ -42,17 +42,14 @@ public class GameManager : MonoBehaviour
     {
         InitializeBase();
         scorePlayer = 0;
-        jogadas = jogadasBase;
-        if (SceneManager.GetActiveScene().name == "Fase 1") 
+        if (SceneManager.GetActiveScene().name != "Menu" & SceneManager.GetActiveScene().name != "seleçãoDeFase")
         {
-            UpdateJogadas(jogadas);
+            UpdateJogadas(jogadasBase);
         }
-        
     }
 
     private void InitializeBase()
     {
-        
         FindButtons();
         managerUI = FindObjectOfType<UIManager>();
         Time.timeScale = 1;

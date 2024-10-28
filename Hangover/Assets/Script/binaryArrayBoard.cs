@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class binaryArray : MonoBehaviour
+public class binaryArrayBoard : MonoBehaviour
 {
 
     #region Singleton
 
     // Declara uma instância estática da classe 
-    public static binaryArray instance;
+    public static binaryArrayBoard instance;
 
     // Método chamado quando o script é inicializado
     private void Awake()

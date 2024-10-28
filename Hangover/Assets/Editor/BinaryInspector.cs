@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 
 
-[CustomEditor(typeof(binaryArray))]
+[CustomEditor(typeof(binaryArrayBoard))]
 public class BinaryTestInspector : Editor
 {
     SerializedProperty bools;
