@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening;
 
 public class Board : MonoBehaviour
 {
+    
     [Header("Tamanho do tabuleiro")]
     public int width;
     public int height;
@@ -92,30 +92,25 @@ public class Board : MonoBehaviour
 
         if (selectedPiece == null)
         {
-            // Seleciona a peça pela primeira vez
             selectedPiece = piece;
-            selectedPiece.IncreaseScale(new Vector3(0.8f, 0.8f), 0.4f); // Cresce a peça com overshoot
+            selectedPiece.StartScaleAnimation(new Vector2(0.8f, 0.8f) * 1.2f, 0.2f); // Cresce a peça
         }
         else
         {
-            // Verifica se a peça selecionada é adjacente à peça atual
             if (IsAdjacent(selectedPiece, piece))
             {
-                selectedPiece.IncreaseScale(new Vector3(-0.8f, -0.8f), 0.3f, true); // Volta ao tamanho normal com overshoot reverso
-                piece.IncreaseScale(new Vector3(0.8f, 0.8f), 0.4f); // Cresce a nova peça selecionada
+                selectedPiece.StartScaleAnimation(new Vector2(0.8f, 0.8f), 0.3f); // Volta ao tamanho normal
+                piece.StartScaleAnimation(new Vector2(0.8f, 0.8f) * 1.2f, 0.2f); // Cresce a nova peça
                 StartCoroutine(TrySwapPieces(selectedPiece, piece));
             }
             else
             {
-                // A peça não é adjacente, então apenas atualiza a seleção
-                selectedPiece.IncreaseScale(new Vector3(-0.8f, -0.8f), 0.3f, true); // Volta ao tamanho normal
+                selectedPiece.StartScaleAnimation(new Vector2(0.8f, 0.8f), 0.3f);
                 selectedPiece = piece;
-                selectedPiece.IncreaseScale(new Vector3(0.8f, 0.8f), 0.4f); // Cresce a nova peça
+                selectedPiece.StartScaleAnimation(new Vector2(0.8f, 0.8f) * 1.2f, 0.2f);
             }
         }
-
     }
-
 
     bool IsAdjacent(Piece piece1, Piece piece2)
     {
@@ -127,17 +122,27 @@ public class Board : MonoBehaviour
     {
         canSwap = false;
 
-        SwapPieces(piece1, piece2);
-        yield return new WaitForSeconds(0.1f);
+        // Guarda as posições originais
+        Vector3 originalPosition1 = piece1.transform.position;
+        Vector3 originalPosition2 = piece2.transform.position;
 
+        // Troca de posição inicial
+        SwapPieces(piece1, piece2);
+
+        yield return new WaitForSeconds(0.15f); // Alinha com o tempo de troca
+
+        // Verifica se a troca gerou um match
         if (!HasMatches())
         {
-            SwapPieces(piece1, piece2);
-            selectedPiece.IncreaseScale(new Vector3(-0.8f, -0.8f), 0.3f, true);
-            selectedPiece.IncreaseScale(new Vector3(-0.8f, -0.8f), 0.3f, true);
+            // Se não houve match, volta para as posições originais
+            piece1.StartMoveAnimation(originalPosition1, 0.1f); // Retorna para posição inicial
+            piece2.StartMoveAnimation(originalPosition2, 0.1f); // Retorna para posição inicial
+
+            yield return new WaitForSeconds(0.15f); // Tempo de retorno ao original
         }
         else
         {
+            // Se houve match, processa as peças e verifica novos matches
             CheckForMatches(out _);
         }
 
@@ -146,6 +151,7 @@ public class Board : MonoBehaviour
         canSwap = true;
     }
 
+
     void SwapPieces(Piece piece1, Piece piece2)
     {
         (pieces[piece1.x, piece1.y], pieces[piece2.x, piece2.y]) = (piece2, piece1);
@@ -153,25 +159,53 @@ public class Board : MonoBehaviour
         piece2.Init(piece1.x, piece1.y, this);
 
         Vector3 tempPosition = piece1.transform.position;
-        piece1.transform.position = piece2.transform.position;
-        piece2.transform.position = tempPosition;
+        piece1.StartMoveAnimation(piece2.transform.position, 0.1f);
+        piece2.StartMoveAnimation(tempPosition, 0.1f);
     }
 
-    bool HasMatches()
+    IEnumerator RefillBoard()
     {
+        yield return new WaitForSeconds(0.5f);
+
+        bool[] initialBools = binaryArray.GetInitialBools();
+
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                if (pieces[x, y] == null) continue;
-
-                if (CheckMatchHorizontal(x, y) || CheckMatchVertical(x, y))
+                int index = x + y * width;
+                if (pieces[x, y] == null && (index >= initialBools.Length || !initialBools[index]))
                 {
-                    return true;
+                    for (int k = y + 1; k < height; k++)
+                    {
+                        if (pieces[x, k] != null)
+                        {
+                            MovePiece(pieces[x, k], new Vector3(x, y, 0), 0.3f);
+                            pieces[x, k].Init(x, y, this);
+                            pieces[x, y] = pieces[x, k];
+                            pieces[x, k] = null;
+                            break;
+                        }
+                    }
                 }
             }
         }
-        return false;
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                int index = x + y * width;
+                if (pieces[x, y] == null && (index >= initialBools.Length || !initialBools[index]))
+                {
+                    GameObject newPiece = Instantiate(piecePrefab[RandomFrut()], new Vector3(x, height, 0), Quaternion.identity);
+                    pieces[x, y] = newPiece.GetComponent<Piece>();
+                    pieces[x, y]?.Init(x, y, this);
+                    pieces[x, y].StartMoveAnimation(new Vector3(x, y, 0), 0.3f);
+                }
+            }
+        }
+        CheckForMatches(out _);
     }
 
     bool CheckMatchHorizontal(int x, int y)
@@ -199,7 +233,46 @@ public class Board : MonoBehaviour
 
         return count >= 3;
     }
+    List<Piece> CheckMatchLine(int x, int y, int dx, int dy)
+    {
+        List<Piece> matched = new List<Piece>();
+        FrutType type = pieces[x, y].frutType;
+        matched.Add(pieces[x, y]);
 
+        for (int i = 1; i < 3; i++)
+        {
+            int newX = x + dx * i;
+            int newY = y + dy * i;
+
+            if (newX >= width || newY >= height || pieces[newX, newY]?.frutType != type) break;
+            matched.Add(pieces[newX, newY]);
+        }
+
+        return matched;
+    }
+    List<Piece> GetMatchPieces(int x, int y)
+    {
+        List<Piece> matchPieces = new List<Piece>();
+        matchPieces.AddRange(CheckMatchLine(x, y, 1, 0)); // Verifica linha horizontal
+        matchPieces.AddRange(CheckMatchLine(x, y, 0, 1)); // Verifica linha vertical
+        return matchPieces;
+    }
+    bool HasMatches()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if (pieces[x, y] == null) continue;
+
+                if (CheckMatchHorizontal(x, y) || CheckMatchVertical(x, y))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     List<Piece> CheckForMatches(out int totalDestroyed)
     {
         List<Piece> piecesToDestroy = new List<Piece>();
@@ -231,7 +304,6 @@ public class Board : MonoBehaviour
                     Instantiate(particle_popMagic, new Vector3(piece.x, piece.y), Quaternion.identity);
                 }
                 // Cancela os Tweens associados ao objeto antes de destruí-lo
-                piece.transform.DOKill();
                 Destroy(piece.gameObject);
             }
         }
@@ -240,123 +312,14 @@ public class Board : MonoBehaviour
         StartCoroutine(RefillBoard());
         return piecesToDestroy;
     }
-
-    List<Piece> GetMatchPieces(int x, int y)
-    {
-        List<Piece> matchPieces = new List<Piece>();
-        matchPieces.AddRange(CheckMatchLine(x, y, 1, 0)); // Verifica linha horizontal
-        matchPieces.AddRange(CheckMatchLine(x, y, 0, 1)); // Verifica linha vertical
-        return matchPieces;
-    }
-
-    List<Piece> CheckMatchLine(int x, int y, int dx, int dy)
-    {
-        List<Piece> matched = new List<Piece>();
-        FrutType type = pieces[x, y].frutType;
-        matched.Add(pieces[x, y]);
-
-        for (int i = 1; i < 3; i++)
-        {
-            int newX = x + dx * i;
-            int newY = y + dy * i;
-
-            if (newX >= width || newY >= height || pieces[newX, newY]?.frutType != type) break;
-            matched.Add(pieces[newX, newY]);
-        }
-
-        return matched;
-    }
-
-    IEnumerator RefillBoard()
-    {
-        yield return new WaitForSeconds(0.5f);
-
-        bool[] initialBools = binaryArray.GetInitialBools();
-
-        // Mover peças existentes para espaços vazios
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                int index = x + y * width;
-                if (pieces[x, y] == null && (index >= initialBools.Length || !initialBools[index]))
-                {
-                    for (int k = y + 1; k < height; k++)
-                    {
-                        if (pieces[x, k] != null)
-                        {
-                            // A posição da peça anterior deve ser atualizada no array
-                            MovePiece(pieces[x, k], new Vector3(x, y, 0), 0.3f);
-                            pieces[x, k].Init(x, y, this);
-                            pieces[x, y] = pieces[x, k];
-                            pieces[x, k] = null;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        // Repor peças novas
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                int index = x + y * width;
-
-                if (pieces[x, y] == null && (index >= initialBools.Length || !initialBools[index]))
-                {
-                    GameObject newPiece = Instantiate(piecePrefab[RandomFrut()], new Vector3(x, height, 0), Quaternion.identity);
-                    pieces[x, y] = newPiece.GetComponent<Piece>();
-                    pieces[x, y]?.Init(x, y, this);
-                    MovePiece(pieces[x, y], new Vector3(x, y, 0), 0.3f);
-                }
-            }
-        }
-        CheckForMatches(out _);
-    }
-
-    void MovePiece(Piece piece, Vector3 newPosition, float duration)
-    {
-        if (piece == null || piece.gameObject == null) return;  // Verifica se a peça não foi destruída
-        piece.transform.DOMove(newPosition, duration).SetEase(Ease.InOutQuad);
-    }
-    
-
-    bool CanMatchBeMade(int x1, int y1, int x2, int y2)
-    {
-        if (x1 < 0 || x1 >= width || y1 < 0 || y1 >= height ||
-            x2 < 0 || x2 >= width || y2 < 0 || y2 >= height) return false;
-
-        if (Mathf.Abs(x1 - x2) + Mathf.Abs(y1 - y2) != 1) return false;
-
-        SwapPieces(pieces[x1, y1], pieces[x2, y2]);
-        bool matchFound = HasMatches();
-        SwapPieces(pieces[x1, y1], pieces[x2, y2]);
-
-        return matchFound;
-    }
-
-    public bool HasPossibleMatches()
-    {
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                if (pieces[x, y] == null) continue;
-
-                if (CanMatchBeMade(x, y, x + 1, y) || CanMatchBeMade(x, y, x, y + 1))
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     IEnumerator GameOver()
     {
         yield return new WaitForSeconds(1f);
         GameManager.instance.UpdateGameOver("Game Over");
     }
+    void MovePiece(Piece piece, Vector3 newPosition, float duration)
+    {
+        piece?.StartMoveAnimation(newPosition, duration);
+    }
 }
+
