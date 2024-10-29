@@ -3,17 +3,17 @@ using DG.Tweening;
 
 public class Piece : MonoBehaviour
 {
-    public FrutType frutType; // Tipo da fruta da peça
-    public int x; // Posição X da peça no tabuleiro
-    public int y; // Posição Y da peça no tabuleiro
-    public GridManager gridManager; // Referência ao GridManager
-    public bool isInvisible; // Determina se a peça é invisível
+    public FrutType frutType;
+    public int x;
+    public int y;
+    public GridManager gridManager;
+    public bool isInvisible;
+    public bool isMarkedForDestruction;
 
     private Renderer pieceRenderer;
 
     void Awake()
     {
-        // Obtém o componente Renderer apenas uma vez durante a inicialização
         pieceRenderer = GetComponent<Renderer>();
     }
 
@@ -22,73 +22,37 @@ public class Piece : MonoBehaviour
         this.x = x;
         this.y = y;
         this.gridManager = gridManager;
-        SetVisibility(!isInvisible); // Define a visibilidade ao inicializar
+        isInvisible = true;
+        SetVisibility(isInvisible);
     }
-    
-  void OnMouseDown()
+
+    public void MarkForDestruction()
     {
-        if (!isInvisible && frutType != FrutType.Vazio) // Impede a seleção de peças invisíveis ou vazias
+        isMarkedForDestruction = true;
+        SetVisibility(false); // Torna a peça invisível antes de destruí-la
+    }
+
+    public void AnimateDestruction()
+    {
+        transform.DOScale(Vector3.zero, 0.5f).OnComplete(() => Destroy(gameObject));
+    }
+
+
+    void OnMouseDown()
+    {
+        if (isInvisible)
         {
-            gridManager.SelectPiece(this); // Atualizado para usar o GridManager
+            gridManager.SelectPiece(this);
         }
     }
 
-    public void SetVisibility(bool isVisible)
+    public void SetVisibility(bool visible)
     {
-        if (pieceRenderer != null)
-        {
-            pieceRenderer.enabled = isVisible;
-        }
-    }
-
-    public void AnimateScale(Vector3 targetScale, float duration)
-    {
-        // Usando uma animação com overshoot (OutBack) para dar um efeito de "crescimento elástico"
-        transform.DOScale(targetScale, duration)
-            .SetEase(Ease.OutBack) // Ajusta o Ease para OutBack, criando um pequeno overshoot
-            .SetEase(Ease.OutElastic, 1.5f, 0.5f) // Ou Use OutElastic para efeito mais "elástico"
-            .OnComplete(() =>
-            {
-                // Após a animação, pode adicionar mais efeitos, como uma pequena rotação para adicionar estilo
-                if (targetScale == new Vector3(1.2f, 1.2f, 1.2f))
-                {
-                    // Adiciona uma rotação sutil para a peça ao crescer
-                    transform.DORotate(new Vector3(0, 0, 10), 0.1f)
-                            .SetLoops(2, LoopType.Yoyo) // Vai e volta na rotação
-                            .SetEase(Ease.InOutSine);
-                }
-            });
-    }
-
-
-
-    public void IncreaseScale(Vector3 targetScale, float duration, bool returnToOriginal = false)
-    {
-        // Armazena a escala original
-        Vector3 originalScale = transform.localScale;
-
-        // Aumenta a escala com overshoot e elasticidade
-        transform.DOScale(originalScale + targetScale, duration)
-            .SetEase(Ease.OutBack, 1f) // OutBack cria o efeito de overshoot
-            .OnComplete(() =>
-            {
-                if (returnToOriginal)
-                {
-                    // Se necessário, retorna à escala original com overshoot reverso
-                    transform.DOScale(originalScale, duration)
-                        .SetEase(Ease.InBack); // Animação de retorno com efeito de inback
-                }
-            });
-    }
-
-    void OnDestroy()
-    {
-        // Cancela qualquer Tween ativo associado a este transform
-        transform.DOKill();
+        isInvisible = visible;
+        pieceRenderer.enabled = visible;
     }
 }
 
-// Enumeração para os tipos de frutas disponíveis
 public enum FrutType
 {
     Abacaxi,
