@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class Piece : MonoBehaviour
 {
@@ -29,6 +31,7 @@ public class Piece : MonoBehaviour
         this.board = board;
     }
 
+
     void Update()
     {
         if (isMoving)
@@ -40,7 +43,6 @@ public class Piece : MonoBehaviour
                 isMoving = false;
             }
         }
-
         if (isScaling)
         {
             transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime / scaleDuration);
@@ -51,6 +53,7 @@ public class Piece : MonoBehaviour
             }
         }
     }
+
 
     void OnMouseDown()
     {
@@ -65,7 +68,26 @@ public class Piece : MonoBehaviour
         targetPosition = newPosition;
         moveDuration = duration;
         isMoving = true;
+        StartCoroutine(MoveToPosition());
     }
+
+    private IEnumerator MoveToPosition()
+    {
+        float elapsedTime = 0;
+        Vector3 startingPos = transform.position;
+
+        while (elapsedTime < moveDuration)
+        {
+            transform.position = Vector3.Lerp(startingPos, targetPosition, (elapsedTime / moveDuration));
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.position = targetPosition;
+        isMoving = false;
+    }
+
+
 
     public void StartScaleAnimation(Vector3 newScale, float duration)
     {

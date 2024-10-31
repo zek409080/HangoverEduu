@@ -2578,7 +2578,7 @@ PrefabInstance:
       objectReference: {fileID: 5653956943498294196, guid: d741206eb23cda94fb1dc6acffbfa15c, type: 3}
     - target: {fileID: 5653086171243154531, guid: db76c244efaf5044f97e47d9be74a612, type: 3}
       propertyPath: piecePrefab.Array.size
-      value: 7
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5653086171243154531, guid: db76c244efaf5044f97e47d9be74a612, type: 3}
       propertyPath: piecePrefab.Array.data[3]
@@ -2675,7 +2675,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 5
   size: 30
-  initialBools: 000000000000000100000000000100000100000000000100000000000000
+  initialBools: 000000000000000100000000010100000101000000000100000000000000
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

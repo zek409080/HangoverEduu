@@ -4,11 +4,10 @@ using UnityEngine;
 
 public class Board : MonoBehaviour
 {
-    
+    // Parâmetros do tabuleiro
     [Header("Tamanho do tabuleiro")]
     public int width;
     public int height;
-
     [SerializeField] int jogadas;
     public GameObject[] piecePrefab;
     public Piece[,] pieces;
@@ -16,7 +15,6 @@ public class Board : MonoBehaviour
     private bool canSwap = true;
     public Transform cam;
     [SerializeField] GameObject particle_popMagic, caixaDaGrid;
-
     private binaryArrayBoard binaryArray;
 
     void Start()
@@ -43,7 +41,6 @@ public class Board : MonoBehaviour
     void InitializeBoard()
     {
         bool[] initialBools = binaryArray.GetInitialBools();
-
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -60,7 +57,6 @@ public class Board : MonoBehaviour
                 }
             }
         }
-
         CheckForMatches(out _);
     }
 
@@ -85,6 +81,11 @@ public class Board : MonoBehaviour
     {
         return Random.Range(0, piecePrefab.Length);
     }
+    bool IsAdjacent(Piece piece1, Piece piece2)
+    {
+        return (Mathf.Abs(piece1.x - piece2.x) == 1 && piece1.y == piece2.y) ||
+               (Mathf.Abs(piece1.y - piece2.y) == 1 && piece1.x == piece2.x);
+    }
 
     public void SelectPiece(Piece piece)
     {
@@ -100,26 +101,27 @@ public class Board : MonoBehaviour
             if (IsAdjacent(selectedPiece, piece))
             {
                 selectedPiece.StartScaleAnimation(new Vector2(0.8f, 0.8f), 0.3f); // Volta ao tamanho normal
-                piece.StartScaleAnimation(new Vector2(0.8f, 0.8f) * 1.2f, 0.2f); // Cresce a nova peça
                 StartCoroutine(TrySwapPieces(selectedPiece, piece));
+                selectedPiece = null; // Reseta a variável após iniciar a troca
             }
             else
             {
-                selectedPiece.StartScaleAnimation(new Vector2(0.8f, 0.8f), 0.3f);
+                selectedPiece.StartScaleAnimation(new Vector2(0.8f, 0.8f), 0.2f);
                 selectedPiece = piece;
-                selectedPiece.StartScaleAnimation(new Vector2(0.8f, 0.8f) * 1.2f, 0.2f);
+                selectedPiece.StartScaleAnimation(new Vector2(0.8f, 0.8f) , 0.2f);
             }
         }
     }
 
-    bool IsAdjacent(Piece piece1, Piece piece2)
+    public IEnumerator TrySwapPieces(Piece piece1, Piece piece2)
     {
-        return (Mathf.Abs(piece1.x - piece2.x) == 1 && piece1.y == piece2.y) ||
-               (Mathf.Abs(piece1.y - piece2.y) == 1 && piece1.x == piece2.x);
-    }
+        // Verifica novamente a existência das peças no início
+        if (piece1 == null || piece2 == null || piece1.gameObject == null || piece2.gameObject == null)
+        {
+            Debug.LogWarning("Tentativa de trocar peças que foram destruídas.");
+            yield break;
+        }
 
-    IEnumerator TrySwapPieces(Piece piece1, Piece piece2)
-    {
         canSwap = false;
 
         // Guarda as posições originais
@@ -129,16 +131,21 @@ public class Board : MonoBehaviour
         // Troca de posição inicial
         SwapPieces(piece1, piece2);
 
-        yield return new WaitForSeconds(0.15f); // Alinha com o tempo de troca
+        yield return new WaitForSeconds(0.15f);
 
         // Verifica se a troca gerou um match
         if (!HasMatches())
         {
-            // Se não houve match, volta para as posições originais
-            piece1.StartMoveAnimation(originalPosition1, 0.1f); // Retorna para posição inicial
-            piece2.StartMoveAnimation(originalPosition2, 0.1f); // Retorna para posição inicial
+            // Se não houver match, restaura a posição na matriz antes de animar o retorno
+            SwapPieces(piece1, piece2);
 
-            yield return new WaitForSeconds(0.15f); // Tempo de retorno ao original
+            // Retorna visualmente para posição original
+            if (piece1 != null && piece2 != null && piece1.gameObject != null && piece2.gameObject != null)
+            {
+                piece1.StartMoveAnimation(originalPosition1, 0.1f);
+                piece2.StartMoveAnimation(originalPosition2, 0.1f);
+                yield return new WaitForSeconds(0.15f);
+            }
         }
         else
         {
@@ -146,6 +153,7 @@ public class Board : MonoBehaviour
             CheckForMatches(out _);
         }
 
+        // Atualiza o número de jogadas e redefine a peça selecionada após a troca completa
         GameManager.instance.UpdateJogadas(-1);
         selectedPiece = null;
         canSwap = true;
@@ -154,21 +162,39 @@ public class Board : MonoBehaviour
 
     void SwapPieces(Piece piece1, Piece piece2)
     {
-        (pieces[piece1.x, piece1.y], pieces[piece2.x, piece2.y]) = (piece2, piece1);
-        piece1.Init(piece2.x, piece2.y, this);
-        piece2.Init(piece1.x, piece1.y, this);
+        // Verifica se as peças ainda existem antes de realizar a troca
+        if (piece1 == null || piece2 == null || piece1.gameObject == null || piece2.gameObject == null)
+        {
+            Debug.LogWarning("Tentativa de trocar peças que foram destruídas.");
+            return;
+        }
 
-        Vector3 tempPosition = piece1.transform.position;
-        piece1.StartMoveAnimation(piece2.transform.position, 0.1f);
-        piece2.StartMoveAnimation(tempPosition, 0.1f);
+        // Troca as peças na matriz
+        (pieces[piece1.x, piece1.y], pieces[piece2.x, piece2.y]) = (piece2, piece1);
+
+        // Atualiza os índices das peças
+        int tempX = piece1.x, tempY = piece1.y;
+        piece1.Init(piece2.x, piece2.y, this);
+        piece2.Init(tempX, tempY, this);
+
+        // Animação de troca somente se ambas as peças ainda existirem
+        if (piece1 != null && piece2 != null && piece1.gameObject != null && piece2.gameObject != null)
+        {
+            Vector3 tempPosition = piece1.transform.position;
+            piece1.StartMoveAnimation(piece2.transform.position, 0.1f);
+            piece2.StartMoveAnimation(tempPosition, 0.1f);
+        }
     }
+
+
+
+
 
     IEnumerator RefillBoard()
     {
         yield return new WaitForSeconds(0.5f);
 
         bool[] initialBools = binaryArray.GetInitialBools();
-
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -205,6 +231,9 @@ public class Board : MonoBehaviour
                 }
             }
         }
+
+        yield return new WaitForSeconds(0.3f); // Aguarda as animações
+
         CheckForMatches(out _);
     }
 
@@ -212,12 +241,10 @@ public class Board : MonoBehaviour
     {
         FrutType currentType = pieces[x, y].frutType;
         int count = 1;
-
         for (int i = x + 1; i < width && pieces[i, y]?.frutType == currentType; i++)
         {
             count++;
         }
-
         return count >= 3;
     }
 
@@ -225,38 +252,43 @@ public class Board : MonoBehaviour
     {
         FrutType currentType = pieces[x, y].frutType;
         int count = 1;
-
         for (int i = y + 1; i < height && pieces[x, i]?.frutType == currentType; i++)
         {
             count++;
         }
-
         return count >= 3;
     }
+
     List<Piece> CheckMatchLine(int x, int y, int dx, int dy)
     {
         List<Piece> matched = new List<Piece>();
         FrutType type = pieces[x, y].frutType;
         matched.Add(pieces[x, y]);
-
-        for (int i = 1; i < 3; i++)
+        for (int i = 1; i < width && i < height; i++) // Varre a linha na direção dada
         {
             int newX = x + dx * i;
             int newY = y + dy * i;
-
+            // Verifica se a posição é válida e se o tipo da fruta corresponde
             if (newX >= width || newY >= height || pieces[newX, newY]?.frutType != type) break;
             matched.Add(pieces[newX, newY]);
         }
-
-        return matched;
+        // Retorna somente se houver 3 ou mais peças na combinação
+        return matched.Count >= 3 ? matched : new List<Piece>();
     }
+
     List<Piece> GetMatchPieces(int x, int y)
     {
         List<Piece> matchPieces = new List<Piece>();
-        matchPieces.AddRange(CheckMatchLine(x, y, 1, 0)); // Verifica linha horizontal
-        matchPieces.AddRange(CheckMatchLine(x, y, 0, 1)); // Verifica linha vertical
+
+        List<Piece> horizontalMatches = CheckMatchLine(x, y, 1, 0); // Horizontal
+        if (horizontalMatches.Count >= 3) matchPieces.AddRange(horizontalMatches);
+
+        List<Piece> verticalMatches = CheckMatchLine(x, y, 0, 1); // Vertical
+        if (verticalMatches.Count >= 3) matchPieces.AddRange(verticalMatches);
+
         return matchPieces;
     }
+
     bool HasMatches()
     {
         for (int x = 0; x < width; x++)
@@ -264,7 +296,6 @@ public class Board : MonoBehaviour
             for (int y = 0; y < height; y++)
             {
                 if (pieces[x, y] == null) continue;
-
                 if (CheckMatchHorizontal(x, y) || CheckMatchVertical(x, y))
                 {
                     return true;
@@ -273,17 +304,16 @@ public class Board : MonoBehaviour
         }
         return false;
     }
+
     List<Piece> CheckForMatches(out int totalDestroyed)
     {
         List<Piece> piecesToDestroy = new List<Piece>();
         totalDestroyed = 0;
-
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
                 if (pieces[x, y] == null) continue;
-
                 List<Piece> matchPieces = GetMatchPieces(x, y);
                 if (matchPieces.Count >= 3)
                 {
@@ -293,7 +323,6 @@ public class Board : MonoBehaviour
                 }
             }
         }
-
         foreach (Piece piece in piecesToDestroy)
         {
             if (piece != null && piece.gameObject != null)
@@ -307,16 +336,16 @@ public class Board : MonoBehaviour
                 Destroy(piece.gameObject);
             }
         }
-
-
         StartCoroutine(RefillBoard());
         return piecesToDestroy;
     }
+
     IEnumerator GameOver()
     {
         yield return new WaitForSeconds(1f);
         GameManager.instance.UpdateGameOver("Game Over");
     }
+
     void MovePiece(Piece piece, Vector3 newPosition, float duration)
     {
         piece?.StartMoveAnimation(newPosition, duration);
