@@ -64,5 +64,8 @@ public enum FrutType
     Uva,
     Poder,
     Obstacle,
-    Vazio
+    Vazio,
+    Cereja, // Power-up que explode
+    Roma,   // Power-up de foguetes
+    Amora   // poder de estourar peças
 }

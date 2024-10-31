@@ -51,3 +51,4 @@ public class UIManager : MonoBehaviour
         scoreText.text = valueScoore.ToString();
     }
 }
+

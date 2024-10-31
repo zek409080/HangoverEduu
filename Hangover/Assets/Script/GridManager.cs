@@ -2,21 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
-using Unity.VisualScripting;
 
 public class GridManager : MonoBehaviour
 {
     public int width, height;
     public float moveDuration = 0.3f;
     public GameObject[] piecePrefabs;
+    public GameObject[] PowerpiecePrefabs; // Array de prefabs dos power-ups
     private Piece[,] grid;
     private Piece selectedPiece;
-    private bool isMatching = false; // Controle de estados durante matchs e descidas
+    private bool isMatching = false;
+
+    // Variáveis de controle de jogadas e pontuação
+    public int jogadas = 20; // Número inicial de jogadas
+    private int score = 0;
 
     void Start()
     {
         InitializeBoard();
         StartCoroutine(CheckAndClearMatchesAtStart());
+        UpdateUI(); // Inicializa a UI com o número inicial de jogadas e pontuação
     }
 
     void InitializeBoard()
@@ -41,13 +46,12 @@ public class GridManager : MonoBehaviour
         Piece newPiece = newPieceObj.GetComponent<Piece>();
         newPiece.Init(x, y, this);
         grid[x, y] = newPiece;
-        return newPiece; // Retorna a nova peça criada
+        return newPiece;
     }
-
 
     public void SelectPiece(Piece piece)
     {
-        if (isMatching) return; // Impede seleção durante os matchs e descidas
+        if (isMatching) return;
 
         if (selectedPiece == null)
         {
@@ -57,10 +61,11 @@ public class GridManager : MonoBehaviour
         {
             StartCoroutine(TrySwapPieces(selectedPiece, piece));
             selectedPiece = null;
+            DecrementJogadas(); // Decrementa uma jogada a cada troca
         }
         else
         {
-            selectedPiece = piece; // Se não for adjacente, seleciona a nova peça
+            selectedPiece = piece;
         }
     }
 
@@ -72,7 +77,6 @@ public class GridManager : MonoBehaviour
 
     IEnumerator TrySwapPieces(Piece piece1, Piece piece2)
     {
-        // Verificar se há um match antes de realizar a troca
         SwapPieces(piece1, piece2);
         yield return new WaitForSeconds(moveDuration);
 
@@ -82,7 +86,7 @@ public class GridManager : MonoBehaviour
         }
         else
         {
-            SwapPieces(piece1, piece2); // Reverte a troca se não houver match
+            SwapPieces(piece1, piece2);
             yield return new WaitForSeconds(moveDuration);
         }
     }
@@ -110,35 +114,32 @@ public class GridManager : MonoBehaviour
 
         List<Piece> matchedPieces = new List<Piece>();
 
-        // Verifica matches horizontais
-        matchedPieces.AddRange(CheckLineMatch(piece.x, piece.y, 1, 0)); // Direção positiva
-        matchedPieces.Add(piece); // Adiciona a peça atual
-        matchedPieces.AddRange(CheckLineMatch(piece.x, piece.y, -1, 0)); // Direção negativa
+        matchedPieces.AddRange(CheckLineMatch(piece.x, piece.y, 1, 0));
+        matchedPieces.Add(piece);
+        matchedPieces.AddRange(CheckLineMatch(piece.x, piece.y, -1, 0));
 
-        // Se encontrou 3 ou mais peças do mesmo tipo
         if (matchedPieces.Count >= 3)
         {
             foreach (Piece p in matchedPieces)
             {
                 p.MarkForDestruction();
+                AddScore(10); // Adiciona 10 pontos por peça destruída
             }
             return true;
         }
 
-        // Limpa a lista para checar na vertical
         matchedPieces.Clear();
 
-        // Verifica matches verticais
-        matchedPieces.AddRange(CheckLineMatch(piece.x, piece.y, 0, 1)); // Direção positiva
-        matchedPieces.Add(piece); // Adiciona a peça atual
-        matchedPieces.AddRange(CheckLineMatch(piece.x, piece.y, 0, -1)); // Direção negativa
+        matchedPieces.AddRange(CheckLineMatch(piece.x, piece.y, 0, 1));
+        matchedPieces.Add(piece);
+        matchedPieces.AddRange(CheckLineMatch(piece.x, piece.y, 0, -1));
 
-        // Se encontrou 3 ou mais peças do mesmo tipo
         if (matchedPieces.Count >= 3)
         {
             foreach (Piece p in matchedPieces)
             {
                 p.MarkForDestruction();
+                AddScore(10); // Adiciona 10 pontos por peça destruída
             }
             return true;
         }
@@ -146,44 +147,67 @@ public class GridManager : MonoBehaviour
         return false;
     }
 
+    void AddScore(int points)
+    {
+        score += points;
+        UpdateUI();
+    }
+
+    void DecrementJogadas()
+    {
+        jogadas--;
+        UpdateUI();
+
+        if (jogadas <= 0)
+        {
+            GameOver();
+        }
+    }
+
+    void GameOver()
+    {
+        FindObjectOfType<UIManager>().UpdateTextGameOver("Game Over");
+    }
+
+    void UpdateUI()
+    {
+        FindObjectOfType<UIManager>().UpdateJogadas(jogadas);
+        FindObjectOfType<UIManager>().UpdateScore(score);
+    }
+
     List<Piece> CheckLineMatch(int startX, int startY, int offsetX, int offsetY)
     {
         List<Piece> matchedPieces = new List<Piece>();
 
-        // Verifica se a posição inicial é válida
         if (grid[startX, startY] == null)
             return matchedPieces;
 
         FrutType startType = grid[startX, startY].frutType;
 
-        // Verifica em uma direção
-        for (int i = 1; i < 3; i++) // Verifica 2 peças adjacentes
+        for (int i = 1; i < 3; i++)
         {
             int newX = startX + offsetX * i;
             int newY = startY + offsetY * i;
 
-            // Verifica os limites da grade
             if (newX < 0 || newY < 0 || newX >= width || newY >= height)
                 break;
 
             Piece nextPiece = grid[newX, newY];
 
-            // Verifica se a próxima peça é do mesmo tipo
             if (nextPiece != null && nextPiece.frutType == startType)
             {
                 matchedPieces.Add(nextPiece);
             }
             else
             {
-                break; // Para de procurar se encontrar uma peça diferente
+                break;
             }
         }
 
         return matchedPieces;
     }
 
-
-    IEnumerator ClearAndFillBoard()
+IEnumerator ClearAndFillBoard()
     {
         isMatching = true; // Bloqueia outras ações enquanto há matchs
 
@@ -278,4 +302,49 @@ public class GridManager : MonoBehaviour
 
         } while (hasMatches);
     }
+
+    // Método que gera o power-up em determinada posição
+    public void CreatePowerUp(int x, int y, FrutType powerUpType)
+    {
+        int prefabIndex = (int)powerUpType; // Converte o enum para um índice do array
+        if (prefabIndex >= 0 && prefabIndex < piecePrefabs.Length) // Verifica se o índice é válido
+        {
+            GameObject powerUpPiece = Instantiate(PowerpiecePrefabs[prefabIndex], new Vector3(x, y, 0), Quaternion.identity);
+
+            // Configura o power-up após a criação, se necessário
+            powerUpPiece.GetComponent<Piece>().Init(x, y, this);
+            powerUpPiece.GetComponent<Piece>().frutType = powerUpType;
+        }
+        else
+        {
+            Debug.LogWarning("Índice de power-up fora do intervalo ou tipo inválido.");
+        }
+    }
+
+
+// Função que é chamada durante o cálculo do match
+private void HandleMatch(int matchCount, int x, int y)
+    {
+        if (matchCount == 5)
+        {
+            // Determina o tipo de power-up gerado
+            FrutType powerUpType = DeterminePowerUpType();
+           CreatePowerUp(x, y, powerUpType);
+        }
+    }
+
+    // Determina o tipo de power-up
+    private FrutType DeterminePowerUpType()
+    {
+        // Pode ser uma escolha aleatória para variar os tipos de power-up
+        int randomType = Random.Range(0, 3);
+        return randomType switch
+        {
+            0 => FrutType.Cereja,
+            1 => FrutType.Roma,
+            2 => FrutType.Amora,
+            _ => FrutType.Cereja
+        };
+    }
+    
 }
