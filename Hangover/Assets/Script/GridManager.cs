@@ -1,202 +1,159 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 
 public class GridManager : MonoBehaviour
 {
     public int width, height;
-    public float moveDuration = 0.3f;
-    public GameObject[] piecePrefabs;
-    public GameObject[] PowerpiecePrefabs; // Array de prefabs dos power-ups
-    private Piece[,] grid;
-    private Piece selectedPiece;
-    private bool isMatching = false;
+    public float moveDuration = 0.5f;
+    public GameObject[] fruitPrefabs;
+    public GameObject cerejaPrefab;
+    public GameObject romaPrefab;
+    public GameObject amoraPrefab;
+    public Piece[,] grid;
 
-    // Vari·veis de controle de jogadas e pontuaÁ„o
-    public int jogadas = 20; // N˙mero inicial de jogadas
-    private int score = 0;
+    // Vari√°veis de controle de jogadas e pontua√ß√£o
+    private UIManager uiManager;
 
-    void Start()
-    {
-        InitializeBoard();
-        StartCoroutine(CheckAndClearMatchesAtStart());
-        UpdateUI(); // Inicializa a UI com o n˙mero inicial de jogadas e pontuaÁ„o
-    }
-
-    void InitializeBoard()
+    private void Start()
     {
         grid = new Piece[width, height];
+        InitializeGrid();
+        CheckAndClearMatchesAtStart();
+        uiManager = FindObjectOfType<UIManager>();
 
+        if (uiManager != null)
+        {
+            // Atualizar UI com valores iniciais
+            uiManager.UpdateJogadas(GameManager.GetJogadas());
+            uiManager.UpdateScore(GameManager.GetScore());
+        }
+
+        // Assinar eventos do GameManager
+        GameManager.onScoreChanged += OnScoreChanged;
+        GameManager.onJogadasChanged += OnJogadasChanged;
+    }
+
+    private void OnDisable()
+    {
+        // Desinscrever de eventos para evitar erros quando o objeto for destru√≠do
+        GameManager.onScoreChanged -= OnScoreChanged;
+        GameManager.onJogadasChanged -= OnJogadasChanged;
+    }
+
+    private void OnScoreChanged(int newScore)
+    {
+        if (uiManager != null)
+        {
+            uiManager.UpdateScore(newScore);
+        }
+    }
+
+    private void OnJogadasChanged(int newJogadas)
+    {
+        if (uiManager != null)
+        {
+            uiManager.UpdateJogadas(newJogadas);
+        }
+    }
+
+    // Restante da implementa√ß√£o do GridManager
+
+    private void InitializeGrid()
+    {
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                SpawnNewPiece(x, y);
+                Piece newPiece = CreateNewPiece(x, y, true);
+                grid[x, y] = newPiece;
             }
         }
     }
 
-    Piece SpawnNewPiece(int x, int y)
+    private Piece CreateNewPiece(int x, int y, bool animateFromTop = false)
     {
-        GameObject piecePrefab = piecePrefabs[Random.Range(0, piecePrefabs.Length)];
-        GameObject newPieceObj = Instantiate(piecePrefab, new Vector3(x, y, 0), Quaternion.identity);
-        newPieceObj.transform.parent = transform;
+        GameObject piecePrefab = GetRandomPiecePrefab();
+        Vector3 startPosition = animateFromTop ? new Vector3(x, height, 0) : new Vector3(x, y, 0);
+        GameObject newPieceObj = Instantiate(piecePrefab, startPosition, Quaternion.identity);
 
         Piece newPiece = newPieceObj.GetComponent<Piece>();
-        newPiece.Init(x, y, this);
-        grid[x, y] = newPiece;
+        newPiece.SetPosition(x, y);
+
+        if (animateFromTop)
+        {
+            newPiece.transform.DOMove(new Vector3(x, y, 0), moveDuration);
+        }
+
         return newPiece;
     }
 
-    public void SelectPiece(Piece piece)
+    private GameObject GetRandomPiecePrefab()
     {
-        if (isMatching) return;
-
-        if (selectedPiece == null)
-        {
-            selectedPiece = piece;
-        }
-        else if (IsAdjacent(selectedPiece, piece))
-        {
-            StartCoroutine(TrySwapPieces(selectedPiece, piece));
-            selectedPiece = null;
-            DecrementJogadas(); // Decrementa uma jogada a cada troca
-        }
-        else
-        {
-            selectedPiece = piece;
-        }
+        return fruitPrefabs[Random.Range(0, fruitPrefabs.Length)];
     }
 
-    bool IsAdjacent(Piece piece1, Piece piece2)
+    private bool CheckInitialMatches(Piece piece)
     {
-        return (Mathf.Abs(piece1.x - piece2.x) == 1 && piece1.y == piece2.y) ||
-               (Mathf.Abs(piece1.y - piece2.y) == 1 && piece1.x == piece2.x);
+        List<Piece> matchedPieces = GetAllMatchesForPiece(piece);
+        return matchedPieces.Count > 2;
     }
 
-    IEnumerator TrySwapPieces(Piece piece1, Piece piece2)
+    private void CheckAndClearMatchesAtStart()
     {
-        SwapPieces(piece1, piece2);
-        yield return new WaitForSeconds(moveDuration);
-
-        if (CheckMatches(piece1) || CheckMatches(piece2))
-        {
-            yield return StartCoroutine(ClearAndFillBoard());
-        }
-        else
-        {
-            SwapPieces(piece1, piece2);
-            yield return new WaitForSeconds(moveDuration);
-        }
+        StartCoroutine(CheckAndClearMatchesCoroutine());
     }
 
-    void SwapPieces(Piece piece1, Piece piece2)
+    private IEnumerator CheckAndClearMatchesCoroutine()
     {
-        int tempX = piece1.x;
-        int tempY = piece1.y;
-
-        grid[piece1.x, piece1.y] = piece2;
-        grid[piece2.x, piece2.y] = piece1;
-
-        piece1.x = piece2.x;
-        piece1.y = piece2.y;
-        piece2.x = tempX;
-        piece2.y = tempY;
-
-        piece1.transform.DOMove(new Vector3(piece1.x, piece1.y, 0), moveDuration);
-        piece2.transform.DOMove(new Vector3(piece2.x, piece2.y, 0), moveDuration);
-    }
-
-    bool CheckMatches(Piece piece)
-    {
-        if (piece == null) return false;
-
-        List<Piece> matchedPieces = new List<Piece>();
-
-        matchedPieces.AddRange(CheckLineMatch(piece.x, piece.y, 1, 0));
-        matchedPieces.Add(piece);
-        matchedPieces.AddRange(CheckLineMatch(piece.x, piece.y, -1, 0));
-
-        if (matchedPieces.Count >= 3)
+        bool matchesFound;
+        do
         {
-            foreach (Piece p in matchedPieces)
+            matchesFound = false;
+            for (int x = 0; x < width; x++)
             {
-                p.MarkForDestruction();
-                AddScore(10); // Adiciona 10 pontos por peÁa destruÌda
+                for (int y = 0; y < height; y++)
+                {
+                    if (grid[x, y] != null && CheckForMatchAt(x, y))
+                    {
+                        grid[x, y].MarkForDestruction();
+                        matchesFound = true;
+                    }
+                }
             }
-            return true;
-        }
-
-        matchedPieces.Clear();
-
-        matchedPieces.AddRange(CheckLineMatch(piece.x, piece.y, 0, 1));
-        matchedPieces.Add(piece);
-        matchedPieces.AddRange(CheckLineMatch(piece.x, piece.y, 0, -1));
-
-        if (matchedPieces.Count >= 3)
-        {
-            foreach (Piece p in matchedPieces)
+            if (matchesFound)
             {
-                p.MarkForDestruction();
-                AddScore(10); // Adiciona 10 pontos por peÁa destruÌda
+                yield return StartCoroutine(ClearAndFillBoard());
             }
-            return true;
-        }
-
-        return false;
+        } while (matchesFound);
     }
 
-    void AddScore(int points)
+    private bool CheckForMatchAt(int x, int y)
     {
-        score += points;
-        UpdateUI();
+        return (CheckForMatchInDirection(grid[x, y], Vector2.left, 2) ||
+                CheckForMatchInDirection(grid[x, y], Vector2.right, 2) ||
+                CheckForMatchInDirection(grid[x, y], Vector2.up, 2) ||
+                CheckForMatchInDirection(grid[x, y], Vector2.down, 2));
     }
 
-    void DecrementJogadas()
+    private List<Piece> GetMatch(Piece startPiece, Vector2 direction)
     {
-        jogadas--;
-        UpdateUI();
+        List<Piece> match = new List<Piece> { startPiece };
+        FrutType frutType = startPiece.frutType;
 
-        if (jogadas <= 0)
+        int nextX = startPiece.x + (int)direction.x;
+        int nextY = startPiece.y + (int)direction.y;
+
+        while (nextX >= 0 && nextX < width && nextY >= 0 && nextY < height)
         {
-            GameOver();
-        }
-    }
-
-    void GameOver()
-    {
-        FindObjectOfType<UIManager>().UpdateTextGameOver("Game Over");
-    }
-
-    void UpdateUI()
-    {
-        FindObjectOfType<UIManager>().UpdateJogadas(jogadas);
-        FindObjectOfType<UIManager>().UpdateScore(score);
-    }
-
-    List<Piece> CheckLineMatch(int startX, int startY, int offsetX, int offsetY)
-    {
-        List<Piece> matchedPieces = new List<Piece>();
-
-        if (grid[startX, startY] == null)
-            return matchedPieces;
-
-        FrutType startType = grid[startX, startY].frutType;
-
-        for (int i = 1; i < 3; i++)
-        {
-            int newX = startX + offsetX * i;
-            int newY = startY + offsetY * i;
-
-            if (newX < 0 || newY < 0 || newX >= width || newY >= height)
-                break;
-
-            Piece nextPiece = grid[newX, newY];
-
-            if (nextPiece != null && nextPiece.frutType == startType)
+            Piece nextPiece = grid[nextX, nextY];
+            if (nextPiece != null && nextPiece.frutType == frutType)
             {
-                matchedPieces.Add(nextPiece);
+                match.Add(nextPiece);
+                nextX += (int)direction.x;
+                nextY += (int)direction.y;
             }
             else
             {
@@ -204,147 +161,326 @@ public class GridManager : MonoBehaviour
             }
         }
 
-        return matchedPieces;
+        return match;
     }
 
-IEnumerator ClearAndFillBoard()
+    private bool CheckForMatchInDirection(Piece piece, Vector2 direction, int length)
     {
-        isMatching = true; // Bloqueia outras aÁıes enquanto h· matchs
+        List<Piece> matchingPieces = new List<Piece> { piece };
+        for (int i = 1; i <= length; i++)
+        {
+            int checkX = piece.x + (int)direction.x * i;
+            int checkY = piece.y + (int)direction.y * i;
+            if (checkX < 0 || checkX >= width || checkY < 0 || checkY >= height)
+                break;
+            if (grid[checkX, checkY] != null && grid[checkX, checkY].frutType == piece.frutType)
+                matchingPieces.Add(grid[checkX, checkY]);
+            else
+                break;
+        }
+        return matchingPieces.Count > length;
+    }
 
+    private List<Piece> GetAllMatchesForPiece(Piece piece)
+    {
+        List<Piece> horizontalMatches = GetMatches(piece, +1, 0).ToList();
+        horizontalMatches.AddRange(GetMatches(piece, -1, 0).Where(p => p != piece));
+
+        List<Piece> verticalMatches = GetMatches(piece, 0, +1).ToList();
+        verticalMatches.AddRange(GetMatches(piece, 0, -1).Where(p => p != piece));
+
+        List<Piece> allMatches = new List<Piece>();
+
+        if (horizontalMatches.Count >= 3) allMatches.AddRange(horizontalMatches);
+        if (verticalMatches.Count >= 3) allMatches.AddRange(verticalMatches);
+
+        return allMatches.Distinct().ToList();
+    }
+
+    private List<Piece> GetMatches(Piece piece, int dx, int dy)
+    {
+        List<Piece> matchingPieces = new List<Piece> { piece };
+
+        int newX = piece.x;
+        int newY = piece.y;
+
+        while (true)
+        {
+            newX += dx;
+            newY += dy;
+
+            if (newX < 0 || newX >= width || newY < 0 || newY >= height) break;
+
+            Piece nextPiece = grid[newX, newY];
+            if (nextPiece != null && nextPiece.frutType == piece.frutType)
+            {
+                matchingPieces.Add(nextPiece);
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        return matchingPieces;
+    }
+
+    private IEnumerator ClearAndFillBoard()
+    {
         yield return StartCoroutine(ClearMatches());
-        yield return new WaitForSeconds(1f); // Atraso para a remoÁ„o visual
-
+        yield return new WaitForSeconds(0.5f);
         yield return StartCoroutine(FillEmptySpaces());
-        yield return StartCoroutine(CheckAndClearMatchesAtStart());
-
-        isMatching = false; // Libera as aÁıes
     }
 
-    IEnumerator ClearMatches()
+    private IEnumerator ClearMatches()
     {
+        // Destruir pe√ßas marcadas para destrui√ß√£o
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                if (grid[x, y] != null && !grid[x, y].isInvisible)
+                if (grid[x, y] != null && grid[x, y].isMarkedForDestruction)
                 {
-                    Destroy(grid[x, y].gameObject);
-                    grid[x, y] = null;
+                    DestroyPiece(grid[x, y]);
                 }
             }
         }
-        yield return new WaitForSeconds(moveDuration);
+        yield return new WaitForSeconds(0.5f);
     }
 
-    IEnumerator FillEmptySpaces()
+    private IEnumerator FillEmptySpaces()
     {
+        // Fazer as pe√ßas ca√≠rem nos espa√ßos vazios
         for (int x = 0; x < width; x++)
         {
-            // Mover as peÁas para baixo em cada coluna
             for (int y = 0; y < height; y++)
             {
-                if (grid[x, y] == null) // Se h· um espaÁo vazio
+                if (grid[x, y] == null)
                 {
-                    // Procura por uma peÁa acima para descer
-                    for (int yAbove = y + 1; yAbove < height; yAbove++)
+                    for (int ny = y + 1; ny < height; ny++)
                     {
-                        if (grid[x, yAbove] != null) // Encontrou uma peÁa acima
+                        if (grid[x, ny] != null)
                         {
-                            Piece pieceToMove = grid[x, yAbove];
-                            grid[x, yAbove] = null; // Libera a posiÁ„o acima
-                            grid[x, y] = pieceToMove; // Move a peÁa para a posiÁ„o vazia
-                            pieceToMove.y = y; // Atualiza a posiÁ„o Y da peÁa
-                            pieceToMove.transform.DOMove(new Vector3(x, y, 0), moveDuration); // Move a peÁa na tela
-                            break; // Sai do loop apÛs mover uma peÁa
+                            MovePiece(grid[x, ny], x, y);
+                            break;
                         }
                     }
                 }
             }
+        }
 
-            // ApÛs mover as peÁas, preencher os espaÁos vazios no topo
-            for (int y = height - 1; y >= 0; y--)
+        // Criar novas pe√ßas para os espa√ßos restantes
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
             {
-                if (grid[x, y] == null) // Se ainda h· um espaÁo vazio
+                if (grid[x, y] == null)
                 {
-                    // Gera nova peÁa na primeira posiÁ„o vazia a partir do topo
-                    Piece newPiece = SpawnNewPiece(x, y); // Gera nova peÁa na posiÁ„o (x, y)
-                                                          // N„o È necess·rio atualizar grid[x, y], pois j· foi atualizado no SpawnNewPiece
+                    Piece newPiece = CreateNewPiece(x, y, true);
+                    while (CheckInitialMatches(newPiece))
+                    {
+                        Destroy(newPiece.gameObject);
+                        newPiece = CreateNewPiece(x, y, true);
+                    }
+                    grid[x, y] = newPiece;
+                    newPiece.transform.DOMove(new Vector3(x, y, 0), moveDuration);
                 }
             }
         }
-        yield return new WaitForSeconds(moveDuration); // Atraso para animaÁıes
+
+        yield return new WaitForSeconds(moveDuration);
     }
 
-
-    IEnumerator CheckAndClearMatchesAtStart()
+    private void MovePiece(Piece piece, int newX, int newY)
     {
-        bool hasMatches;
+        grid[piece.x, piece.y] = null;
+        piece.transform.DOMove(new Vector3(newX, newY, 0), moveDuration);
+        piece.SetPosition(newX, newY);
+        grid[newX, newY] = piece;
+    }
 
-        do
+    public bool CheckAndProcessMatches(Piece piece1, Piece piece2)
+    {
+        List<Piece> match1 = GetAllMatchesForPiece(piece1);
+        List<Piece> match2 = GetAllMatchesForPiece(piece2);
+
+        if (match1.Count >= 3 || match2.Count >= 3)
         {
-            hasMatches = false;
+            if (match1.Count >= 4) CreatePowerUp(piece1);
+            if (match2.Count >= 4) CreatePowerUp(piece2);
 
-            for (int x = 0; x < width; x++)
+            if (match1.Count >= 3) StartCoroutine(HandleMatches(match1));
+            if (match2.Count >= 3) StartCoroutine(HandleMatches(match2));
+            return true;
+        }
+        return false;
+    }
+
+    private IEnumerator HandleMatches(List<Piece> matches)
+    {
+        foreach (var match in matches)
+        {
+            GameManager.AddScore(10); // Atualiza a pontua√ß√£o
+            match.MarkForDestruction();
+        }
+        yield return StartCoroutine(ClearAndFillBoard());
+        GameManager.DecrementJogadas(); // Decrementa jogadas ao processar matches
+    }
+
+    public void SwapPieces(Piece piece1, Piece piece2)
+    {
+        int tempX = piece1.x;
+        int tempY = piece1.y;
+        piece1.SetPosition(piece2.x, piece2.y);
+        piece2.SetPosition(tempX, tempY);
+
+        grid[piece1.x, piece1.y] = piece1;
+        grid[piece2.x, piece2.y] = piece2;
+
+        piece1.OnSwap(piece2);  // Chama OnSwap para a pe√ßa 1
+        piece2.OnSwap(piece1);  // Chama OnSwap para a pe√ßa 2
+    }
+
+    public bool AreAdjacent(Piece piece1, Piece piece2)
+    {
+        int deltaX = Mathf.Abs(piece1.x - piece2.x);
+        int deltaY = Mathf.Abs(piece1.y - piece2.y);
+        return (deltaX == 1 && deltaY == 0) || (deltaX == 0 && deltaY == 1);
+    }
+
+    // M√©todo para criar um Power-up aleat√≥rio (Cereja, Roma ou Amora)
+    private void CreatePowerUp(Piece piece)
+    {
+        GameObject powerUpPrefab = GetRandomPowerUpPrefab();
+        Vector3 position = new Vector3(piece.x, piece.y, 0);
+        GameObject powerUpObj = Instantiate(powerUpPrefab, position, Quaternion.identity);
+
+        Piece powerUpPiece = powerUpObj.GetComponent<Piece>();
+        powerUpPiece.Init(piece.x, piece.y, this);
+        grid[piece.x, piece.y] = powerUpPiece;
+
+        Destroy(piece.gameObject);
+    }
+
+    private GameObject GetRandomPowerUpPrefab()
+    {
+        GameObject[] powerUps = { cerejaPrefab, romaPrefab, amoraPrefab };
+        int randomIndex = Random.Range(0, powerUps.Length);
+        return powerUps[randomIndex];
+    }
+
+    // M√©todos para os Power-ups: cereja, roma e amora
+
+    public void ActivateCereja(Piece cereja)
+    {
+        if (cereja == null || cereja.isMarkedForDestruction) return;
+        Debug.Log("Ativando PowerUp Cereja");
+
+        int explosionRadius = 2;  // Expans√£o de 2 pe√ßas em todas as dire√ß√µes, resultando em um quadrado 5x5
+
+        for (int dx = -explosionRadius; dx <= explosionRadius; dx++)
+        {
+            for (int dy = -explosionRadius; dy <= explosionRadius; dy++)
             {
-                for (int y = 0; y < height; y++)
+                int newX = cereja.x + dx;
+                int newY = cereja.y + dy;
+
+                if (IsWithinBounds(newX, newY))
                 {
-                    if (grid[x, y] != null && CheckMatches(grid[x, y]))
+                    Piece neighbor = grid[newX, newY];
+                    if (neighbor != null && !neighbor.isMarkedForDestruction)
                     {
-                        hasMatches = true;
+                        neighbor.MarkForDestruction();
+                        neighbor.AnimateDestruction();
                     }
                 }
             }
+        }
+        StartCoroutine(ResetMatching());
+    }
 
-            if (hasMatches)
+    // Fun√ß√£o utilit√°ria para verificar se uma posi√ß√£o est√° dentro dos limites da grade
+    private bool IsWithinBounds(int x, int y)
+    {
+        return x >= 0 && x < width && y >= 0 && y < height;
+    }
+
+    public void ActivateRoma(Piece roma)
+    {
+        if (roma == null || roma.isMarkedForDestruction) return;
+        Debug.Log("Ativando PowerUp Roma");
+
+        // Destruir pe√ßas em toda a linha e coluna da pe√ßa roma
+        for (int x = 0; x < width; x++)
+        {
+            if (grid[x, roma.y] != null && !grid[x, roma.y].isMarkedForDestruction)
             {
-                yield return StartCoroutine(ClearAndFillBoard());
+                grid[x, roma.y].MarkForDestruction();
+                grid[x, roma.y].AnimateDestruction();
             }
-
-        } while (hasMatches);
-    }
-
-    // MÈtodo que gera o power-up em determinada posiÁ„o
-    public void CreatePowerUp(int x, int y, FrutType powerUpType)
-    {
-        int prefabIndex = (int)powerUpType; // Converte o enum para um Ìndice do array
-        if (prefabIndex >= 0 && prefabIndex < piecePrefabs.Length) // Verifica se o Ìndice È v·lido
-        {
-            GameObject powerUpPiece = Instantiate(PowerpiecePrefabs[prefabIndex], new Vector3(x, y, 0), Quaternion.identity);
-
-            // Configura o power-up apÛs a criaÁ„o, se necess·rio
-            powerUpPiece.GetComponent<Piece>().Init(x, y, this);
-            powerUpPiece.GetComponent<Piece>().frutType = powerUpType;
         }
-        else
+
+        for (int y = 0; y < height; y++)
         {
-            Debug.LogWarning("Õndice de power-up fora do intervalo ou tipo inv·lido.");
+            if (grid[roma.x, y] != null && !grid[roma.x, y].isMarkedForDestruction)
+            {
+                grid[roma.x, y].MarkForDestruction();
+                grid[roma.x, y].AnimateDestruction();
+            }
         }
+
+        StartCoroutine(ResetMatching());
     }
 
-
-// FunÁ„o que È chamada durante o c·lculo do match
-private void HandleMatch(int matchCount, int x, int y)
+    public void ActivateAmora(Piece amora, Piece targetPiece)
     {
-        if (matchCount == 5)
+        if (amora == null || amora.isMarkedForDestruction || targetPiece == null) return;
+        Debug.Log("Ativando PowerUp Amora");
+
+        // Destruir todas as pe√ßas do mesmo tipo que a pe√ßa alvo
+        foreach (Piece piece in grid)
         {
-            // Determina o tipo de power-up gerado
-            FrutType powerUpType = DeterminePowerUpType();
-           CreatePowerUp(x, y, powerUpType);
+            if (piece != null && piece.frutType == targetPiece.frutType && !piece.isMarkedForDestruction)
+            {
+                piece.MarkForDestruction();
+                piece.AnimateDestruction();
+            }
         }
+
+        // Destruir a pr√≥pria Amora por ela mesma
+        DestroyPiece(amora);
+
+        StartCoroutine(ResetMatching());
     }
 
-    // Determina o tipo de power-up
-    private FrutType DeterminePowerUpType()
+    // Fun√ß√£o para resetar as combina√ß√µes ap√≥s a ativa√ß√£o do PowerUp
+    private IEnumerator ResetMatching()
     {
-        // Pode ser uma escolha aleatÛria para variar os tipos de power-up
-        int randomType = Random.Range(0, 3);
-        return randomType switch
-        {
-            0 => FrutType.Cereja,
-            1 => FrutType.Roma,
-            2 => FrutType.Amora,
-            _ => FrutType.Cereja
-        };
+        yield return new WaitForSeconds(0.5f);
+        yield return StartCoroutine(ClearAndFillBoard()); // Garantir que a grade seja atualizada
     }
-    
+
+    // Fun√ß√£o para destruir uma pe√ßa
+    public void DestroyPiece(Piece piece)
+    {
+        if (piece == null) return;
+        piece.MarkForDestruction();
+        piece.AnimateDestruction();
+        grid[piece.x, piece.y] = null;
+        Destroy(piece.gameObject);
+    }
+
+    // Fun√ß√£o para obter os vizinhos de uma pe√ßa
+    private List<Piece> GetNeighbors(int x, int y)
+    {
+        List<Piece> neighbors = new List<Piece>();
+
+        if (x > 0) neighbors.Add(grid[x - 1, y]);
+        if (x < width - 1) neighbors.Add(grid[x + 1, y]);
+        if (y > 0) neighbors.Add(grid[x, y - 1]);
+        if (y < height - 1) neighbors.Add(grid[x, y + 1]);
+
+        return neighbors;
+    }
+   
 }

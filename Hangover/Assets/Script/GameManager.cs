@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,7 +14,7 @@ public class GameManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(instance);
+            DontDestroyOnLoad(gameObject);
         }
         else if (instance != this)
         {
@@ -23,83 +24,205 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
+    [Header("Game Settings")]
+    public int initialScore = 0;
+    public int scorePlayer;
+    public float fadeDuration = 1f;
 
-    public int scorePlayer, jogadas,jogadasBase;
+    [Header("UI Elements")]
+    public CanvasGroup faderCanvasGroup;
 
-    UIManager managerUI;
+    private UIManager managerUI;
 
+    // Eventos dispon√≠veis para outros componentes se inscreverem
+    public static event System.Action<int> onScoreChanged;
+    public static event System.Action<int> onJogadasChanged;
+    
+    private static int score = 0;
+    private static int jogadas = 20;
+    
     private void Start()
     {
+        StartCoroutine(FadeIn());
+        SceneManager.sceneLoaded += OnSceneLoaded;
         Initialize();
-        SceneManager.sceneLoaded += Initialize;
     }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        InitializeBase();
+        scorePlayer = initialScore;
+        FindFaderCanvasGroup();
+    }
+
     private void Initialize()
     {
         InitializeBase();
     }
-
-    private void Initialize(Scene scene, LoadSceneMode mode)
+    
+    public static void DecrementJogadas()
     {
-        InitializeBase();
-        scorePlayer = 0;
-        jogadas = jogadasBase;
-        if (SceneManager.GetActiveScene().name == "Fase 1") 
+        jogadas--;
+        onJogadasChanged?.Invoke(jogadas); // Usamos o operador null-conditional para invocar o evento se n√£o for nulo
+
+        if (jogadas <= 0)
         {
-            UpdateJogadas(jogadas);
+            TriggerGameOver();
         }
-        
     }
+    
+    private static void TriggerGameOver()
+    {
+        // L√≥gica para Game Over
+        // Pode ser alguma coisa como encontrar `UIManager` e mostrar o Game Over.
+        UIManager uiManager = FindObjectOfType<UIManager>();
+        if (uiManager != null)
+        {
+            uiManager.ShowGameOver("Game Over");
+        }
+    }
+
 
     private void InitializeBase()
     {
-        
         FindButtons();
         managerUI = FindObjectOfType<UIManager>();
+        if (managerUI == null)
+        {
+            Debug.LogError("UIManager not found in the scene. Please ensure there is a UIManager object in the scene.");
+        }
         Time.timeScale = 1;
     }
 
-
     private void FindButtons()
     {
-        if (SceneManager.GetActiveScene().name == "Menu")
-        {
-            GameObject.Find("Play").GetComponent<Button>().onClick.AddListener(() => LoadScene("seleÁ„oDeFase"));
-            GameObject.Find("Exit").GetComponent<Button>().onClick.AddListener(ExitGame);
-        }
+        string sceneName = SceneManager.GetActiveScene().name;
 
-        if (SceneManager.GetActiveScene().name == "seleÁ„oDeFase")
+        if (sceneName == "Menu")
         {
-            GameObject.Find("Return_button").GetComponent<Button>().onClick.AddListener(() => LoadScene("Menu"));
+            BindButton("Play", () => LoadScene("selecaoDeFase"));
+            BindButton("Exit", ExitGame);
         }
-        if (SceneManager.GetActiveScene().name == "Jogo")
+        else if (sceneName == "selecaoDeFase")
         {
-            GameObject.Find("Play").GetComponent<Button>().onClick.AddListener(() => LoadScene("Jogo"));
-            GameObject.Find("Exit").GetComponent<Button>().onClick.AddListener(() => LoadScene("Menu"));
+            BindButton("Return_button", () => LoadScene("Menu"));
+        }
+        else if (sceneName == "Jogo")
+        {
+            BindButton("Play", () => LoadScene("Jogo"));
+            BindButton("Exit", () => LoadScene("Menu"));
+        }
+    }
+
+    private void BindButton(string buttonName, UnityEngine.Events.UnityAction action)
+    {
+        GameObject buttonObj = GameObject.Find(buttonName);
+        if (buttonObj != null)
+        {
+            Button button = buttonObj.GetComponent<Button>();
+            if (button != null)
+            {
+                button.onClick.AddListener(action);
+            }
+            else
+            {
+                Debug.LogWarning($"Button component not found on {buttonName}.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"Button {buttonName} not found in the scene.");
         }
     }
 
     public void LoadScene(string sceneName)
     {
-        SceneManager.LoadScene(sceneName);
-    }
-    public void ExitGame()
-    {
-        Application.Quit();
+        StartCoroutine(FadeAndLoadScene(sceneName));
     }
 
-    public void AddScore(int scoreValue)
+    private IEnumerator FadeAndLoadScene(string sceneName)
     {
-        scorePlayer += scoreValue;
-        managerUI.UpdateScore(scorePlayer);
+        yield return StartCoroutine(FadeOut());
+        SceneManager.LoadScene(sceneName);
+        yield return StartCoroutine(FadeIn());
+    }
+
+    private IEnumerator FadeOut()
+    {
+        if (faderCanvasGroup == null)
+        {
+            yield break;
+        }
+
+        faderCanvasGroup.blocksRaycasts = true;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < fadeDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            faderCanvasGroup.alpha = Mathf.Clamp01(elapsedTime / fadeDuration);
+            yield return null;
+        }
+    }
+
+    private IEnumerator FadeIn()
+    {
+        if (faderCanvasGroup == null)
+        {
+            yield break;
+        }
+
+        float elapsedTime = 0f;
+
+        while (elapsedTime < fadeDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            faderCanvasGroup.alpha = 1f - Mathf.Clamp01(elapsedTime / fadeDuration);
+            yield return null;
+        }
+
+        faderCanvasGroup.blocksRaycasts = false;
+    }
+
+    private void FindFaderCanvasGroup()
+    {
+        faderCanvasGroup = GameObject.Find("FadePainel")?.GetComponent<CanvasGroup>();
+
+        if (faderCanvasGroup == null)
+        {
+            Debug.LogWarning("FaderCanvasGroup not found in the new scene!");
+        }
+    }
+
+    public static void AddScore(int points)
+    {
+        score += points;
+        onScoreChanged?.Invoke(score); // Usamos o operador null-conditional para invocar o evento se n√£o for nulo
+    }
+    
+    public static int GetScore()
+    {
+        return score;
+    }
+    
+    public static int GetJogadas()
+    {
+        return jogadas;
+    }
+
+
+    public void UpdateJogadas(int jogadas)
+    {
+        onJogadasChanged?.Invoke(jogadas);
     }
 
     public void UpdateGameOver(string textGameover)
     {
-        managerUI.UpdateTextGameOver(textGameover); 
+        managerUI?.ShowGameOver(textGameover);
     }
-    public void UpdateJogadas(int jogadasValue)
+
+    public void ExitGame()
     {
-        jogadas += jogadasValue;
-        managerUI.UpdateJogadas(jogadas);
+        Application.Quit();
     }
 }

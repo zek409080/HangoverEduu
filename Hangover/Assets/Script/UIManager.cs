@@ -3,16 +3,39 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Text;
 
 public class UIManager : MonoBehaviour
 {
-    [SerializeField]TextMeshProUGUI scoreText, jogadasText, gameoverText;
-    [SerializeField]Button  buttonclose;
-    [SerializeField]GameObject menuPanel;
+    [SerializeField] private TextMeshProUGUI scoreText;
+    [SerializeField] private TextMeshProUGUI jogadasText;
+    [SerializeField] private TextMeshProUGUI gameoverText;
+    [SerializeField] private Button buttonClose;
+    [SerializeField] private GameObject menuPanel;
 
-    public void RedtartScene(string sceneName)
+    private StringBuilder _stringBuilder;
+
+    private void Awake()
+    {
+        _stringBuilder = new StringBuilder();
+    }
+
+    private void OnEnable()
+    {
+        GameManager.onScoreChanged += UpdateScore;
+        GameManager.onJogadasChanged += UpdateJogadas;
+    }
+
+    private void OnDisable()
+    {
+        GameManager.onScoreChanged -= UpdateScore;
+        GameManager.onJogadasChanged -= UpdateJogadas;
+    }
+
+    public void RestartGame(string sceneName)
     {
         menuPanel.SetActive(false);
+        ResumeGame();
         GameManager.instance.LoadScene(sceneName);
     }
 
@@ -21,34 +44,44 @@ public class UIManager : MonoBehaviour
         GameManager.instance.LoadScene(sceneName);
     }
 
-    public void ActiveMenu(bool ativo)
+    public void ToggleMenu(bool isActive)
     {
-        if (ativo)
-        {
-          menuPanel.SetActive(true);
-          Time.timeScale = 0f;
-        }
+        menuPanel.SetActive(isActive);
+        if (isActive)
+            PauseGame();
         else
-        {
-          menuPanel.SetActive(false);
-          Time.timeScale = 1f;
-        }
+            ResumeGame();
     }
-    public void UpdateTextGameOver(string textGameover)
+
+    public void ShowGameOver(string textGameOver)
     {
-        gameoverText.text = textGameover;
+        gameoverText.text = textGameOver;
         menuPanel.SetActive(true);
-        Time.timeScale = 0f;
-        buttonclose.enabled = false;
+        PauseGame();
+        buttonClose.enabled = false;
     }
+
     public void UpdateJogadas(int jogadas)
     {
-        jogadasText.text = jogadas.ToString(); ;
+        _stringBuilder.Clear();
+        _stringBuilder.Append(jogadas);
+        jogadasText.text = _stringBuilder.ToString();
     }
 
-    public void UpdateScore(int valueScoore)
+    public void UpdateScore(int score)
     {
-        scoreText.text = valueScoore.ToString();
+        _stringBuilder.Clear();
+        _stringBuilder.Append(score);
+        scoreText.text = _stringBuilder.ToString();
+    }
+
+    private void PauseGame()
+    {
+        Time.timeScale = 0f;
+    }
+
+    private void ResumeGame()
+    {
+        Time.timeScale = 1f;
     }
 }
-
