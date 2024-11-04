@@ -661,14 +661,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9811321, g: 0.8862745, b: 0.8352941, a: 1}
+  m_Color: {r: 0.45882353, g: 0.45882353, b: 0.8039216, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 424b768a2d3d01a4fa9d291f9e8efc2b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d65671d6f45d1314d82374e34ad30edd, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1953,7 +1953,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_IsOn: 1
+  m_IsOn: 0
 --- !u!1 &426395678
 GameObject:
   m_ObjectHideFlags: 0
@@ -2086,14 +2086,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5845471, g: 0.5798772, b: 0.7830189, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 9f723daf467a784489fa607c284bdc3e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5a6801db8ef818b44860b520c5a23a4a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3254,14 +3254,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5845471, g: 0.5798772, b: 0.7830189, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 19f6d47f9b1e45f49ad863e58a7b0557, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 147a2ef4400f7ff4c9c46db1005b3c34, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3955,14 +3955,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9811321, g: 0.8862745, b: 0.8352941, a: 1}
+  m_Color: {r: 0.45768067, g: 0.45833308, b: 0.8018868, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: c19e34dd0bb4ef148a7435ce2b4b69ec, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9b2d38142293d1b468583e789543873c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -4197,7 +4197,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_IsOn: 1
+  m_IsOn: 0
 --- !u!1 &1119536503
 GameObject:
   m_ObjectHideFlags: 0
@@ -4434,7 +4434,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_IsOn: 1
+  m_IsOn: 0
 --- !u!1 &1143458345
 GameObject:
   m_ObjectHideFlags: 0
@@ -4828,14 +4828,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9811321, g: 0.8862745, b: 0.8352941, a: 1}
+  m_Color: {r: 0.45882353, g: 0.45882353, b: 0.8039216, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: f4caacc9c28832e4ebbffe14e5a0da25, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b459bafd06ef34a49a41d21f2e1a6c26, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -5657,14 +5657,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5845471, g: 0.5798772, b: 0.7830189, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 0f5425e2f28dc39498be1954efd80bd5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 90bb1cdccc683d0479206ff8d3ed0015, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -6945,9 +6945,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64b1b0855dbc7c848ac2b518a4b576cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  musicContainer: {fileID: 0}
+  somContainer: {fileID: 0}
+  estadoDomusica: 1
+  estadoDoSom: 0
   fundoMusical: {fileID: 0}
-  somLigado: {fileID: 0}
-  somDesligado: {fileID: 0}
 --- !u!82 &1883948061
 AudioSource:
   m_ObjectHideFlags: 0

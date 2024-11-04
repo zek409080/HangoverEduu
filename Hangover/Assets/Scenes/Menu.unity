@@ -2221,9 +2221,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64b1b0855dbc7c848ac2b518a4b576cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  musicContainer: {fileID: 0}
+  somContainer: {fileID: 0}
+  estadoDomusica: 1
+  estadoDoSom: 0
   fundoMusical: {fileID: 0}
-  somLigado: {fileID: 0}
-  somDesligado: {fileID: 0}
 --- !u!1 &1836431369
 GameObject:
   m_ObjectHideFlags: 0
