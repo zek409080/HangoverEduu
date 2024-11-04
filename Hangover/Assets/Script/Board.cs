@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Board : MonoBehaviour
@@ -8,19 +9,31 @@ public class Board : MonoBehaviour
     [Header("Tamanho do tabuleiro")]
     public int width;
     public int height;
+    private binaryArrayBoard binaryArray;
     [SerializeField] int jogadas;
     public GameObject[] piecePrefab;
     public Piece[,] pieces;
     private Piece selectedPiece;
     private bool canSwap = true;
     public Transform cam;
+
+    [Header("Objetivo")]
+    public SpriteRenderer objetivo;
+    public int maxObejetivo;
+    private int currentObjective;
+    public TextMeshProUGUI obejectiveText;
+
+    [Header("Particle de exploção e o funda da fruta")]
     [SerializeField] GameObject particle_popMagic, caixaDaGrid;
-    private binaryArrayBoard binaryArray;
+    
+
+    [Header("Audio")]
     AudioSource audiopop;
 
 
     void Start()
     {
+        currentObjective = 0;
         audiopop = GetComponent<AudioSource>();
         pieces = new Piece[width, height];
         binaryArray = GetComponent<binaryArrayBoard>();
@@ -47,7 +60,15 @@ public class Board : MonoBehaviour
         if (GameManager.instance.jogadas == 0)
         {
             //checar se foi completado o objetivo 
-            StartCoroutine(GameOver());
+            if (currentObjective >= maxObejetivo)
+            {
+                StartCoroutine(GameVitoria());
+            }
+            else
+            {
+                StartCoroutine(GameOver());
+            }
+           
         }
     }
 
@@ -71,6 +92,8 @@ public class Board : MonoBehaviour
             }
         }
         CheckForMatches(out _);
+        List<Piece> piecesDestroyed = CheckForMatches(out _);
+        CheckObjective(piecesDestroyed);
     }
 
     Piece CreateEmptyPiece(int x, int y)
@@ -125,7 +148,30 @@ public class Board : MonoBehaviour
             }
         }
     }
+    private void UpdateObjectiveText()
+    {
+        obejectiveText.text = $"{currentObjective}/{maxObejetivo}";
+    }
 
+    void CheckObjective(List<Piece> piecesDestroyed)
+    {
+        FrutType objetivoFrutType = objetivo.GetComponent<Piece>().frutType;
+        int destroyedCount = 0;
+
+        foreach (Piece piece in piecesDestroyed)
+        {
+            if (piece.frutType == objetivoFrutType)
+            {
+                destroyedCount++;
+            }
+        }
+
+        if (destroyedCount > 0)
+        {
+            currentObjective += destroyedCount;
+        }
+        UpdateObjectiveText();
+    }
     public IEnumerator TrySwapPieces(Piece piece1, Piece piece2)
     {
         // Verifica novamente a existência das peças no início
@@ -197,6 +243,9 @@ public class Board : MonoBehaviour
             piece1.StartMoveAnimation(piece2.transform.position, 0.1f);
             piece2.StartMoveAnimation(tempPosition, 0.1f);
         }
+
+        List<Piece> piecesDestroyed = CheckForMatches(out int totalDestroyed);
+        CheckObjective(piecesDestroyed);
     }
 
 
@@ -248,6 +297,8 @@ public class Board : MonoBehaviour
         yield return new WaitForSeconds(0.3f); // Aguarda as animações
 
         CheckForMatches(out _);
+        List<Piece> piecesDestroyed = CheckForMatches(out int totalDestroyed);
+        CheckObjective(piecesDestroyed);
     }
 
     bool CheckMatchHorizontal(int x, int y)
