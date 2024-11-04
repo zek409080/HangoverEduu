@@ -13,6 +13,7 @@ public class GridManager : MonoBehaviour
     public GameObject romaPrefab;
     public GameObject amoraPrefab;
     public Piece[,] grid;
+    public GameObject destructionEffectPrefab;
 
     // Variáveis de controle de jogadas e pontuação
     private UIManager uiManager;
@@ -464,7 +465,15 @@ public class GridManager : MonoBehaviour
     public void DestroyPiece(Piece piece)
     {
         if (piece == null) return;
+        
         piece.MarkForDestruction();
+
+        // Instanciar o efeito de destruição
+        if (destructionEffectPrefab != null)
+        {
+            Instantiate(destructionEffectPrefab, piece.transform.position, Quaternion.identity);
+        }
+        
         piece.AnimateDestruction();
         grid[piece.x, piece.y] = null;
         Destroy(piece.gameObject);

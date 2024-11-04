@@ -2775,7 +2775,7 @@ MonoBehaviour:
   cerejaPrefab: {fileID: 5189414865226056622, guid: b51adcd8152e1314bb160e1a5815c439, type: 3}
   romaPrefab: {fileID: 5277923847060947649, guid: 7cb1a78401bb38347a8f3d8f35fd556e, type: 3}
   amoraPrefab: {fileID: 3709904927056707482, guid: 100fda708a1579c4f9a42f473dc93945, type: 3}
-  jogadas: 20
+  destructionEffectPrefab: {fileID: 5653956943498294196, guid: d741206eb23cda94fb1dc6acffbfa15c, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
