@@ -16,9 +16,12 @@ public class Board : MonoBehaviour
     public Transform cam;
     [SerializeField] GameObject particle_popMagic, caixaDaGrid;
     private binaryArrayBoard binaryArray;
+    AudioSource audiopop;
+
 
     void Start()
     {
+        audiopop = GetComponent<AudioSource>();
         pieces = new Piece[width, height];
         binaryArray = GetComponent<binaryArrayBoard>();
         InitializeBoard();
@@ -32,6 +35,15 @@ public class Board : MonoBehaviour
 
     private void Update()
     {
+        if (MusicUI.instance.estadoDoSom)    
+        {
+          audiopop.enabled = false;
+        }
+        else
+        {
+            audiopop.enabled = true;
+        }
+
         if (GameManager.instance.jogadas == 0)
         {
             StartCoroutine(GameOver());
@@ -320,6 +332,7 @@ public class Board : MonoBehaviour
                     piecesToDestroy.AddRange(matchPieces);
                     totalDestroyed += matchPieces.Count;
                     GameManager.instance.AddScore(10);
+                    audiopop.Play();
                 }
             }
         }

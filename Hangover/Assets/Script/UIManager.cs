@@ -10,10 +10,10 @@ public class UIManager : MonoBehaviour
     [SerializeField]Button  buttonclose;
     [SerializeField]GameObject menuPanel;
 
-    public void RedtartScene(string sceneName)
+    public void RedtartScene()
     {
         menuPanel.SetActive(false);
-        GameManager.instance.LoadScene(sceneName);
+        GameManager.instance.RestartGame();
     }
 
     public void QuitGame(string sceneName)

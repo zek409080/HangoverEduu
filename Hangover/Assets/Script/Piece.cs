@@ -9,6 +9,8 @@ public class Piece : MonoBehaviour
     public int y;
     public Board board;
     public bool isInvisible;
+    public AudioSource audioSelect;
+
 
     private Vector3 targetPosition;
     private Vector3 targetScale;
@@ -26,6 +28,7 @@ public class Piece : MonoBehaviour
     }
     public void Init(int x, int y, Board board)
     {
+        audioSelect = GetComponent<AudioSource>();
         this.x = x;
         this.y = y;
         this.board = board;
@@ -34,6 +37,17 @@ public class Piece : MonoBehaviour
 
     void Update()
     {
+
+        if (MusicUI.instance.estadoDoSom)
+        {
+         audioSelect.enabled = false;
+        }
+
+        else
+        {
+            audioSelect.enabled = true;
+        }
+
         if (isMoving)
         {
             transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime / moveDuration);
@@ -59,6 +73,7 @@ public class Piece : MonoBehaviour
     {
         if (!isInvisible && frutType != FrutType.Vazio)
         {
+            audioSelect.Play();
             board.SelectPiece(this);
         }
     }

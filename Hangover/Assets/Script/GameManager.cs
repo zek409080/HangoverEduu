@@ -41,6 +41,7 @@ public class GameManager : MonoBehaviour
     private void Initialize(Scene scene, LoadSceneMode mode)
     {
         InitializeBase();
+        jogadas = 0;
         scorePlayer = 0;
         if (SceneManager.GetActiveScene().name != "Menu" & SceneManager.GetActiveScene().name != "seleçãoDeFase")
         {
@@ -78,6 +79,11 @@ public class GameManager : MonoBehaviour
     public void LoadScene(string sceneName)
     {
         SceneManager.LoadScene(sceneName);
+    }
+
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
     public void ExitGame()
     {
