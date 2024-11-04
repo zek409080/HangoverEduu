@@ -65,6 +65,7 @@ public class MusicUI : MonoBehaviour
             musicContainer = GameObject.Find("Panel_config");
         }
 
+
         if (musicContainer != null && musicContainer.activeSelf && music == null)
         {
             GameObject musicOn = GameObject.Find("MusicOn");

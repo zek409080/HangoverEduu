@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    [SerializeField]TextMeshProUGUI scoreText, jogadasText, gameoverText;
+    [SerializeField] TextMeshProUGUI scoreText, jogadasText;
     [SerializeField]Button  buttonclose;
     [SerializeField]GameObject menuPanel;
 
@@ -36,7 +36,7 @@ public class UIManager : MonoBehaviour
     }
     public void UpdateTextGameOver(string textGameover)
     {
-        gameoverText.text = textGameover;
+        //gameoverText.text = textGameover;
         menuPanel.SetActive(true);
         Time.timeScale = 0f;
         buttonclose.enabled = false;

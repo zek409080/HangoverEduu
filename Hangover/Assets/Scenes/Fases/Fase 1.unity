@@ -1233,7 +1233,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scoreText: {fileID: 2123501548}
   jogadasText: {fileID: 785472551}
-  gameoverText: {fileID: 300422365}
   buttonclose: {fileID: 1181572643}
   menuPanel: {fileID: 1975821874}
 --- !u!4 &1209041558
@@ -2196,7 +2195,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1975821875
 RectTransform:
   m_ObjectHideFlags: 0
