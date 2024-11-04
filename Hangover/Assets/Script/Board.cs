@@ -412,11 +412,10 @@ public class Board : MonoBehaviour
     }
     IEnumerator GameVitoria()
     {
-        yield return 2;
+        yield return new WaitForSeconds(1f);
         GameManager.instance.UpdateGameOver("Vitória");
 
     }
-
 
     void MovePiece(Piece piece, Vector3 newPosition, float duration)
     {

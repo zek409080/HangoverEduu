@@ -121,7 +121,8 @@ public enum FrutType
     Melancia,
     Pinha,
     Uva,
-    Poder,
-    Obstacle,
+    Roma,//poder
+    Cereja,//poder
+    Franboesa,//poder
     Vazio
 }
