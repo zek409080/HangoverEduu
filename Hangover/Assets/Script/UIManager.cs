@@ -6,9 +6,13 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
+    [Header("Panel De Pause")]
     [SerializeField] TextMeshProUGUI scoreText, jogadasText;
     [SerializeField]Button  buttonclose;
     [SerializeField]GameObject menuPanel;
+
+    [Header("Panel De vitoria ou derrota")]
+    [SerializeField] TextMeshProUGUI gameoverText;
 
     public void RedtartScene()
     {
@@ -36,7 +40,7 @@ public class UIManager : MonoBehaviour
     }
     public void UpdateTextGameOver(string textGameover)
     {
-        //gameoverText.text = textGameover;
+        gameoverText.text = textGameover;
         menuPanel.SetActive(true);
         Time.timeScale = 0f;
         buttonclose.enabled = false;

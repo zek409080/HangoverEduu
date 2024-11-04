@@ -46,6 +46,7 @@ public class Board : MonoBehaviour
 
         if (GameManager.instance.jogadas == 0)
         {
+            //checar se foi completado o objetivo 
             StartCoroutine(GameOver());
         }
     }
@@ -356,8 +357,15 @@ public class Board : MonoBehaviour
     IEnumerator GameOver()
     {
         yield return new WaitForSeconds(1f);
-        GameManager.instance.UpdateGameOver("Game Over");
+        GameManager.instance.UpdateGameOver("Perdeu");
     }
+    IEnumerator GameVitoria()
+    {
+        yield return 2;
+        GameManager.instance.UpdateGameOver("Vitória");
+
+    }
+
 
     void MovePiece(Piece piece, Vector3 newPosition, float duration)
     {
