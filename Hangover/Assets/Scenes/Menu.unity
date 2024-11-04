@@ -451,6 +451,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   initialScore: 0
+  scorePlayer: 0
   fadeDuration: 1
   faderCanvasGroup: {fileID: 835175157}
 --- !u!1 &464750288
@@ -916,7 +917,7 @@ GameObject:
   - component: {fileID: 835175158}
   - component: {fileID: 835175157}
   m_Layer: 5
-  m_Name: Panel
+  m_Name: FadePainel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1896,7 +1897,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: "sele\xE7\xE3oDeFase"
+          m_StringArgument: selecaoDeFase
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1365709039

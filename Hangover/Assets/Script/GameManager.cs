@@ -43,9 +43,13 @@ public class GameManager : MonoBehaviour
     
     private void Start()
     {
-        StartCoroutine(FadeIn());
         SceneManager.sceneLoaded += OnSceneLoaded;
         Initialize();
+    }
+
+    public void StartJogadas()
+    {
+        jogadas = 20;
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -53,18 +57,20 @@ public class GameManager : MonoBehaviour
         InitializeBase();
         scorePlayer = initialScore;
         FindFaderCanvasGroup();
+        StartCoroutine(FadeIn());
     }
 
     private void Initialize()
     {
         InitializeBase();
+        StartCoroutine(FadeIn());
     }
     
     public static void DecrementJogadas()
     {
         jogadas--;
-        onJogadasChanged?.Invoke(jogadas); // Usamos o operador null-conditional para invocar o evento se não for nulo
-
+        onJogadasChanged?.Invoke(jogadas); // Usamos o operador null-condicional para invocar o evento se não for nulo
+        
         if (jogadas <= 0)
         {
             TriggerGameOver();
@@ -74,7 +80,6 @@ public class GameManager : MonoBehaviour
     private static void TriggerGameOver()
     {
         // Lógica para Game Over
-        // Pode ser alguma coisa como encontrar `UIManager` e mostrar o Game Over.
         UIManager uiManager = FindObjectOfType<UIManager>();
         if (uiManager != null)
         {
@@ -82,14 +87,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
     private void InitializeBase()
     {
         FindButtons();
         managerUI = FindObjectOfType<UIManager>();
         if (managerUI == null)
         {
-            Debug.LogError("UIManager not found in the scene. Please ensure there is a UIManager object in the scene.");
+            Debug.LogWarning("UIManager not found in the scene. Please ensure there is a UIManager object in the scene.");
         }
         Time.timeScale = 1;
     }
@@ -137,23 +141,45 @@ public class GameManager : MonoBehaviour
 
     public void LoadScene(string sceneName)
     {
-        StartCoroutine(FadeAndLoadScene(sceneName));
+        if (SceneExistsInBuildSettings(sceneName))
+        {
+            StartCoroutine(FadeAndLoadScene(sceneName));
+        }
+        else
+        {
+            Debug.LogError($"Scene '{sceneName}' could not be found in the Build Settings.");
+        }
+    }
+
+    private bool SceneExistsInBuildSettings(string sceneName)
+    {
+        for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
+        {
+            string scenePath = SceneUtility.GetScenePathByBuildIndex(i);
+            string sceneNameInSettings = System.IO.Path.GetFileNameWithoutExtension(scenePath);
+            if (sceneNameInSettings == sceneName)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private IEnumerator FadeAndLoadScene(string sceneName)
     {
         yield return StartCoroutine(FadeOut());
         SceneManager.LoadScene(sceneName);
-        yield return StartCoroutine(FadeIn());
     }
 
     private IEnumerator FadeOut()
     {
+        FindFaderCanvasGroup();
         if (faderCanvasGroup == null)
         {
             yield break;
         }
 
+        faderCanvasGroup.gameObject.SetActive(true);
         faderCanvasGroup.blocksRaycasts = true;
         float elapsedTime = 0f;
 
@@ -167,10 +193,13 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator FadeIn()
     {
+        FindFaderCanvasGroup();
         if (faderCanvasGroup == null)
         {
             yield break;
         }
+
+        faderCanvasGroup.blocksRaycasts = true; // Já que o fade pode estar ainda sendo usado para nova tela.
 
         float elapsedTime = 0f;
 
@@ -182,22 +211,35 @@ public class GameManager : MonoBehaviour
         }
 
         faderCanvasGroup.blocksRaycasts = false;
+
+        yield return new WaitForSeconds(fadeDuration);
+
+        faderCanvasGroup.gameObject.SetActive(false);
     }
 
     private void FindFaderCanvasGroup()
     {
-        faderCanvasGroup = GameObject.Find("FadePainel")?.GetComponent<CanvasGroup>();
-
-        if (faderCanvasGroup == null)
+        GameObject fadePanel = GameObject.Find("FadePainel");
+        
+        if (fadePanel != null)
         {
-            Debug.LogWarning("FaderCanvasGroup not found in the new scene!");
+            faderCanvasGroup = fadePanel.GetComponent<CanvasGroup>();
+
+            if (faderCanvasGroup == null)
+            {
+                Debug.LogWarning("CanvasGroup component not found on FadePainel.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("FadePainel GameObject not found in the new scene!");
         }
     }
 
     public static void AddScore(int points)
     {
         score += points;
-        onScoreChanged?.Invoke(score); // Usamos o operador null-conditional para invocar o evento se não for nulo
+        onScoreChanged?.Invoke(score); // Usamos o operador null-condicional para invocar o evento se não for nulo
     }
     
     public static int GetScore()
@@ -210,7 +252,6 @@ public class GameManager : MonoBehaviour
         return jogadas;
     }
 
-
     public void UpdateJogadas(int jogadas)
     {
         onJogadasChanged?.Invoke(jogadas);
@@ -218,7 +259,14 @@ public class GameManager : MonoBehaviour
 
     public void UpdateGameOver(string textGameover)
     {
-        managerUI?.ShowGameOver(textGameover);
+        if (managerUI != null)
+        {
+            managerUI.ShowGameOver(textGameover);
+        }
+        else
+        {
+            Debug.LogWarning("UIManager not found in the scene. Cannot display game over.");
+        }
     }
 
     public void ExitGame()
