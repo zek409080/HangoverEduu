@@ -29,7 +29,7 @@ public class MusicUI : MonoBehaviour
     #endregion
     Toggle music, som;
     [SerializeField] private GameObject musicContainer, somContainer;
-    public bool estadoDomusica = true, estadoDoSom = true;
+    public bool estadoDomusica = true, estadoDoSom = false;
     [SerializeField] private AudioSource fundoMusical;
 
     private void Start()
