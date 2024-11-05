@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
+using TMPro;
 
 public class GridManager : MonoBehaviour
 {
@@ -15,8 +16,17 @@ public class GridManager : MonoBehaviour
     public Piece[,] grid;
     public GameObject destructionEffectPrefab;
 
-    // Variáveis de controle de jogadas e pontuação
+    [Header("Objetivo")]
+    public FrutType targetFruitType;  // Tipo da fruta que é o objetivo
+    public int maxObjective;
+    private int currentObjective;
+    public TextMeshProUGUI objectiveText;
+
+    [Header("Audio")]
+    [SerializeField] AudioSource soundPop;
+
     private UIManager uiManager;
+
 
     private void Start()
     {
@@ -35,6 +45,8 @@ public class GridManager : MonoBehaviour
         // Assinar eventos do GameManager
         GameManager.onScoreChanged += OnScoreChanged;
         GameManager.onJogadasChanged += OnJogadasChanged;
+
+       UpdateObjectiveText();
     }
 
     private void OnDisable()
@@ -96,12 +108,57 @@ public class GridManager : MonoBehaviour
         return fruitPrefabs[Random.Range(0, fruitPrefabs.Length)];
     }
 
-    private bool CheckInitialMatches(Piece piece)
+
+
+    private IEnumerator ClearInitialMatches()
     {
-        List<Piece> matchedPieces = GetAllMatchesForPiece(piece);
-        return matchedPieces.Count > 2;
+        bool matchesFound;
+        do
+        {
+            matchesFound = FindAllMatches().Count > 0;
+            if (matchesFound)
+            {
+                yield return StartCoroutine(ClearAndFillBoard());
+            }
+        } while (matchesFound);
+    }
+    private List<Piece> FindAllMatches()
+    {
+        List<Piece> piecesToClear = new List<Piece>();
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                Piece currentPiece = grid[x, y];
+                if (currentPiece != null)
+                {
+                    List<Piece> horizontalMatches = GetMatches(currentPiece, Vector2.right);
+                    List<Piece> verticalMatches = GetMatches(currentPiece, Vector2.up);
+
+                    if (horizontalMatches.Count >= 3) piecesToClear.AddRange(horizontalMatches);
+                    if (verticalMatches.Count >= 3) piecesToClear.AddRange(verticalMatches);
+                }
+            }
+        }
+
+        piecesToClear = piecesToClear.Distinct().ToList();
+        return piecesToClear;
+    }
+    private void UpdateObjectiveText()
+    {
+        objectiveText.text = $"{currentObjective}/{maxObjective}";
     }
 
+
+
+
+
+
+
+
+
+    
     private void CheckAndClearMatchesAtStart()
     {
         StartCoroutine(CheckAndClearMatchesCoroutine());
@@ -139,7 +196,40 @@ public class GridManager : MonoBehaviour
                 CheckForMatchInDirection(grid[x, y], Vector2.down, 2));
     }
 
-    private List<Piece> GetMatch(Piece startPiece, Vector2 direction)
+    private bool CheckForMatchInDirection(Piece piece, Vector2 direction, int length)
+    {
+        List<Piece> matchingPieces = new List<Piece> { piece };
+        for (int i = 1; i <= length; i++)
+        {
+            int checkX = piece.x + (int)direction.x * i;
+            int checkY = piece.y + (int)direction.y * i;
+            if (checkX < 0 || checkX >= width || checkY < 0 || checkY >= height)
+                break;
+            if (grid[checkX, checkY] != null && grid[checkX, checkY].frutType == piece.frutType)
+                matchingPieces.Add(grid[checkX, checkY]);
+            else
+                break;
+        }
+        return matchingPieces.Count > length;
+    }
+
+    private List<Piece> GetAllMatchesForPiece(Piece piece)
+    {
+        List<Piece> horizontalMatches = GetMatches(piece, new Vector2(+1, 0)).ToList();
+        horizontalMatches.AddRange(GetMatches(piece, new Vector2(-1,0)).Where(p => p != piece));
+
+        List<Piece> verticalMatches = GetMatches(piece, new Vector2(0, +1)).ToList();
+        verticalMatches.AddRange(GetMatches(piece, new Vector2(0, -1)).Where(p => p != piece));
+
+        List<Piece> allMatches = new List<Piece>();
+
+        if (horizontalMatches.Count >= 3) allMatches.AddRange(horizontalMatches);
+        if (verticalMatches.Count >= 3) allMatches.AddRange(verticalMatches);
+
+        return allMatches.Distinct().ToList();
+    }
+
+    private List<Piece> GetMatches(Piece startPiece, Vector2 direction)
     {
         List<Piece> match = new List<Piece> { startPiece };
         FrutType frutType = startPiece.frutType;
@@ -165,67 +255,6 @@ public class GridManager : MonoBehaviour
         return match;
     }
 
-    private bool CheckForMatchInDirection(Piece piece, Vector2 direction, int length)
-    {
-        List<Piece> matchingPieces = new List<Piece> { piece };
-        for (int i = 1; i <= length; i++)
-        {
-            int checkX = piece.x + (int)direction.x * i;
-            int checkY = piece.y + (int)direction.y * i;
-            if (checkX < 0 || checkX >= width || checkY < 0 || checkY >= height)
-                break;
-            if (grid[checkX, checkY] != null && grid[checkX, checkY].frutType == piece.frutType)
-                matchingPieces.Add(grid[checkX, checkY]);
-            else
-                break;
-        }
-        return matchingPieces.Count > length;
-    }
-
-    private List<Piece> GetAllMatchesForPiece(Piece piece)
-    {
-        List<Piece> horizontalMatches = GetMatches(piece, +1, 0).ToList();
-        horizontalMatches.AddRange(GetMatches(piece, -1, 0).Where(p => p != piece));
-
-        List<Piece> verticalMatches = GetMatches(piece, 0, +1).ToList();
-        verticalMatches.AddRange(GetMatches(piece, 0, -1).Where(p => p != piece));
-
-        List<Piece> allMatches = new List<Piece>();
-
-        if (horizontalMatches.Count >= 3) allMatches.AddRange(horizontalMatches);
-        if (verticalMatches.Count >= 3) allMatches.AddRange(verticalMatches);
-
-        return allMatches.Distinct().ToList();
-    }
-
-    private List<Piece> GetMatches(Piece piece, int dx, int dy)
-    {
-        List<Piece> matchingPieces = new List<Piece> { piece };
-
-        int newX = piece.x;
-        int newY = piece.y;
-
-        while (true)
-        {
-            newX += dx;
-            newY += dy;
-
-            if (newX < 0 || newX >= width || newY < 0 || newY >= height) break;
-
-            Piece nextPiece = grid[newX, newY];
-            if (nextPiece != null && nextPiece.frutType == piece.frutType)
-            {
-                matchingPieces.Add(nextPiece);
-            }
-            else
-            {
-                break;
-            }
-        }
-
-        return matchingPieces;
-    }
-
     private IEnumerator ClearAndFillBoard()
     {
         yield return StartCoroutine(ClearMatches());
@@ -235,23 +264,25 @@ public class GridManager : MonoBehaviour
 
     private IEnumerator ClearMatches()
     {
-        // Destruir peças marcadas para destruição
-        for (int x = 0; x < width; x++)
+        List<Piece> piecesToClear = FindAllMatches();
+
+        foreach (var piece in piecesToClear)
         {
-            for (int y = 0; y < height; y++)
+            if (piece.frutType == targetFruitType)
             {
-                if (grid[x, y] != null && grid[x, y].isMarkedForDestruction)
-                {
-                    DestroyPiece(grid[x, y]);
-                }
+                currentObjective++;
+                UpdateObjectiveText();
             }
+
+            GameManager.AddScore(10);
+            DestroyPiece(piece);
         }
+
         yield return new WaitForSeconds(0.5f);
     }
 
     private IEnumerator FillEmptySpaces()
     {
-        // Fazer as peças caírem nos espaços vazios
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -270,7 +301,6 @@ public class GridManager : MonoBehaviour
             }
         }
 
-        // Criar novas peças para os espaços restantes
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -278,7 +308,7 @@ public class GridManager : MonoBehaviour
                 if (grid[x, y] == null)
                 {
                     Piece newPiece = CreateNewPiece(x, y, true);
-                    while (CheckInitialMatches(newPiece))
+                    while (FindAllMatches().Contains(newPiece))
                     {
                         Destroy(newPiece.gameObject);
                         newPiece = CreateNewPiece(x, y, true);
@@ -321,11 +351,17 @@ public class GridManager : MonoBehaviour
     {
         foreach (var match in matches)
         {
-            GameManager.AddScore(10); // Atualiza a pontuação
+            GameManager.AddScore(10);
+            if (match.frutType == targetFruitType)
+            {
+                currentObjective++;
+                UpdateObjectiveText();
+            }
             match.MarkForDestruction();
         }
+
         yield return StartCoroutine(ClearAndFillBoard());
-        GameManager.DecrementJogadas(); // Decrementa jogadas ao processar matches
+        GameManager.DecrementJogadas();
     }
 
     public void SwapPieces(Piece piece1, Piece piece2)
@@ -478,18 +514,4 @@ public class GridManager : MonoBehaviour
         grid[piece.x, piece.y] = null;
         Destroy(piece.gameObject);
     }
-
-    // Função para obter os vizinhos de uma peça
-    private List<Piece> GetNeighbors(int x, int y)
-    {
-        List<Piece> neighbors = new List<Piece>();
-
-        if (x > 0) neighbors.Add(grid[x - 1, y]);
-        if (x < width - 1) neighbors.Add(grid[x + 1, y]);
-        if (y > 0) neighbors.Add(grid[x, y - 1]);
-        if (y < height - 1) neighbors.Add(grid[x, y + 1]);
-
-        return neighbors;
-    }
-   
 }
