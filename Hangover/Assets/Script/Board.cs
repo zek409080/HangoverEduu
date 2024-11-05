@@ -102,7 +102,6 @@ public class Board : MonoBehaviour
         Piece emptyPiece = emptyObject.AddComponent<Piece>();
         emptyPiece.frutType = FrutType.Vazio;
         emptyPiece.Init(x, y, this);
-        emptyPiece.SetVisibility(false);
         return emptyPiece;
     }
 
@@ -115,7 +114,7 @@ public class Board : MonoBehaviour
 
     int RandomFrut()
     {
-        return Random.Range(0, piecePrefab.Length);
+        return Random.Range(0, piecePrefab.Length - 3);
     }
     bool IsAdjacent(Piece piece1, Piece piece2)
     {
@@ -323,35 +322,51 @@ public class Board : MonoBehaviour
         return count >= 3;
     }
 
-    List<Piece> CheckMatchLine(int x, int y, int dx, int dy)
-    {
-        List<Piece> matched = new List<Piece>();
-        FrutType type = pieces[x, y].frutType;
-        matched.Add(pieces[x, y]);
-        for (int i = 1; i < width && i < height; i++) // Varre a linha na direção dada
-        {
-            int newX = x + dx * i;
-            int newY = y + dy * i;
-            // Verifica se a posição é válida e se o tipo da fruta corresponde
-            if (newX >= width || newY >= height || pieces[newX, newY]?.frutType != type) break;
-            matched.Add(pieces[newX, newY]);
-        }
-        // Retorna somente se houver 3 ou mais peças na combinação
-        return matched.Count >= 3 ? matched : new List<Piece>();
-    }
-
     List<Piece> GetMatchPieces(int x, int y)
     {
         List<Piece> matchPieces = new List<Piece>();
 
-        List<Piece> horizontalMatches = CheckMatchLine(x, y, 1, 0); // Horizontal
-        if (horizontalMatches.Count >= 3) matchPieces.AddRange(horizontalMatches);
+        // Checa combinações horizontais
+        if (CheckMatchHorizontal(x, y))
+        {
+            // Adiciona a peça atual
+            matchPieces.Add(pieces[x, y]);
 
-        List<Piece> verticalMatches = CheckMatchLine(x, y, 0, 1); // Vertical
-        if (verticalMatches.Count >= 3) matchPieces.AddRange(verticalMatches);
+            // Adiciona as peças à direita
+            for (int i = x + 1; i < width && pieces[i, y] != null && pieces[i, y].frutType == pieces[x, y].frutType; i++)
+            {
+                matchPieces.Add(pieces[i, y]);
+            }
+
+            // Adiciona as peças à esquerda
+            for (int i = x - 1; i >= 0 && pieces[i, y] != null && pieces[i, y].frutType == pieces[x, y].frutType; i--)
+            {
+                matchPieces.Add(pieces[i, y]);
+            }
+        }
+
+        // Checa combinações verticais
+        if (CheckMatchVertical(x, y))
+        {
+            // Adiciona a peça atual
+            matchPieces.Add(pieces[x, y]);
+
+            // Adiciona as peças acima
+            for (int i = y + 1; i < height && pieces[x, i] != null && pieces[x, i].frutType == pieces[x, y].frutType; i++)
+            {
+                matchPieces.Add(pieces[x, i]);
+            }
+
+            // Adiciona as peças abaixo
+            for (int i = y - 1; i >= 0 && pieces[x, i] != null && pieces[x, i].frutType == pieces[x, y].frutType; i--)
+            {
+                matchPieces.Add(pieces[x, i]);
+            }
+        }
 
         return matchPieces;
     }
+
 
     bool HasMatches()
     {
@@ -368,23 +383,41 @@ public class Board : MonoBehaviour
         }
         return false;
     }
+    void CreatePowerPiece(int x, int y, FrutType powerType)
+    {
+        GameObject powerPiece = Instantiate(piecePrefab[(int)powerType], new Vector3(x, y, 0), Quaternion.identity);
+        pieces[x, y] = powerPiece.GetComponent<Piece>();
+        pieces[x, y]?.Init(x, y, this);
+    }
+
+    void InstantiatePowerIfMatch(List<Piece> matchPieces)
+    {
+        if (matchPieces.Count >= 4)
+        {
+            Piece lastPiece = matchPieces[matchPieces.Count - 1];
+            FrutType powerType = matchPieces.Count == 4 ? FrutType.Roma :
+                                (matchPieces.Count == 5 ? FrutType.Cereja : FrutType.Framboesa);
+            CreatePowerPiece(lastPiece.x, lastPiece.y, powerType);
+        }
+    }
 
     List<Piece> CheckForMatches(out int totalDestroyed)
     {
         List<Piece> piecesToDestroy = new List<Piece>();
         totalDestroyed = 0;
+
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
                 if (pieces[x, y] == null) continue;
+
                 List<Piece> matchPieces = GetMatchPieces(x, y);
                 if (matchPieces.Count >= 3)
                 {
+                    InstantiatePowerIfMatch(matchPieces);
                     piecesToDestroy.AddRange(matchPieces);
                     totalDestroyed += matchPieces.Count;
-                    GameManager.instance.AddScore(10);
-                    audiopop.Play();
                 }
             }
         }
@@ -416,6 +449,17 @@ public class Board : MonoBehaviour
         GameManager.instance.UpdateGameOver("Vitória");
 
     }
+
+    public void DestroyPiece(int x, int y)
+    {
+        if (pieces[x, y] != null)
+        {
+            Instantiate(particle_popMagic, new Vector3(x, y), Quaternion.identity);
+            Destroy(pieces[x, y].gameObject);
+            pieces[x, y] = null;
+        }
+    }
+
 
     void MovePiece(Piece piece, Vector3 newPosition, float duration)
     {

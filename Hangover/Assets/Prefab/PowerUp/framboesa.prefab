@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5773364383260029266}
   - component: {fileID: 8845507781388867529}
   - component: {fileID: 5398887723690151322}
+  - component: {fileID: 2285242392773313128}
   m_Layer: 0
   m_Name: framboesa
   m_TagString: Untagged
@@ -73,7 +74,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 5
   m_Sprite: {fileID: 21300000, guid: d65671d6f45d1314d82374e34ad30edd, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -106,3 +107,21 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &2285242392773313128
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 766435143265915206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 937af50cd6729ce4ea992b2a131dabf4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  frutType: 9
+  x: 0
+  y: 0
+  board: {fileID: 0}
+  isInvisible: 0
+  audioSelect: {fileID: 0}

@@ -10,22 +10,12 @@ public class Piece : MonoBehaviour
     public Board board;
     public bool isInvisible;
     public AudioSource audioSelect;
-
-
     private Vector3 targetPosition;
-    private Vector3 targetScale;
     private float moveDuration;
-    private float scaleDuration;
-    private bool isScaling = false;
     private bool isMoving = false;
-    private Renderer pieceRenderer;
-    public void SetVisibility(bool isVisible)
-    {
-        if (pieceRenderer != null)
-        {
-            pieceRenderer.enabled = isVisible;
-        }
-    }
+    private Vector3 targetScale;
+    private bool isScaling = false;
+    private float scaleDuration;
     public void Init(int x, int y, Board board)
     {
         audioSelect = GetComponent<AudioSource>();
@@ -34,20 +24,8 @@ public class Piece : MonoBehaviour
         this.board = board;
     }
 
-
     void Update()
     {
-
-        if (MusicUI.instance.estadoDoSom)
-        {
-         audioSelect.enabled = false;
-        }
-
-        else
-        {
-            audioSelect.enabled = true;
-        }
-
         if (isMoving)
         {
             transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime / moveDuration);
@@ -57,17 +35,13 @@ public class Piece : MonoBehaviour
                 isMoving = false;
             }
         }
-        if (isScaling)
-        {
-            transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime / scaleDuration);
-            if (Vector3.Distance(transform.localScale, targetScale) < 0.01f)
-            {
-                transform.localScale = targetScale;
-                isScaling = false;
-            }
-        }
     }
-
+    public void StartScaleAnimation(Vector3 newScale, float duration)
+    {
+        targetScale = newScale;
+        scaleDuration = duration;
+        isScaling = true;
+    }
 
     void OnMouseDown()
     {
@@ -102,27 +76,69 @@ public class Piece : MonoBehaviour
         isMoving = false;
     }
 
-
-
-    public void StartScaleAnimation(Vector3 newScale, float duration)
+    public void ActivatePower()
     {
-        targetScale = newScale;
-        scaleDuration = duration;
-        isScaling = true;
+        switch (frutType)
+        {
+            case FrutType.Framboesa:
+                ExplodeHorizontal();
+                break;
+            case FrutType.Roma:
+                ExplodeVertical();
+                break;
+            case FrutType.Cereja:
+                ExplodeSquare();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void ExplodeHorizontal()
+    {
+        for (int i = 0; i < board.width; i++)
+        {
+            Piece piece = board.pieces[i, y];
+            
+        }
+    }
+
+    private void ExplodeVertical()
+    {
+        for (int j = 0; j < board.height; j++)
+        {
+            Piece piece = board.pieces[x, j];
+            
+        }
+    }
+
+    private void ExplodeSquare()
+    {
+        for (int i = x - 1; i <= x + 1; i++)
+        {
+            for (int j = y - 1; j <= y + 1; j++)
+            {
+                if (i >= 0 && i < board.width && j >= 0 && j < board.height)
+                {
+                    Piece piece = board.pieces[i, j];
+                }
+            }
+        }
     }
 }
+
 // Enumeração para os tipos de frutas disponíveis
 public enum FrutType
 {
+    Vazio,
+    Roma,      
+    Cereja,    
+    Framboesa, 
     Abacaxi,
     Banana,
     Manga,
     Maca,
     Melancia,
     Pinha,
-    Uva,
-    Roma,//poder
-    Cereja,//poder
-    Franboesa,//poder
-    Vazio
+    Uva
 }
