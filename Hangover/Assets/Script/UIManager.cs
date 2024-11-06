@@ -12,6 +12,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI gameoverText;
     [SerializeField] private Button buttonClose;
     [SerializeField] private GameObject menuPanel;
+    private GameManager gameManager;
 
     private StringBuilder _stringBuilder;
 
@@ -37,6 +38,7 @@ public class UIManager : MonoBehaviour
         menuPanel.SetActive(false);
         ResumeGame();
         GameManager.instance.LoadScene(sceneName);
+        GameManager.instance.StartJogadas();
     }
 
     public void QuitGame(string sceneName)
@@ -48,9 +50,13 @@ public class UIManager : MonoBehaviour
     {
         menuPanel.SetActive(isActive);
         if (isActive)
+        {
             PauseGame();
+        }
         else
+        {
             ResumeGame();
+        }
     }
 
     public void ShowGameOver(string textGameOver)

@@ -21,6 +21,10 @@ public class AmoraPiece : Piece
 
     public override void OnSwap(Piece targetPiece)
     {
+        if (MusicUI.instance.estadoDoSom)
+        {
+            somSelect.Play();
+        }
         base.OnSwap(targetPiece);
         gridManager.powerUpManager.ActivateAmora(this, targetPiece);
         gridManager.DestroyPiece(this); // Destruir a própria Amora após o uso
