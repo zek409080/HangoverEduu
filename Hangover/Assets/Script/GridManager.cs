@@ -15,6 +15,7 @@ public class GridManager : MonoBehaviour
     private UIManager uiManager;
     private MatchManager matchManager;
     public PowerUpManager powerUpManager;
+    private ObjectiveManager objectiveManager;
 
     private void Start()
     {
@@ -34,6 +35,12 @@ public class GridManager : MonoBehaviour
 
         GameManager.onScoreChanged += OnScoreChanged;
         GameManager.onJogadasChanged += OnJogadasChanged;
+        
+        objectiveManager = FindObjectOfType<ObjectiveManager>();
+        if (objectiveManager == null)
+        {
+            Debug.LogError("ObjectiveManager not found in the scene.");
+        }
     }
 
     private void OnDisable()
@@ -229,6 +236,10 @@ public class GridManager : MonoBehaviour
         {
             GameManager.AddScore(10);
             match.MarkForDestruction();
+
+            // Atualizar o ObjectiveManager
+            objectiveManager.AddScore(10);
+            objectiveManager.AddPieceCount(match.frutType);
         }
         yield return StartCoroutine(ClearAndFillBoard());
         GameManager.DecrementJogadas();

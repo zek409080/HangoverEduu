@@ -13,12 +13,48 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Button buttonClose;
     [SerializeField] private GameObject menuPanel;
     private GameManager gameManager;
+    [SerializeField] private TextMeshProUGUI objectivesText;
+    private ObjectiveManager objectiveManager;
+
 
     private StringBuilder _stringBuilder;
 
     private void Awake()
     {
         _stringBuilder = new StringBuilder();
+    }
+    
+    private void Start()
+    {
+        objectiveManager = FindObjectOfType<ObjectiveManager>();
+        if (objectiveManager != null)
+        {
+            objectiveManager.onObjectivesCompleted.AddListener(OnObjectivesCompleted);
+            UpdateObjectivesText();
+        }
+        else
+        {
+            Debug.LogError("ObjectiveManager not found in the scene.");
+        }
+    }
+
+    private void OnObjectivesCompleted()
+    {
+        // Lógica para quando os objetivos são completados, por exemplo, mostrar uma mensagem de vitória
+        ShowGameOver("Parabéns! Você completou todos os objetivos!");
+    }
+
+    private void UpdateObjectivesText()
+    {
+        // Atualize a interface do usuário para refletir os objetivos atuais
+        if (objectiveManager != null)
+        {
+            objectivesText.text = "";
+            foreach (var objective in objectiveManager.objectives)
+            {
+                objectivesText.text += $"Objetivo: {objective.type} - Alvo: {objective.targetValue}\n";
+            }
+        }
     }
 
     private void OnEnable()
