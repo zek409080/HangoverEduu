@@ -15,6 +15,7 @@ public class GridManager : MonoBehaviour
     public GameObject amoraPrefab;
     public Piece[,] grid;
     public GameObject destructionEffectPrefab;
+    public GameObject caixaDaFruta;
 
     [Header("Objetivo")]
     public FrutType targetFruitType;  // Tipo da fruta que é o objetivo
@@ -34,6 +35,7 @@ public class GridManager : MonoBehaviour
         InitializeGrid();
         CheckAndClearMatchesAtStart();
         uiManager = FindObjectOfType<UIManager>();
+        soundPop = GetComponent<AudioSource>();
 
         if (uiManager != null)
         {
@@ -82,6 +84,7 @@ public class GridManager : MonoBehaviour
             {
                 Piece newPiece = CreateNewPiece(x, y, true);
                 grid[x, y] = newPiece;
+                Instantiate(caixaDaFruta, new Vector2(x,y), Quaternion.identity);
             }
         }
     }
@@ -108,20 +111,6 @@ public class GridManager : MonoBehaviour
         return fruitPrefabs[Random.Range(0, fruitPrefabs.Length)];
     }
 
-
-
-    private IEnumerator ClearInitialMatches()
-    {
-        bool matchesFound;
-        do
-        {
-            matchesFound = FindAllMatches().Count > 0;
-            if (matchesFound)
-            {
-                yield return StartCoroutine(ClearAndFillBoard());
-            }
-        } while (matchesFound);
-    }
     private List<Piece> FindAllMatches()
     {
         List<Piece> piecesToClear = new List<Piece>();
@@ -149,15 +138,6 @@ public class GridManager : MonoBehaviour
     {
         objectiveText.text = $"{currentObjective}/{maxObjective}";
     }
-
-
-
-
-
-
-
-
-
     
     private void CheckAndClearMatchesAtStart()
     {
@@ -273,7 +253,10 @@ public class GridManager : MonoBehaviour
                 currentObjective++;
                 UpdateObjectiveText();
             }
-
+            if (MusicUI.instance.estadoDoSom)
+            {
+                soundPop.Play();
+            }
             GameManager.AddScore(10);
             DestroyPiece(piece);
         }

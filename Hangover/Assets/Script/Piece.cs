@@ -8,7 +8,7 @@ public class Piece : MonoBehaviour
     public int y;
     public bool isInvisible;
     public bool isMarkedForDestruction;
-
+    public AudioSource somSelect;
     public GridManager gridManager { get; private set; }
     private Renderer pieceRenderer;
     private PieceSwapper pieceSwapper;
@@ -28,6 +28,7 @@ public class Piece : MonoBehaviour
     {
         gridManager = FindObjectOfType<GridManager>();
         pieceSwapper = FindObjectOfType<PieceSwapper>();
+        AudioSource somSelect = GetComponent<AudioSource>();
 
         if (gridManager == null)
         {
@@ -106,10 +107,14 @@ public class Piece : MonoBehaviour
         }
     }
 
-    private void OnMouseUp()
+    private void OnMouseDown()
     {
         if (!isInvisible && gridManager != null)
         {
+            if (MusicUI.instance.estadoDoSom)
+            {
+                somSelect.Play();
+            }
             Debug.Log("Piece clicked for selection: " + name);
             pieceSwapper.SelectPiece(this);
         }

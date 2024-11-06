@@ -18,6 +18,10 @@ public class CerejaPiece : Piece
     {
         if (!isInvisible && gridManager != null)
         {
+            if (MusicUI.instance.estadoDoSom)
+            {
+                somSelect.Play();
+            }
             gridManager.ActivateCereja(this);  // Ativar PowerUp cereja ao clicar
             gridManager.DestroyPiece(this);    // Destruir a peça cereja após o uso
         }

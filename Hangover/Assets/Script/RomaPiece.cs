@@ -18,6 +18,10 @@ public class RomaPiece : Piece
     {
         if (!isInvisible && gridManager != null)
         {
+            if (MusicUI.instance.estadoDoSom)
+            {
+                somSelect.Play();
+            }
             gridManager.ActivateRoma(this);  // Ativar PowerUp roma ao clicar
             gridManager.DestroyPiece(this);  // Destruir a peça roma após o uso
         }
