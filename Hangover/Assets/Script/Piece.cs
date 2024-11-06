@@ -12,6 +12,8 @@ public class Piece : MonoBehaviour
     public GridManager gridManager { get; private set; }
     private Renderer pieceRenderer;
     private PieceSwapper pieceSwapper;
+    private float idleTime;
+    private float idleThreshold = 5.0f; 
 
     private Color originalColor;
     private static readonly Color selectedColor = Color.gray;
@@ -28,7 +30,7 @@ public class Piece : MonoBehaviour
     {
         gridManager = FindObjectOfType<GridManager>();
         pieceSwapper = FindObjectOfType<PieceSwapper>();
-        AudioSource somSelect = GetComponent<AudioSource>();
+        somSelect = GetComponent<AudioSource>(); // Corrigir aqui para não ter valor nulo
 
         if (gridManager == null)
         {
@@ -49,16 +51,57 @@ public class Piece : MonoBehaviour
 
     private void Update()
     {
-
-        if (MusicUI.instance.estadoDoSom)
+        if (MusicUI.instance != null)
         {
-            somSelect.enabled = true;
+            if (MusicUI.instance.estadoDoSom)
+            {
+                if (somSelect != null)
+                {
+                    somSelect.enabled = true;
+                }
+                else
+                {
+                    Debug.LogWarning("somSelect is null in Piece");
+                }
+            }
+            else
+            {
+                if (somSelect != null)
+                {
+                    somSelect.enabled = false;
+                }
+                else
+                {
+                    Debug.LogWarning("somSelect is null in Piece");
+                }
+            }
         }
-
         else
         {
-            somSelect.enabled = false;
+            Debug.LogWarning("MusicUI.instance is null in Piece");
         }
+        
+        // Monitorar tempo de inatividade
+        if (Input.anyKeyDown)
+        {
+            idleTime = 0;
+        }
+        else
+        {
+            idleTime += Time.deltaTime;
+        
+            if (idleTime >= idleThreshold)
+            {
+                // Provide hint to the player
+                ProvideHint();
+            }
+        }
+    }
+    
+    private void ProvideHint()
+    {
+        // Lógica para sugerir um movimento ao jogador
+        // Exemplo: destacar uma peça combinável
     }
 
     public virtual void Init(int x, int y, GridManager gridManager)
@@ -124,18 +167,17 @@ public class Piece : MonoBehaviour
     private void OnMouseDown()
     {
         if (!isInvisible && gridManager != null)
-        {   
+        {
             somSelect.Play();
             Debug.Log("Piece clicked for selection: " + name);
             pieceSwapper.SelectPiece(this);
         }
     }
-    
+
     public virtual void OnSwap(Piece targetPiece)
     {
         // Este método pode ser sobrescrito por peças específicas, como a Amora
     }
-    
 }
 
 public enum FrutType

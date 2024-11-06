@@ -20,6 +20,10 @@ public class PowerUpManager : MonoBehaviour
         if (cereja == null || cereja.isMarkedForDestruction) return;
         Debug.Log("Ativando PowerUp Cereja");
 
+        // Instanciar efeito de explosão
+        GameObject explosionEffect = Instantiate(destructionEffectPrefab, cereja.transform.position, Quaternion.identity);
+        Destroy(explosionEffect, 2.0f); // Destruir objeto de efeito após 2 segundos
+
         int explosionRadius = 2;
 
         for (int dx = -explosionRadius; dx <= explosionRadius; dx++)
@@ -48,19 +52,23 @@ public class PowerUpManager : MonoBehaviour
         if (roma == null || roma.isMarkedForDestruction) return;
         Debug.Log("Ativando PowerUp Roma");
 
+        // Instanciar efeito de foguete para a linha horizontal
         for (int x = 0; x < gridManager.width; x++)
         {
             if (gridManager.grid[x, roma.y] != null && !gridManager.grid[x, roma.y].isMarkedForDestruction)
             {
+                Instantiate(destructionEffectPrefab, gridManager.grid[x, roma.y].transform.position, Quaternion.identity);
                 gridManager.grid[x, roma.y].MarkForDestruction();
                 gridManager.grid[x, roma.y].AnimateDestruction();
             }
         }
 
+        // Instanciar efeito de foguete para a linha vertical
         for (int y = 0; y < gridManager.height; y++)
         {
             if (gridManager.grid[roma.x, y] != null && !gridManager.grid[roma.x, y].isMarkedForDestruction)
             {
+                Instantiate(destructionEffectPrefab, gridManager.grid[roma.x, y].transform.position, Quaternion.identity);
                 gridManager.grid[roma.x, y].MarkForDestruction();
                 gridManager.grid[roma.x, y].AnimateDestruction();
             }
@@ -78,6 +86,7 @@ public class PowerUpManager : MonoBehaviour
         {
             if (piece != null && piece.frutType == targetPiece.frutType && !piece.isMarkedForDestruction)
             {
+                Instantiate(destructionEffectPrefab, piece.transform.position, Quaternion.identity);
                 piece.MarkForDestruction();
                 piece.AnimateDestruction();
             }

@@ -10,18 +10,23 @@ public class AmoraPiece : Piece
 
     public override void AnimateDestruction()
     {
+        // Primeiro ativa o PowerUp Amora
+        gridManager.powerUpManager.ActivateAmora(this, null); // Nenhuma peça alvo necessária para a amora
         base.AnimateDestruction();
-        // Amora não é destruída imediatamente
     }
 
     void OnMouseDown()
     {
-        // Amora só ativada quando for trocada com outra peça
+        if (!isInvisible && gridManager != null)
+        {
+            gridManager.powerUpManager.ActivateAmora(this, null); // Nenhuma peça alvo necessária para a amora
+            gridManager.DestroyPiece(this);    // Destruir a peça amora após o uso
+        }
     }
 
     public override void OnSwap(Piece targetPiece)
     {
-        if (MusicUI.instance.estadoDoSom)
+        if (MusicUI.instance?.estadoDoSom == true)
         {
             somSelect.Play();
         }
