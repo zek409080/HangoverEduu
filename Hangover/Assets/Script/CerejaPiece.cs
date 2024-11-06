@@ -11,14 +11,14 @@ public class CerejaPiece : Piece
     public override void AnimateDestruction()
     {
         base.AnimateDestruction();
-        gridManager.ActivateCereja(this);
+        gridManager.powerUpManager.ActivateCereja(this);
     }
 
     void OnMouseDown()
     {
         if (!isInvisible && gridManager != null)
         {
-            gridManager.ActivateCereja(this);  // Ativar PowerUp cereja ao clicar
+            gridManager.powerUpManager.ActivateCereja(this);  // Ativar PowerUp cereja ao clicar
             gridManager.DestroyPiece(this);    // Destruir a peça cereja após o uso
         }
     }

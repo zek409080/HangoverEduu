@@ -22,7 +22,7 @@ public class AmoraPiece : Piece
     public override void OnSwap(Piece targetPiece)
     {
         base.OnSwap(targetPiece);
-        gridManager.ActivateAmora(this, targetPiece);
+        gridManager.powerUpManager.ActivateAmora(this, targetPiece);
         gridManager.DestroyPiece(this); // Destruir a própria Amora após o uso
     }
 }
