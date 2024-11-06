@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using TMPro;
+using Unity.VisualScripting;
 
 public class GridManager : MonoBehaviour
 {
@@ -28,7 +29,18 @@ public class GridManager : MonoBehaviour
 
     private UIManager uiManager;
 
+    private void Update()
+    {
+        if (MusicUI.instance.estadoDoSom)
+        {
+            soundPop.enabled = false;
+        }
 
+        else
+        {
+            soundPop.enabled = true;
+        }
+    }
     private void Start()
     {
         grid = new Piece[width, height];
