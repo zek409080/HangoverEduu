@@ -50,15 +50,6 @@ public class Piece : MonoBehaviour
     private void Update()
     {
 
-        if (MusicUI.instance.estadoDoSom)
-        {
-            somSelect.enabled = true;
-        }
-
-        else
-        {
-            somSelect.enabled = false;
-        }
     }
 
     public virtual void Init(int x, int y, GridManager gridManager)
@@ -125,7 +116,6 @@ public class Piece : MonoBehaviour
     {
         if (!isInvisible && gridManager != null)
         {   
-            somSelect.Play();
             Debug.Log("Piece clicked for selection: " + name);
             pieceSwapper.SelectPiece(this);
         }

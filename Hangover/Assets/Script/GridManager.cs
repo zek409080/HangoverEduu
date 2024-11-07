@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using TMPro;
-using Unity.VisualScripting;
 
 public class GridManager : MonoBehaviour
 {
@@ -31,6 +30,7 @@ public class GridManager : MonoBehaviour
 
     private void Update()
     {
+        Debug.Log(HasMatches());
         if (MusicUI.instance.estadoDoSom)
         {
             soundPop.enabled = false;
@@ -100,7 +100,26 @@ public class GridManager : MonoBehaviour
             }
         }
     }
+    public void ResetGrid()
+    {
+        // Remove todas as peças atuais
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if (grid[x, y] != null)
+                {
+                    Destroy(grid[x, y].gameObject);
+                    grid[x, y] = null;
+                }
+            }
+        }
 
+        // Reinicializa a grade
+        InitializeGrid();
+        CheckAndClearMatchesAtStart();
+        UpdateObjectiveText();
+    }
     private Piece CreateNewPiece(int x, int y, bool animateFromTop = false)
     {
         GameObject piecePrefab = GetRandomPiecePrefab();
@@ -204,7 +223,25 @@ public class GridManager : MonoBehaviour
         }
         return matchingPieces.Count > length;
     }
-
+    public bool HasMatches()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if (grid[x, y] != null)
+                {
+                    // Verifica por combinações de três ou mais peças horizontalmente e verticalmente
+                    if (CheckForMatchInDirection(grid[x, y], Vector2.right, 3) ||  // Horizontal
+                        CheckForMatchInDirection(grid[x, y], Vector2.up, 3))      // Vertical
+                    {
+                        return true;  // Encontrou um match
+                    }
+                }
+            }
+        }
+        return false;  // Nenhum match encontrado
+    }
     private List<Piece> GetAllMatchesForPiece(Piece piece)
     {
         List<Piece> horizontalMatches = GetMatches(piece, new Vector2(+1, 0)).ToList();
