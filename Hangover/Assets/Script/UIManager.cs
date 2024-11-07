@@ -33,12 +33,10 @@ public class UIManager : MonoBehaviour
         GameManager.onJogadasChanged -= UpdateJogadas;
     }
 
-    public void RestartGame(string sceneName)
+    public void RestartGame()
     {
-        menuPanel.SetActive(false);
         ResumeGame();
-        GameManager.instance.LoadScene(sceneName);
-        GameManager.instance.StartJogadas();
+        GameManager.instance.RestartGame();
     }
 
     public void QuitGame(string sceneName)
