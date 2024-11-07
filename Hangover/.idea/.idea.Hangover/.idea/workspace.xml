@@ -5,8 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8cd84c9d-24f4-49ac-af28-737b057b860e" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Hangover/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Hangover/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Fase 1.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Fase 1.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Menu.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Menu.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/selecaoDeFase.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/selecaoDeFase.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Script/AmoraPiece.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/AmoraPiece.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Script/GameManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/GameManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Script/GridManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/GridManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Script/MenuManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/MenuManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Script/ObjectiveManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/ObjectiveManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Script/Piece.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/Piece.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Script/PieceSwapper.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/PieceSwapper.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Script/PowerUpManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/PowerUpManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Script/UIManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/UIManager.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,6 +28,20 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
@@ -138,6 +163,7 @@
       <workItem from="1730524474081" duration="2899000" />
       <workItem from="1730555050434" duration="23240000" />
       <workItem from="1730688918515" duration="5191000" />
+      <workItem from="1730978067822" duration="11218000" />
     </task>
     <servers />
   </component>

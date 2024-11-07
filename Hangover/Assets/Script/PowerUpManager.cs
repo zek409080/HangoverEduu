@@ -22,7 +22,7 @@ public class PowerUpManager : MonoBehaviour
 
         // Instanciar efeito de explosão
         GameObject explosionEffect = Instantiate(destructionEffectPrefab, cereja.transform.position, Quaternion.identity);
-        Destroy(explosionEffect, 2.0f); // Destruir objeto de efeito após 2 segundos
+        Destroy(explosionEffect, 2.0f);
 
         int explosionRadius = 2;
 
@@ -52,7 +52,6 @@ public class PowerUpManager : MonoBehaviour
         if (roma == null || roma.isMarkedForDestruction) return;
         Debug.Log("Ativando PowerUp Roma");
 
-        // Instanciar efeito de foguete para a linha horizontal
         for (int x = 0; x < gridManager.width; x++)
         {
             if (gridManager.grid[x, roma.y] != null && !gridManager.grid[x, roma.y].isMarkedForDestruction)
@@ -63,7 +62,6 @@ public class PowerUpManager : MonoBehaviour
             }
         }
 
-        // Instanciar efeito de foguete para a linha vertical
         for (int y = 0; y < gridManager.height; y++)
         {
             if (gridManager.grid[roma.x, y] != null && !gridManager.grid[roma.x, y].isMarkedForDestruction)
@@ -93,10 +91,8 @@ public class PowerUpManager : MonoBehaviour
         }
 
         gridManager.DestroyPiece(amora);
-
-        StartCoroutine(gridManager.ResetMatching());
     }
-    
+
     private bool IsWithinBounds(int x, int y)
     {
         return x >= 0 && x < gridManager.width && y >= 0 && y < gridManager.height;
@@ -106,7 +102,6 @@ public class PowerUpManager : MonoBehaviour
     {
         if (piece == null || piece.isMarkedForDestruction) return;
 
-        // Define o tipo de power-up com base na contagem de peças na peça combinada
         float randomValue = Random.value;
 
         if (randomValue < 0.33f)

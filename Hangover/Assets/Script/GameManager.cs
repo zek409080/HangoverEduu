@@ -41,7 +41,7 @@ public class GameManager : MonoBehaviour
     
     private static int score = 0;
     private static int jogadas = 20;
-    
+
     private void Start()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -70,11 +70,11 @@ public class GameManager : MonoBehaviour
     {
         InitializeBase();
     }
-    
+
     public static void DecrementJogadas()
     {
         jogadas--;
-        onJogadasChanged?.Invoke(jogadas); // Usamos o operador null-condicional para invocar o evento se não for nulo
+        onJogadasChanged?.Invoke(jogadas);
         
         if (jogadas <= 0)
         {
@@ -84,7 +84,6 @@ public class GameManager : MonoBehaviour
     
     private static void TriggerGameOver()
     {
-        // Lógica para Game Over
         UIManager uiManager = FindObjectOfType<UIManager>();
         if (uiManager != null)
         {
@@ -115,7 +114,6 @@ public class GameManager : MonoBehaviour
         else if (sceneName == "selecaoDeFase")
         {
             BindButton("Return_button", () => LoadScene("Menu"));
-            DisplayHighScores();
         }
         else if (sceneName == "Jogo")
         {
@@ -205,7 +203,7 @@ public class GameManager : MonoBehaviour
             yield break;
         }
 
-        faderCanvasGroup.blocksRaycasts = true; // Já que o fade pode estar ainda sendo usado para nova tela.
+        faderCanvasGroup.blocksRaycasts = true;
 
         float elapsedTime = 0f;
 
@@ -245,39 +243,18 @@ public class GameManager : MonoBehaviour
     public void CompleteLevel()
     {
         string sceneName = SceneManager.GetActiveScene().name;
-        int highScore = PlayerPrefs.GetInt(sceneName + "_highscore", 0);
 
-        // Verifica se a pontuação atual é maior que a maior pontuação salva
-        if (score > highScore)
-        {
-            PlayerPrefs.SetInt(sceneName + "_highscore", score);
-        }
+        // Armzenar High Score
+        HighScoresManager.instance.SetHighScore(sceneName, score);
         
         LoadScene("selecaoDeFase");
-    }
-
-    private void DisplayHighScores()
-    {
-        // Encontra todos os botões de fase e exibe a maior pontuação
-        foreach (Button button in FindObjectsOfType<Button>())
-        {
-            string sceneName = button.name; // O nome do botão deve corresponder ao nome da cena
-            int highScore = PlayerPrefs.GetInt(sceneName + "_highscore", 0);
-
-            Text scoreText = button.gameObject.GetComponentInChildren<Text>();
-            if (scoreText != null)
-            {
-                scoreText.text = "High Score: " + highScore;
-            }
-        }
     }
 
     public static void AddScore(int points)
     {
         score += points;
-        onScoreChanged?.Invoke(score); // Usamos o operador null-condicional para invocar o evento se não for nulo
+        onScoreChanged?.Invoke(score);
 
-        // Atualiza a interface com a nova pontuação
         if (GameObject.Find("ScoreText") != null)
         {
             GameObject.Find("ScoreText").GetComponent<Text>().text = "Score: " + score;

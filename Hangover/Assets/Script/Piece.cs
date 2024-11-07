@@ -13,7 +13,7 @@ public class Piece : MonoBehaviour
     private Renderer pieceRenderer;
     private PieceSwapper pieceSwapper;
     private float idleTime;
-    private float idleThreshold = 5.0f; 
+    private float idleThreshold = 5.0f;
 
     private Color originalColor;
     private static readonly Color selectedColor = Color.gray;
@@ -30,7 +30,7 @@ public class Piece : MonoBehaviour
     {
         gridManager = FindObjectOfType<GridManager>();
         pieceSwapper = FindObjectOfType<PieceSwapper>();
-        somSelect = GetComponent<AudioSource>(); // Corrigir aqui para não ter valor nulo
+        somSelect = GetComponent<AudioSource>();
 
         if (gridManager == null)
         {
@@ -42,7 +42,6 @@ public class Piece : MonoBehaviour
             Debug.LogError("PieceSwapper not found in the scene. Please ensure there is a PieceSwapper object in the scene.");
         }
 
-        // Save the original color of the piece
         if (pieceRenderer != null)
         {
             originalColor = pieceRenderer.material.color;
@@ -76,32 +75,11 @@ public class Piece : MonoBehaviour
                 }
             }
         }
-        else
-        {
-            Debug.LogWarning("MusicUI.instance is null in Piece");
-        }
-        
-        // Monitorar tempo de inatividade
-        if (Input.anyKeyDown)
-        {
-            idleTime = 0;
-        }
-        else
-        {
-            idleTime += Time.deltaTime;
-        
-            if (idleTime >= idleThreshold)
-            {
-                // Provide hint to the player
-                ProvideHint();
-            }
-        }
     }
-    
+
     private void ProvideHint()
     {
         // Lógica para sugerir um movimento ao jogador
-        // Exemplo: destacar uma peça combinável
     }
 
     public virtual void Init(int x, int y, GridManager gridManager)
@@ -146,7 +124,7 @@ public class Piece : MonoBehaviour
     {
         if (isMarkedForDestruction)
         {
-            gridManager.grid[x, y] = null; // Remova a referência antes da destruição
+            gridManager.grid[x, y] = null;
 
             transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBack).OnComplete(() =>
             {
@@ -176,7 +154,7 @@ public class Piece : MonoBehaviour
 
     public virtual void OnSwap(Piece targetPiece)
     {
-        // Este método pode ser sobrescrito por peças específicas, como a Amora
+        // Método virtual para ser sobrescrito por subclasses específicas
     }
 }
 
@@ -192,7 +170,7 @@ public enum FrutType
     Poder,
     Obstacle,
     Vazio,
-    Cereja, // Power-up que explode
-    Roma, // Power-up de foguetes
-    Amora // poder de estourar peças
+    Cereja,
+    Roma,
+    Amora
 }

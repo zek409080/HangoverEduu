@@ -21,18 +21,19 @@ public class GridManager : MonoBehaviour
     {
         grid = new Piece[width, height];
         InitializeGrid();
+        
         matchManager = GetComponent<MatchManager>();
-        powerUpManager = GetComponent<PowerUpManager>(); // Certifique-se de que esta linha inicializa o PowerUpManager corretamente
+        powerUpManager = GetComponent<PowerUpManager>();
 
         matchManager.CheckAndClearMatchesAtStart();
+        
         uiManager = FindObjectOfType<UIManager>();
-
         if (uiManager != null)
         {
             uiManager.UpdateJogadas(GameManager.GetJogadas());
             uiManager.UpdateScore(GameManager.GetScore());
         }
-
+        
         GameManager.onScoreChanged += OnScoreChanged;
         GameManager.onJogadasChanged += OnJogadasChanged;
         
@@ -51,18 +52,12 @@ public class GridManager : MonoBehaviour
 
     private void OnScoreChanged(int newScore)
     {
-        if (uiManager != null)
-        {
-            uiManager.UpdateScore(newScore);
-        }
+        uiManager?.UpdateScore(newScore);
     }
 
     private void OnJogadasChanged(int newJogadas)
     {
-        if (uiManager != null)
-        {
-            uiManager.UpdateJogadas(newJogadas);
-        }
+        uiManager?.UpdateJogadas(newJogadas);
     }
 
     private void InitializeGrid()
@@ -236,8 +231,7 @@ public class GridManager : MonoBehaviour
         {
             GameManager.AddScore(10);
             match.MarkForDestruction();
-
-            // Atualizar o ObjectiveManager
+            
             objectiveManager.AddScore(10);
             objectiveManager.AddPieceCount(match.frutType);
         }

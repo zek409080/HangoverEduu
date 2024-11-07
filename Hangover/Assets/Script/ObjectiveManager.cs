@@ -1,4 +1,4 @@
-using System.Collections.Generic; // Certifique-se de incluir isto
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -16,19 +16,20 @@ public class ObjectiveManager : MonoBehaviour
     {
         public ObjectiveType type;
         public int targetValue;
-        public FrutType targetPiece; // Use para o objetivo de contagem de peças
-        public bool isCompleted; // Adiciona um campo para marcar objetivos como completos
+        public FrutType targetPiece; // Usado para o objetivo de contagem de peças
+        public bool isCompleted; // Campo para marcar objetivos como completos
     }
 
     public Objective[] objectives;
     private int currentScore;
-    private Dictionary<FrutType, int> pieceCounts;
+    public Dictionary<FrutType, int> pieceCounts;
 
     public UnityEvent onObjectivesCompleted;
 
     // Mapa de imagens para cada tipo de fruta
     public Dictionary<FrutType, Sprite> fruitSprites = new Dictionary<FrutType, Sprite>();
     public Image fruitImage; // Referência ao componente Image na UI
+    public Text piecesLeftText; // Referência ao componente Text na UI
 
     private void Start()
     {
@@ -39,6 +40,14 @@ public class ObjectiveManager : MonoBehaviour
         {
             pieceCounts[frutType] = 0;
         }
+
+        if (fruitSprites == null)
+        {
+            fruitSprites = new Dictionary<FrutType, Sprite>();
+        }
+
+        // Atualiza a imagem da UI e o texto para o primeiro objetivo que precisa ser completado
+        UpdateUIForNextObjective();
     }
 
     public void AddScore(int score)
@@ -53,7 +62,7 @@ public class ObjectiveManager : MonoBehaviour
         {
             pieceCounts[frutType]++;
             CheckObjectives();
-            UpdateFruitImage(frutType);
+            UpdateUIForNextObjective();
         }
     }
 
@@ -73,6 +82,10 @@ public class ObjectiveManager : MonoBehaviour
                 }
             }
         }
+
+        // Atualiza a imagem da UI e notifica o UIManager depois de verificar os objetivos
+        UpdateUIForNextObjective();
+        FindObjectOfType<UIManager>()?.UpdateObjectivesText();
     }
 
     private void OnObjectiveCompleted(Objective objective)
@@ -80,7 +93,6 @@ public class ObjectiveManager : MonoBehaviour
         objective.isCompleted = true;
         Debug.Log($"Objetivo completado! Tipo: {objective.type}, Valor Alvo: {objective.targetValue}");
 
-        // Checar se todos os objetivos foram completados
         if (AllObjectivesCompleted())
         {
             onObjectivesCompleted.Invoke();
@@ -99,11 +111,32 @@ public class ObjectiveManager : MonoBehaviour
         return true;
     }
 
-    private void UpdateFruitImage(FrutType frutType)
+    public void UpdateFruitImage(FrutType frutType)
     {
         if (fruitSprites.ContainsKey(frutType) && fruitImage != null)
         {
             fruitImage.sprite = fruitSprites[frutType];
+        }
+    }
+
+    private void UpdateUIForNextObjective()
+    {
+        foreach (var objective in objectives)
+        {
+            if (!objective.isCompleted && objective.type == ObjectiveType.PieceCount)
+            {
+                UpdateFruitImage(objective.targetPiece);
+                UpdatePiecesLeftText(objective.targetPiece, objective.targetValue - pieceCounts[objective.targetPiece]);
+                break;
+            }
+        }
+    }
+
+    private void UpdatePiecesLeftText(FrutType frutType, int piecesLeft)
+    {
+        if (piecesLeftText != null)
+        {
+            piecesLeftText.text = $"Faltam {piecesLeft} peças de {frutType}";
         }
     }
 }
