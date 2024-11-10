@@ -38,16 +38,6 @@ public class Piece : MonoBehaviour
     void Update()
     {
 
-        if (MusicUI.instance.estadoDoSom)
-        {
-         audioSelect.enabled = false;
-        }
-
-        else
-        {
-            audioSelect.enabled = true;
-        }
-
         if (isMoving)
         {
             transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime / moveDuration);
@@ -73,7 +63,10 @@ public class Piece : MonoBehaviour
     {
         if (!isInvisible && frutType != FrutType.Vazio)
         {
-            audioSelect.Play();
+            if (MusicUI.instance.estadoDoSom)
+            {
+                audioSelect.Play();
+            }
             board.SelectPiece(this);
         }
     }
@@ -121,8 +114,11 @@ public enum FrutType
     Melancia,
     Pinha,
     Uva,
+    Vazio
+}
+public enum PowerUpType
+{
     Roma,//poder
     Cereja,//poder
-    Franboesa,//poder
-    Vazio
+    Franboesa //poder
 }

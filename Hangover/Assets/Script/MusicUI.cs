@@ -68,6 +68,7 @@ public class MusicUI : MonoBehaviour
 
         if (musicContainer != null && musicContainer.activeSelf && music == null)
         {
+            Debug.Log("musicOn recebe o gameobjet find");
             GameObject musicOn = GameObject.Find("MusicOn");
             if (musicOn != null)
             {
@@ -89,6 +90,7 @@ public class MusicUI : MonoBehaviour
 
         if (somContainer != null && somContainer.activeSelf && som == null)
         {
+            Debug.Log("SoundOn recebe o gameobjet find");
             GameObject somOn = GameObject.Find("SoundOn");
             if (somOn != null)
             {

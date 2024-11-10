@@ -12,6 +12,7 @@ public class Board : MonoBehaviour
     private binaryArrayBoard binaryArray;
     [SerializeField] int jogadas;
     public GameObject[] piecePrefab;
+    public GameObject[] powerUpPrefab;
     public Piece[,] pieces;
     private Piece selectedPiece;
     private bool canSwap = true;
@@ -48,15 +49,6 @@ public class Board : MonoBehaviour
 
     private void Update()
     {
-        if (MusicUI.instance.estadoDoSom)    
-        {
-          audiopop.enabled = false;
-        }
-        else
-        {
-            audiopop.enabled = true;
-        }
-
         if (GameManager.instance.jogadas == 0)
         {
             //checar se foi completado o objetivo 
@@ -91,7 +83,6 @@ public class Board : MonoBehaviour
                 }
             }
         }
-        CheckForMatches(out _);
         List<Piece> piecesDestroyed = CheckForMatches(out _);
         CheckObjective(piecesDestroyed);
     }
@@ -244,7 +235,7 @@ public class Board : MonoBehaviour
             piece2.StartMoveAnimation(tempPosition, 0.1f);
         }
 
-        List<Piece> piecesDestroyed = CheckForMatches(out int totalDestroyed);
+        List<Piece> piecesDestroyed = CheckForMatches(out _);
         CheckObjective(piecesDestroyed);
     }
 
@@ -256,7 +247,9 @@ public class Board : MonoBehaviour
     {
         yield return new WaitForSeconds(0.5f);
 
+        bool boardRefilled = false;
         bool[] initialBools = binaryArray.GetInitialBools();
+
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -272,6 +265,7 @@ public class Board : MonoBehaviour
                             pieces[x, k].Init(x, y, this);
                             pieces[x, y] = pieces[x, k];
                             pieces[x, k] = null;
+                            boardRefilled = true;
                             break;
                         }
                     }
@@ -290,16 +284,19 @@ public class Board : MonoBehaviour
                     pieces[x, y] = newPiece.GetComponent<Piece>();
                     pieces[x, y]?.Init(x, y, this);
                     pieces[x, y].StartMoveAnimation(new Vector3(x, y, 0), 0.3f);
+                    boardRefilled = true;
                 }
             }
         }
 
-        yield return new WaitForSeconds(0.3f); // Aguarda as animações
-
-        CheckForMatches(out _);
-        List<Piece> piecesDestroyed = CheckForMatches(out int totalDestroyed);
-        CheckObjective(piecesDestroyed);
+        if (boardRefilled)
+        {
+            yield return new WaitForSeconds(0.3f); // Aguarda animações
+            List<Piece> piecesDestroyed = CheckForMatches(out int totalDestroyed);
+            CheckObjective(piecesDestroyed);
+        }
     }
+
 
     bool CheckMatchHorizontal(int x, int y)
     {
@@ -384,7 +381,10 @@ public class Board : MonoBehaviour
                     piecesToDestroy.AddRange(matchPieces);
                     totalDestroyed += matchPieces.Count;
                     GameManager.instance.AddScore(10);
-                    audiopop.Play();
+                    if (MusicUI.instance.estadoDoSom)
+                    {
+                        audiopop.Play();
+                    }
                 }
             }
         }
@@ -422,4 +422,3 @@ public class Board : MonoBehaviour
         piece?.StartMoveAnimation(newPosition, duration);
     }
 }
-
