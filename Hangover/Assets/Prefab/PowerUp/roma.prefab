@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 1901382555868215831}
   - component: {fileID: 2607747091441604721}
   - component: {fileID: 6452555479607855181}
+  - component: {fileID: -4018293624390237762}
+  - component: {fileID: -2793790336043987584}
   m_Layer: 0
   m_Name: roma
   m_TagString: Untagged
@@ -106,3 +108,33 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-4018293624390237762
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9066069773785717412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3aedc56ca1c1d7d4a90c24fb7a9079b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-2793790336043987584
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9066069773785717412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 937af50cd6729ce4ea992b2a131dabf4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  frutType: 7
+  x: 0
+  y: 0
+  board: {fileID: 0}
+  isInvisible: 0
+  audioSelect: {fileID: 0}

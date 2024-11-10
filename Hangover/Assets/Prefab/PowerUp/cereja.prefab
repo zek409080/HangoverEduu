@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 4718007753728960996}
   - component: {fileID: 6115558308110702477}
   - component: {fileID: 2611918207496865503}
+  - component: {fileID: 1796363545829121423}
+  - component: {fileID: 1121574550025084314}
   m_Layer: 0
   m_Name: cereja
   m_TagString: Untagged
@@ -106,3 +108,33 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1796363545829121423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 371608522373280429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc481b9a70ddec5418f1e0d86f3ff41b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1121574550025084314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 371608522373280429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 937af50cd6729ce4ea992b2a131dabf4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  frutType: 8
+  x: 0
+  y: 0
+  board: {fileID: 0}
+  isInvisible: 0
+  audioSelect: {fileID: 0}

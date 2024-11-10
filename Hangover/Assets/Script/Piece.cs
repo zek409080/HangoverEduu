@@ -114,11 +114,8 @@ public enum FrutType
     Melancia,
     Pinha,
     Uva,
-    Vazio
-}
-public enum PowerUpType
-{
     Roma,//poder
     Cereja,//poder
-    Franboesa //poder
+    Franboesa, //poder
+    Vazio
 }
