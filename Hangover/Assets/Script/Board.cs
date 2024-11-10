@@ -376,18 +376,27 @@ public class Board : MonoBehaviour
             {
                 if (pieces[x, y] == null) continue;
                 List<Piece> matchPieces = GetMatchPieces(x, y);
+
                 if (matchPieces.Count >= 3)
                 {
                     piecesToDestroy.AddRange(matchPieces);
                     totalDestroyed += matchPieces.Count;
                     GameManager.instance.AddScore(10);
+
                     if (MusicUI.instance.estadoDoSom)
                     {
                         audiopop.Play();
                     }
+
+                    // Instancia um power-up se o match for de 4 ou mais peças
+                    if (matchPieces.Count >= 4)
+                    {
+                        InstantiateRandomPowerUp(x, y);
+                    }
                 }
             }
         }
+
         foreach (Piece piece in piecesToDestroy)
         {
             if (piece != null && piece.gameObject != null)
@@ -397,10 +406,10 @@ public class Board : MonoBehaviour
                 {
                     Instantiate(particle_popMagic, new Vector3(piece.x, piece.y), Quaternion.identity);
                 }
-                // Cancela os Tweens associados ao objeto antes de destruí-lo
                 Destroy(piece.gameObject);
             }
         }
+
         StartCoroutine(RefillBoard());
         return piecesToDestroy;
     }
@@ -498,6 +507,23 @@ public class Board : MonoBehaviour
         }
 
         Destroy(cereja.gameObject);
+    }
+    void InstantiateRandomPowerUp(int x, int y)
+    {
+        // Seleciona um power-up aleatório
+        GameObject powerUp = powerUpPrefab[Random.Range(0, powerUpPrefab.Length)];
+
+        // Define uma posição próxima ao match para o power-up
+        Vector3 spawnPosition = new Vector3(x + Random.Range(-1, 2), y + Random.Range(-1, 2), 0);
+
+        // Garante que a posição está dentro dos limites do tabuleiro e não sobreponha outra peça
+        while (!IsWithinBounds((int)spawnPosition.x, (int)spawnPosition.y) || pieces[(int)spawnPosition.x, (int)spawnPosition.y] != null)
+        {
+            spawnPosition = new Vector3(x + Random.Range(-1, 2), y + Random.Range(-1, 2), 0);
+        }
+
+        // Instancia o power-up na posição definida
+        Instantiate(powerUp, spawnPosition, Quaternion.identity);
     }
 
     bool IsWithinBounds(int x, int y)
