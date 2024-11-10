@@ -4,15 +4,19 @@ using UnityEngine;
 
 public class PieceFranboesa : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    private Board board;
+    private void Start()
     {
-        
+        board = GameObject.Find("GridManager").GetComponent<Board>();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnMouseDown()
     {
-        
+        // Chama o power-up passando a peça atual como amora e uma peça alvo (por exemplo, outra selecionada).
+        Piece targetPiece = board.selectedPiece; // Supondo que há um método para obter a peça selecionada.
+        if (targetPiece != null)
+        {
+            board.ActivateFranboesa(GetComponent<Piece>(), targetPiece);
+        }
     }
 }

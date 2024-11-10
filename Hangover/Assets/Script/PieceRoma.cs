@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class PieceRoma : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    private Board board;
+    private void Start()
     {
-        
+        board = GameObject.Find("GridManager").GetComponent<Board>();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnMouseDown()
     {
-        
+        // Chama o power-up Roma passando a própria peça como parâmetro.
+        board.ActivateRoma(GetComponent<Piece>());
     }
 }

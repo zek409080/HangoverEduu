@@ -14,7 +14,7 @@ public class Board : MonoBehaviour
     public GameObject[] piecePrefab;
     public GameObject[] powerUpPrefab;
     public Piece[,] pieces;
-    private Piece selectedPiece;
+    public Piece selectedPiece;
     private bool canSwap = true;
     public Transform cam;
 
@@ -421,4 +421,88 @@ public class Board : MonoBehaviour
     {
         piece?.StartMoveAnimation(newPosition, duration);
     }
+
+
+
+
+
+    public void ActivateFranboesa(Piece amora, Piece targetPiece)
+    {
+        if (amora == null || targetPiece == null) return;
+        Debug.Log("Ativando PowerUp Amora");
+
+        foreach (Piece piece in pieces)
+        {
+            if (piece != null && piece.frutType == targetPiece.frutType)
+            {
+                Instantiate(particle_popMagic, piece.transform.position, Quaternion.identity);
+                Destroy(piece.gameObject);
+            }
+        }
+        Destroy(amora.gameObject);
+    }
+
+    // Power-up que destrói peças em formato de +
+    public void ActivateRoma(Piece roma)
+    {
+        if (roma == null) return;
+        Debug.Log("Ativando PowerUp Roma");
+
+        // Destruição na linha horizontal
+        for (int x = 0; x < width; x++)
+        {
+            if (pieces[x, roma.y] != null)
+            {
+                Instantiate(particle_popMagic, pieces[x, roma.y].transform.position, Quaternion.identity);
+                Destroy(pieces[x, roma.y].gameObject);
+                pieces[x, roma.y] = null;
+            }
+        }
+
+        // Destruição na linha vertical
+        for (int y = 0; y < height; y++)
+        {
+            if (pieces[roma.x, y] != null)
+            {
+                Instantiate(particle_popMagic, pieces[roma.x, y].transform.position, Quaternion.identity);
+                Destroy(pieces[roma.x, y].gameObject);
+                pieces[roma.x, y] = null;
+            }
+        }
+
+        Destroy(roma.gameObject);
+    }
+
+    // Power-up que explode uma área de 3x3
+    public void ActivateCereja(Piece cereja)
+    {
+        if (cereja == null) return;
+        Debug.Log("Ativando PowerUp Cereja");
+
+        int explosionRadius = 1; // 1 para 3x3
+
+        for (int dx = -explosionRadius; dx <= explosionRadius; dx++)
+        {
+            for (int dy = -explosionRadius; dy <= explosionRadius; dy++)
+            {
+                int newX = cereja.x + dx;
+                int newY = cereja.y + dy;
+
+                if (IsWithinBounds(newX, newY) && pieces[newX, newY] != null)
+                {
+                    Instantiate(particle_popMagic, pieces[newX, newY].transform.position, Quaternion.identity);
+                    Destroy(pieces[newX, newY].gameObject);
+                    pieces[newX, newY] = null;
+                }
+            }
+        }
+
+        Destroy(cereja.gameObject);
+    }
+
+    bool IsWithinBounds(int x, int y)
+    {
+        return x >= 0 && x < width && y >= 0 && y < height;
+    }
+
 }

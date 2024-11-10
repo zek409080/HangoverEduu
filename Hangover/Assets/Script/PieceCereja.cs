@@ -4,15 +4,14 @@ using UnityEngine;
 
 public class PieceCereja : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    private Board board;
+    private void Start()
     {
-        
+        board = GameObject.Find("GridManager").GetComponent<Board>();
     }
-
-    // Update is called once per frame
-    void Update()
+    private void OnMouseDown()
     {
-        
+        // Chama o power-up Cereja passando a própria peça como parâmetro.
+        board.ActivateCereja(GetComponent<Piece>());
     }
 }
