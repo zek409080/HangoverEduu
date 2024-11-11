@@ -2,13 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PieceCereja : MonoBehaviour
+public class PieceCereja : Piece
 {
-    private Board board;
-    private void Start()
+    public override void Init(int x, int y, Board gridManager)
     {
-        board = GameObject.Find("GridManager").GetComponent<Board>();
+        base.Init(x, y, gridManager);
+        frutType = FrutType.Cereja;
     }
+
     private void OnMouseDown()
     {
         // Chama o power-up Cereja passando a própria peça como parâmetro.

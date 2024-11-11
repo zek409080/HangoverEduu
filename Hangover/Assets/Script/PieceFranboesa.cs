@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PieceFranboesa : MonoBehaviour
+public class PieceFranboesa : Piece
 {
     private Board board;
     private void Start()
