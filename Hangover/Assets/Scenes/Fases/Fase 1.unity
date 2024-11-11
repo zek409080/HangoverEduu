@@ -593,7 +593,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -402.27, y: 0.0000071526}
+  m_AnchoredPosition: {x: -381, y: 8}
   m_SizeDelta: {x: 158.1558, y: 158.1558}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &634206656
@@ -1222,8 +1222,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectives:
   - type: 0
-    targetValue: 10
-    targetPiece: 3
+    targetValue: 30
+    targetPiece: 4
     isCompleted: 0
   onObjectivesCompleted:
     m_PersistentCalls:
@@ -1958,6 +1958,7 @@ MonoBehaviour:
   gameoverText: {fileID: 1330868309}
   victoryText: {fileID: 1330868309}
   buttonClose: {fileID: 1181572643}
+  restartButton: {fileID: 1593200418}
   menuPanel: {fileID: 1975821874}
   victoryPanel: {fileID: 813969845}
   objectivesText: {fileID: 1996214912}
@@ -3044,19 +3045,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1593200419}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1209041557}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: RestartGame
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: Fase 1
-          m_BoolArgument: 0
-        m_CallState: 1
+      m_Calls: []
 --- !u!114 &1593200419
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3619,8 +3608,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Objective
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 1cd46ef56448e584b93d3a2788abf8de, type: 2}
-  m_sharedMaterial: {fileID: -8185626443317836725, guid: 1cd46ef56448e584b93d3a2788abf8de, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3680,7 +3669,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 190.45291, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -3710,8 +3699,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -3.6054077, y: 4}
-  m_SizeDelta: {x: 639.17, y: 159.7935}
+  m_AnchoredPosition: {x: -96, y: 14}
+  m_SizeDelta: {x: 1080.061, y: 159.7935}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2064382319
 GameObject:
@@ -4119,7 +4108,6 @@ MonoBehaviour:
   - {fileID: 6874434505175374339, guid: 48f4979ab729d1440b4d083e886c57ad, type: 3}
   - {fileID: 3612017322786362154, guid: a87420bb18f88f0418b1b9e9962e1b44, type: 3}
   - {fileID: 6319861555613119749, guid: 256254138fe544c43a21812514f9b104, type: 3}
-  - {fileID: 5018873714049314917, guid: 70931bad00c870d4b90dd5d3d3de209a, type: 3}
   destructionEffectPrefab: {fileID: 5653956943498294196, guid: d741206eb23cda94fb1dc6acffbfa15c, type: 3}
   powerUpManager: {fileID: 0}
 --- !u!114 &4153749581167662288

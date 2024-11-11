@@ -166,4 +166,14 @@ public class ObjectiveManager : MonoBehaviour
         // Atualizar a UI para refletir o estado reiniciado
         UpdateUIForNextObjective();
     }
+    
+    public int GetPieceCount(FrutType frutType)
+    {
+        if (pieceCounts.ContainsKey(frutType))
+        {
+            return pieceCounts[frutType];
+        }
+        return 0;
+    }
+    
 }

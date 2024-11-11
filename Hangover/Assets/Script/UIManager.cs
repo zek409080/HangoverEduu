@@ -7,22 +7,22 @@ using System.Text;
 
 public class UIManager : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI scoreText; // Para exibir o score durante o jogo
+    [SerializeField] private TextMeshProUGUI scoreText; 
     [SerializeField] private TextMeshProUGUI jogadasText;
-    [SerializeField] private TextMeshProUGUI highScoreText; // Para exibir o high score durante o jogo
-    [SerializeField] private TextMeshProUGUI finalScoreText; // Para exibir o score final no painel de vitória
-    [SerializeField] private TextMeshProUGUI finalHighScoreText; // Para exibir o high score final no painel de vitória
-    [SerializeField] private TextMeshProUGUI gameoverText; // Para exibir mensagem de game over
-    [SerializeField] private TextMeshProUGUI victoryText; // Para exibir mensagem de vitória
+    [SerializeField] private TextMeshProUGUI highScoreText; 
+    [SerializeField] private TextMeshProUGUI finalScoreText; 
+    [SerializeField] private TextMeshProUGUI finalHighScoreText; 
+    [SerializeField] private TextMeshProUGUI gameoverText; 
+    [SerializeField] private TextMeshProUGUI victoryText;
     [SerializeField] private Button buttonClose;
-    [SerializeField] private GameObject menuPanel; // Painel para menu/pause
-    [SerializeField] private GameObject victoryPanel; // Painel para vitória
-    private GameManager gameManager;
+    [SerializeField] private Button restartButton; // Adicionando referência ao botão de reinício
+    [SerializeField] private GameObject menuPanel; 
+    [SerializeField] private GameObject victoryPanel;
     [SerializeField] private TextMeshProUGUI objectivesText;
-    private ObjectiveManager objectiveManager;
     [SerializeField] private GameObject objectiveCompletedPopup;
     [SerializeField] private TextMeshProUGUI objectiveCompletedText;
-
+    private GameManager gameManager;
+    private ObjectiveManager objectiveManager;
     private StringBuilder _stringBuilder;
 
     private void Awake()
@@ -30,6 +30,11 @@ public class UIManager : MonoBehaviour
         _stringBuilder = new StringBuilder();
         menuPanel.SetActive(false);
         victoryPanel.SetActive(false);
+        
+        if (restartButton != null)
+        {
+            restartButton.onClick.AddListener(RestartLevel);
+        }
     }
 
     private void Start()
@@ -51,17 +56,30 @@ public class UIManager : MonoBehaviour
         // Podemos adicionar alguma lógica adicional se necessário
     }
 
+    private void RestartLevel()
+    {
+        GameManager.instance.RestartCurrentLevel();
+    }
+    
     public void UpdateObjectivesText()
     {
         if (objectiveManager != null)
         {
-            List<string> objectivesStatus = new List<string>();
+            _stringBuilder.Clear();
             foreach (var objective in objectiveManager.objectives)
             {
-                string status = objective.isCompleted ? "Completo" : "Em Progresso";
-                objectivesStatus.Add($"{objective.type}: {objective.targetValue} ({status})");
+                string status = "";
+                if (objective.type == ObjectiveManager.ObjectiveType.Score)
+                {
+                    status = $"{GameManager.GetScore()}/{objective.targetValue}";
+                }
+                else if (objective.type == ObjectiveManager.ObjectiveType.PieceCount)
+                {
+                    status = $"{objectiveManager.GetPieceCount(objective.targetPiece)}/{objective.targetValue}";
+                }
+                _stringBuilder.AppendLine($"{objective.type}: {status} {(objective.isCompleted ? "(Completo)" : "")}");
             }
-            objectivesText.text = string.Join("\n", objectivesStatus);
+            objectivesText.text = _stringBuilder.ToString();
         }
     }
 
@@ -123,8 +141,8 @@ public class UIManager : MonoBehaviour
     public void ShowGameOver(string textGameOver)
     {
         gameoverText.text = textGameOver;
-        victoryPanel.SetActive(true);  // Ativar o painel de vitória ao invés do menu de pausa
-        menuPanel.SetActive(false);    // Certifique-se de desativar o menu de pausa
+        victoryPanel.SetActive(true);  
+        menuPanel.SetActive(false);   
         PauseGame();
         buttonClose.enabled = false;
 
@@ -143,7 +161,6 @@ public class UIManager : MonoBehaviour
         _stringBuilder.Append(jogadas);
         jogadasText.text = _stringBuilder.ToString();
 
-        // Verifica se as jogadas terminaram
         if (jogadas <= 0)
         {
             CheckEndGame();
@@ -194,7 +211,7 @@ public class UIManager : MonoBehaviour
         {
             objectiveCompletedPopup.SetActive(true);
             objectiveCompletedText.text = message;
-            Invoke("HideObjectiveCompletedPopup", 2.0f); // Esconder o pop-up após 2 segundos
+            Invoke("HideObjectiveCompletedPopup", 2.0f);
         }
     }
 

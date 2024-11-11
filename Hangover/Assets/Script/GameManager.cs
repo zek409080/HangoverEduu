@@ -27,12 +27,11 @@ public class GameManager : MonoBehaviour
     [Header("Game Settings")]
     public int initialScore = 0;
     public float fadeDuration = 1f;
-    public int initialJogadas = 5;
+    public int initialJogadas = 10;
 
     [Header("UI Elements")]
     public CanvasGroup faderCanvasGroup;
 
-    // Eventos disponíveis para outros componentes se inscreverem
     public static event System.Action<int> onScoreChanged;
     public static event System.Action<int> onJogadasChanged;
 
@@ -86,11 +85,12 @@ public class GameManager : MonoBehaviour
         UIManager uiManager = FindObjectOfType<UIManager>();
         if (uiManager != null)
         {
-            // Depende se os objetivos foram completos ou não
             ObjectiveManager objectiveManager = FindObjectOfType<ObjectiveManager>();
             if (objectiveManager != null && objectiveManager.AllObjectivesCompleted())
             {
                 uiManager.ShowVictory("Victory!");
+                LevelManager.instance.UnlockNextLevel(SceneManager.GetActiveScene().name);
+                Debug.Log("Level completed, attempting to unlock next level.");
             }
             else
             {
@@ -244,5 +244,20 @@ public class GameManager : MonoBehaviour
     {
         jogadas = initialJogadas;
         onJogadasChanged?.Invoke(jogadas);
+    }
+
+    // Método para recarregar a cena atual
+
+    public void RestartCurrentLevel()
+    {
+        Debug.Log("Restarting current level: " + SceneManager.GetActiveScene().name);
+        StartCoroutine(FadeAndReloadCurrentScene());
+    }
+
+    private IEnumerator FadeAndReloadCurrentScene()
+    {
+        yield return StartCoroutine(FadeOut());
+        ResetGameStates();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

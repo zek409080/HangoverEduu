@@ -54,7 +54,16 @@ public class MenuManager : MonoBehaviour
             if (buttonObject != null)
             {
                 string faseSceneName = faseSceneNames[i];
-                buttonObject.GetComponent<Button>().onClick.AddListener(() => SetSelectedFase(true, faseSceneName));
+                Button button = buttonObject.GetComponent<Button>();
+                if (LevelManager.instance.IsLevelUnlocked(faseSceneName))
+                {
+                    button.onClick.AddListener(() => SetSelectedFase(true, faseSceneName));
+                    button.interactable = true;
+                }
+                else
+                {
+                    button.interactable = false;
+                }
             }
             else
             {
