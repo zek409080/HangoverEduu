@@ -1,92 +1,64 @@
 using System.Collections;
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 using System.Linq;
 using DG.Tweening;
-using TMPro;
 
 public class GridManager : MonoBehaviour
 {
     public int width, height;
     public float moveDuration = 0.5f;
     public GameObject[] fruitPrefabs;
-    public GameObject cerejaPrefab;
-    public GameObject romaPrefab;
-    public GameObject amoraPrefab;
     public Piece[,] grid;
     public GameObject destructionEffectPrefab;
-    public GameObject caixaDaFruta;
-
-    [Header("Objetivo")]
-    public FrutType targetFruitType;  // Tipo da fruta que é o objetivo
-    public int maxObjective;
-    private int currentObjective;
-    public TextMeshProUGUI objectiveText;
-
-    [Header("Audio")]
-    [SerializeField] AudioSource soundPop;
 
     private UIManager uiManager;
+    private MatchManager matchManager;
+    public PowerUpManager powerUpManager;
+    private ObjectiveManager objectiveManager;
 
-    private void Update()
-    {
-        Debug.Log(HasMatches());
-        if (MusicUI.instance.estadoDoSom)
-        {
-            soundPop.enabled = false;
-        }
-
-        else
-        {
-            soundPop.enabled = true;
-        }
-    }
     private void Start()
     {
         grid = new Piece[width, height];
         InitializeGrid();
-        CheckAndClearMatchesAtStart();
-        uiManager = FindObjectOfType<UIManager>();
-        soundPop = GetComponent<AudioSource>();
+        
+        matchManager = GetComponent<MatchManager>();
+        powerUpManager = GetComponent<PowerUpManager>();
 
+        matchManager.CheckAndClearMatchesAtStart();
+        
+        uiManager = FindObjectOfType<UIManager>();
         if (uiManager != null)
         {
-            // Atualizar UI com valores iniciais
             uiManager.UpdateJogadas(GameManager.GetJogadas());
             uiManager.UpdateScore(GameManager.GetScore());
         }
-
-        // Assinar eventos do GameManager
+        
         GameManager.onScoreChanged += OnScoreChanged;
         GameManager.onJogadasChanged += OnJogadasChanged;
-
-       UpdateObjectiveText();
+        
+        objectiveManager = FindObjectOfType<ObjectiveManager>();
+        if (objectiveManager == null)
+        {
+            Debug.LogError("ObjectiveManager not found in the scene.");
+        }
     }
 
     private void OnDisable()
     {
-        // Desinscrever de eventos para evitar erros quando o objeto for destruído
         GameManager.onScoreChanged -= OnScoreChanged;
         GameManager.onJogadasChanged -= OnJogadasChanged;
     }
 
     private void OnScoreChanged(int newScore)
     {
-        if (uiManager != null)
-        {
-            uiManager.UpdateScore(newScore);
-        }
+        uiManager?.UpdateScore(newScore);
     }
 
     private void OnJogadasChanged(int newJogadas)
     {
-        if (uiManager != null)
-        {
-            uiManager.UpdateJogadas(newJogadas);
-        }
+        uiManager?.UpdateJogadas(newJogadas);
     }
-
-    // Restante da implementação do GridManager
 
     private void InitializeGrid()
     {
@@ -96,30 +68,10 @@ public class GridManager : MonoBehaviour
             {
                 Piece newPiece = CreateNewPiece(x, y, true);
                 grid[x, y] = newPiece;
-                Instantiate(caixaDaFruta, new Vector2(x,y), Quaternion.identity);
             }
         }
     }
-    public void ResetGrid()
-    {
-        // Remove todas as peças atuais
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                if (grid[x, y] != null)
-                {
-                    Destroy(grid[x, y].gameObject);
-                    grid[x, y] = null;
-                }
-            }
-        }
 
-        // Reinicializa a grade
-        InitializeGrid();
-        CheckAndClearMatchesAtStart();
-        UpdateObjectiveText();
-    }
     private Piece CreateNewPiece(int x, int y, bool animateFromTop = false)
     {
         GameObject piecePrefab = GetRandomPiecePrefab();
@@ -127,7 +79,7 @@ public class GridManager : MonoBehaviour
         GameObject newPieceObj = Instantiate(piecePrefab, startPosition, Quaternion.identity);
 
         Piece newPiece = newPieceObj.GetComponent<Piece>();
-        newPiece.SetPosition(x, y);
+        newPiece.Init(x, y, this);
 
         if (animateFromTop)
         {
@@ -142,149 +94,50 @@ public class GridManager : MonoBehaviour
         return fruitPrefabs[Random.Range(0, fruitPrefabs.Length)];
     }
 
-    private List<Piece> FindAllMatches()
+    public void SwapPieces(Piece piece1, Piece piece2)
     {
-        List<Piece> piecesToClear = new List<Piece>();
+        int tempX = piece1.x;
+        int tempY = piece1.y;
+        piece1.SetPosition(piece2.x, piece2.y);
+        piece2.SetPosition(tempX, tempY);
 
-        for (int x = 0; x < width; x++)
+        grid[piece1.x, piece1.y] = piece1;
+        grid[piece2.x, piece2.y] = piece2;
+
+        piece1.OnSwap(piece2);
+        piece2.OnSwap(piece1);
+    }
+
+    public bool AreAdjacent(Piece piece1, Piece piece2)
+    {
+        int deltaX = Mathf.Abs(piece1.x - piece2.x);
+        int deltaY = Mathf.Abs(piece1.y - piece2.y);
+        return (deltaX == 1 && deltaY == 0) || (deltaX == 0 && deltaY == 1);
+    }
+
+    public void DestroyPiece(Piece piece)
+    {
+        if (piece == null) return;
+
+        piece.MarkForDestruction();
+
+        if (destructionEffectPrefab != null)
         {
-            for (int y = 0; y < height; y++)
-            {
-                Piece currentPiece = grid[x, y];
-                if (currentPiece != null)
-                {
-                    List<Piece> horizontalMatches = GetMatches(currentPiece, Vector2.right);
-                    List<Piece> verticalMatches = GetMatches(currentPiece, Vector2.up);
-
-                    if (horizontalMatches.Count >= 3) piecesToClear.AddRange(horizontalMatches);
-                    if (verticalMatches.Count >= 3) piecesToClear.AddRange(verticalMatches);
-                }
-            }
+            Instantiate(destructionEffectPrefab, piece.transform.position, Quaternion.identity);
         }
 
-        piecesToClear = piecesToClear.Distinct().ToList();
-        return piecesToClear;
+        piece.AnimateDestruction();
+        grid[piece.x, piece.y] = null;
+        Destroy(piece.gameObject);
     }
-    private void UpdateObjectiveText()
+
+    public IEnumerator ResetMatching()
     {
-        objectiveText.text = $"{currentObjective}/{maxObjective}";
-    }
-    
-    private void CheckAndClearMatchesAtStart()
-    {
-        StartCoroutine(CheckAndClearMatchesCoroutine());
+        yield return new WaitForSeconds(0.5f);
+        yield return StartCoroutine(ClearAndFillBoard());
     }
 
-    private IEnumerator CheckAndClearMatchesCoroutine()
-    {
-        bool matchesFound;
-        do
-        {
-            matchesFound = false;
-            for (int x = 0; x < width; x++)
-            {
-                for (int y = 0; y < height; y++)
-                {
-                    if (grid[x, y] != null && CheckForMatchAt(x, y))
-                    {
-                        grid[x, y].MarkForDestruction();
-                        matchesFound = true;
-                    }
-                }
-            }
-            if (matchesFound)
-            {
-                yield return StartCoroutine(ClearAndFillBoard());
-            }
-        } while (matchesFound);
-    }
-
-    private bool CheckForMatchAt(int x, int y)
-    {
-        return (CheckForMatchInDirection(grid[x, y], Vector2.left, 2) ||
-                CheckForMatchInDirection(grid[x, y], Vector2.right, 2) ||
-                CheckForMatchInDirection(grid[x, y], Vector2.up, 2) ||
-                CheckForMatchInDirection(grid[x, y], Vector2.down, 2));
-    }
-
-    private bool CheckForMatchInDirection(Piece piece, Vector2 direction, int length)
-    {
-        List<Piece> matchingPieces = new List<Piece> { piece };
-        for (int i = 1; i <= length; i++)
-        {
-            int checkX = piece.x + (int)direction.x * i;
-            int checkY = piece.y + (int)direction.y * i;
-            if (checkX < 0 || checkX >= width || checkY < 0 || checkY >= height)
-                break;
-            if (grid[checkX, checkY] != null && grid[checkX, checkY].frutType == piece.frutType)
-                matchingPieces.Add(grid[checkX, checkY]);
-            else
-                break;
-        }
-        return matchingPieces.Count > length;
-    }
-    public bool HasMatches()
-    {
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                if (grid[x, y] != null)
-                {
-                    // Verifica por combinações de três ou mais peças horizontalmente e verticalmente
-                    if (CheckForMatchInDirection(grid[x, y], Vector2.right, 3) ||  // Horizontal
-                        CheckForMatchInDirection(grid[x, y], Vector2.up, 3))      // Vertical
-                    {
-                        return true;  // Encontrou um match
-                    }
-                }
-            }
-        }
-        return false;  // Nenhum match encontrado
-    }
-    private List<Piece> GetAllMatchesForPiece(Piece piece)
-    {
-        List<Piece> horizontalMatches = GetMatches(piece, new Vector2(+1, 0)).ToList();
-        horizontalMatches.AddRange(GetMatches(piece, new Vector2(-1,0)).Where(p => p != piece));
-
-        List<Piece> verticalMatches = GetMatches(piece, new Vector2(0, +1)).ToList();
-        verticalMatches.AddRange(GetMatches(piece, new Vector2(0, -1)).Where(p => p != piece));
-
-        List<Piece> allMatches = new List<Piece>();
-
-        if (horizontalMatches.Count >= 3) allMatches.AddRange(horizontalMatches);
-        if (verticalMatches.Count >= 3) allMatches.AddRange(verticalMatches);
-
-        return allMatches.Distinct().ToList();
-    }
-
-    private List<Piece> GetMatches(Piece startPiece, Vector2 direction)
-    {
-        List<Piece> match = new List<Piece> { startPiece };
-        FrutType frutType = startPiece.frutType;
-
-        int nextX = startPiece.x + (int)direction.x;
-        int nextY = startPiece.y + (int)direction.y;
-
-        while (nextX >= 0 && nextX < width && nextY >= 0 && nextY < height)
-        {
-            Piece nextPiece = grid[nextX, nextY];
-            if (nextPiece != null && nextPiece.frutType == frutType)
-            {
-                match.Add(nextPiece);
-                nextX += (int)direction.x;
-                nextY += (int)direction.y;
-            }
-            else
-            {
-                break;
-            }
-        }
-
-        return match;
-    }
-
-    private IEnumerator ClearAndFillBoard()
+    public IEnumerator ClearAndFillBoard()
     {
         yield return StartCoroutine(ClearMatches());
         yield return new WaitForSeconds(0.5f);
@@ -293,23 +146,16 @@ public class GridManager : MonoBehaviour
 
     private IEnumerator ClearMatches()
     {
-        List<Piece> piecesToClear = FindAllMatches();
-
-        foreach (var piece in piecesToClear)
+        for (int x = 0; x < width; x++)
         {
-            if (piece.frutType == targetFruitType)
+            for (int y = 0; y < height; y++)
             {
-                currentObjective++;
-                UpdateObjectiveText();
+                if (grid[x, y] != null && grid[x, y].isMarkedForDestruction)
+                {
+                    DestroyPiece(grid[x, y]);
+                }
             }
-            if (MusicUI.instance.estadoDoSom)
-            {
-                soundPop.Play();
-            }
-            GameManager.AddScore(10);
-            DestroyPiece(piece);
         }
-
         yield return new WaitForSeconds(0.5f);
     }
 
@@ -340,7 +186,7 @@ public class GridManager : MonoBehaviour
                 if (grid[x, y] == null)
                 {
                     Piece newPiece = CreateNewPiece(x, y, true);
-                    while (FindAllMatches().Contains(newPiece))
+                    while (matchManager.GetAllMatchesForPiece(newPiece).Count >= 3)
                     {
                         Destroy(newPiece.gameObject);
                         newPiece = CreateNewPiece(x, y, true);
@@ -364,13 +210,13 @@ public class GridManager : MonoBehaviour
 
     public bool CheckAndProcessMatches(Piece piece1, Piece piece2)
     {
-        List<Piece> match1 = GetAllMatchesForPiece(piece1);
-        List<Piece> match2 = GetAllMatchesForPiece(piece2);
+        List<Piece> match1 = matchManager.GetAllMatchesForPiece(piece1);
+        List<Piece> match2 = matchManager.GetAllMatchesForPiece(piece2);
 
         if (match1.Count >= 3 || match2.Count >= 3)
         {
-            if (match1.Count >= 4) CreatePowerUp(piece1);
-            if (match2.Count >= 4) CreatePowerUp(piece2);
+            if (match1.Count >= 4) powerUpManager.CreatePowerUp(piece1);
+            if (match2.Count >= 4) powerUpManager.CreatePowerUp(piece2);
 
             if (match1.Count >= 3) StartCoroutine(HandleMatches(match1));
             if (match2.Count >= 3) StartCoroutine(HandleMatches(match2));
@@ -384,166 +230,12 @@ public class GridManager : MonoBehaviour
         foreach (var match in matches)
         {
             GameManager.AddScore(10);
-            if (match.frutType == targetFruitType)
-            {
-                currentObjective++;
-                UpdateObjectiveText();
-            }
             match.MarkForDestruction();
+            
+            objectiveManager.AddScore(10);
+            objectiveManager.AddPieceCount(match.frutType);
         }
-
         yield return StartCoroutine(ClearAndFillBoard());
         GameManager.DecrementJogadas();
-    }
-
-    public void SwapPieces(Piece piece1, Piece piece2)
-    {
-        int tempX = piece1.x;
-        int tempY = piece1.y;
-        piece1.SetPosition(piece2.x, piece2.y);
-        piece2.SetPosition(tempX, tempY);
-
-        grid[piece1.x, piece1.y] = piece1;
-        grid[piece2.x, piece2.y] = piece2;
-
-        piece1.OnSwap(piece2);  // Chama OnSwap para a peça 1
-        piece2.OnSwap(piece1);  // Chama OnSwap para a peça 2
-    }
-
-    public bool AreAdjacent(Piece piece1, Piece piece2)
-    {
-        int deltaX = Mathf.Abs(piece1.x - piece2.x);
-        int deltaY = Mathf.Abs(piece1.y - piece2.y);
-        return (deltaX == 1 && deltaY == 0) || (deltaX == 0 && deltaY == 1);
-    }
-
-    // Método para criar um Power-up aleatório (Cereja, Roma ou Amora)
-    private void CreatePowerUp(Piece piece)
-    {
-        GameObject powerUpPrefab = GetRandomPowerUpPrefab();
-        Vector3 position = new Vector3(piece.x, piece.y, 0);
-        GameObject powerUpObj = Instantiate(powerUpPrefab, position, Quaternion.identity);
-
-        Piece powerUpPiece = powerUpObj.GetComponent<Piece>();
-        powerUpPiece.Init(piece.x, piece.y, this);
-        grid[piece.x, piece.y] = powerUpPiece;
-
-        Destroy(piece.gameObject);
-    }
-
-    private GameObject GetRandomPowerUpPrefab()
-    {
-        GameObject[] powerUps = { cerejaPrefab, romaPrefab, amoraPrefab };
-        int randomIndex = Random.Range(0, powerUps.Length);
-        return powerUps[randomIndex];
-    }
-
-    // Métodos para os Power-ups: cereja, roma e amora
-
-    public void ActivateCereja(Piece cereja)
-    {
-        if (cereja == null || cereja.isMarkedForDestruction) return;
-        Debug.Log("Ativando PowerUp Cereja");
-
-        int explosionRadius = 2;  // Expansão de 2 peças em todas as direções, resultando em um quadrado 5x5
-
-        for (int dx = -explosionRadius; dx <= explosionRadius; dx++)
-        {
-            for (int dy = -explosionRadius; dy <= explosionRadius; dy++)
-            {
-                int newX = cereja.x + dx;
-                int newY = cereja.y + dy;
-
-                if (IsWithinBounds(newX, newY))
-                {
-                    Piece neighbor = grid[newX, newY];
-                    if (neighbor != null && !neighbor.isMarkedForDestruction)
-                    {
-                        neighbor.MarkForDestruction();
-                        neighbor.AnimateDestruction();
-                    }
-                }
-            }
-        }
-        StartCoroutine(ResetMatching());
-    }
-
-    // Função utilitária para verificar se uma posição está dentro dos limites da grade
-    private bool IsWithinBounds(int x, int y)
-    {
-        return x >= 0 && x < width && y >= 0 && y < height;
-    }
-
-    public void ActivateRoma(Piece roma)
-    {
-        if (roma == null || roma.isMarkedForDestruction) return;
-        Debug.Log("Ativando PowerUp Roma");
-
-        // Destruir peças em toda a linha e coluna da peça roma
-        for (int x = 0; x < width; x++)
-        {
-            if (grid[x, roma.y] != null && !grid[x, roma.y].isMarkedForDestruction)
-            {
-                grid[x, roma.y].MarkForDestruction();
-                grid[x, roma.y].AnimateDestruction();
-            }
-        }
-
-        for (int y = 0; y < height; y++)
-        {
-            if (grid[roma.x, y] != null && !grid[roma.x, y].isMarkedForDestruction)
-            {
-                grid[roma.x, y].MarkForDestruction();
-                grid[roma.x, y].AnimateDestruction();
-            }
-        }
-
-        StartCoroutine(ResetMatching());
-    }
-
-    public void ActivateAmora(Piece amora, Piece targetPiece)
-    {
-        if (amora == null || amora.isMarkedForDestruction || targetPiece == null) return;
-        Debug.Log("Ativando PowerUp Amora");
-
-        // Destruir todas as peças do mesmo tipo que a peça alvo
-        foreach (Piece piece in grid)
-        {
-            if (piece != null && piece.frutType == targetPiece.frutType && !piece.isMarkedForDestruction)
-            {
-                piece.MarkForDestruction();
-                piece.AnimateDestruction();
-            }
-        }
-
-        // Destruir a própria Amora por ela mesma
-        DestroyPiece(amora);
-
-        StartCoroutine(ResetMatching());
-    }
-
-    // Função para resetar as combinações após a ativação do PowerUp
-    private IEnumerator ResetMatching()
-    {
-        yield return new WaitForSeconds(0.5f);
-        yield return StartCoroutine(ClearAndFillBoard()); // Garantir que a grade seja atualizada
-    }
-
-    // Função para destruir uma peça
-    public void DestroyPiece(Piece piece)
-    {
-        if (piece == null) return;
-        
-        piece.MarkForDestruction();
-
-        // Instanciar o efeito de destruição
-        if (destructionEffectPrefab != null)
-        {
-            Instantiate(destructionEffectPrefab, piece.transform.position, Quaternion.identity);
-        }
-        
-        piece.AnimateDestruction();
-        grid[piece.x, piece.y] = null;
-        Destroy(piece.gameObject);
     }
 }

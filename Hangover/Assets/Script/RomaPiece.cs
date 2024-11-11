@@ -11,18 +11,14 @@ public class RomaPiece : Piece
     public override void AnimateDestruction()
     {
         base.AnimateDestruction();
-        gridManager.ActivateRoma(this);
+        gridManager.powerUpManager.ActivateRoma(this);
     }
 
     void OnMouseDown()
     {
         if (!isInvisible && gridManager != null)
         {
-            if (MusicUI.instance.estadoDoSom)
-            {
-                somSelect.Play();
-            }
-            gridManager.ActivateRoma(this);  // Ativar PowerUp roma ao clicar
+            gridManager.powerUpManager.ActivateRoma(this);  // Ativar PowerUp roma ao clicar
             gridManager.DestroyPiece(this);  // Destruir a peça roma após o uso
         }
     }

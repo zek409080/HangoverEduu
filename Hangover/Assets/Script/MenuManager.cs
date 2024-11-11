@@ -1,11 +1,12 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class MenuManager : MonoBehaviour
 {
     [SerializeField] GameObject panelselectedFase;
+    [SerializeField] TextMeshProUGUI highScoreText;
     private string selectedFase;
-    
 
     private readonly string[] faseNames = new string[]
     {
@@ -31,9 +32,13 @@ public class MenuManager : MonoBehaviour
     {
         panelselectedFase.SetActive(set);
         selectedFase = fase;
+
+        // Exibir o high score para a fase selecionada
+        int highScore = HighScoresManager.instance.GetHighScore(fase);
+        highScoreText.text = "High Score: " + highScore;
     }
 
-    public void ButtonStarPanel()
+    public void ButtonStartPanel()
     {
         if (!string.IsNullOrEmpty(selectedFase))
         {
@@ -49,7 +54,16 @@ public class MenuManager : MonoBehaviour
             if (buttonObject != null)
             {
                 string faseSceneName = faseSceneNames[i];
-                buttonObject.GetComponent<Button>().onClick.AddListener(() => SetSelectedFase(true, faseSceneName));
+                Button button = buttonObject.GetComponent<Button>();
+                if (LevelManager.instance.IsLevelUnlocked(faseSceneName))
+                {
+                    button.onClick.AddListener(() => SetSelectedFase(true, faseSceneName));
+                    button.interactable = true;
+                }
+                else
+                {
+                    button.interactable = false;
+                }
             }
             else
             {

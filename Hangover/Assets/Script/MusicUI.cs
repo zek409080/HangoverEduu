@@ -7,10 +7,7 @@ using UnityEngine.UI;
 
 public class MusicUI : MonoBehaviour
 {
-
-
     #region Singleton
-
     public static MusicUI instance;
 
     private void Awake()
@@ -18,15 +15,15 @@ public class MusicUI : MonoBehaviour
         if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(instance);
+            DontDestroyOnLoad(gameObject);
         }
         else if (instance != this)
         {
             Destroy(gameObject);
         }
     }
-
     #endregion
+
     Toggle music, som;
     [SerializeField] private GameObject musicContainer, somContainer;
     public bool estadoDomusica = true, estadoDoSom = true;
@@ -49,8 +46,6 @@ public class MusicUI : MonoBehaviour
                 fundoMusical.enabled = true;
             }
         }
-
-
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -65,7 +60,6 @@ public class MusicUI : MonoBehaviour
             musicContainer = GameObject.Find("Panel_config");
         }
 
-
         if (musicContainer != null && musicContainer.activeSelf && music == null)
         {
             GameObject musicOn = GameObject.Find("MusicOn");
@@ -79,8 +73,6 @@ public class MusicUI : MonoBehaviour
                 }
             }
         }
-
-
 
         if (somContainer == null)
         {
@@ -101,11 +93,14 @@ public class MusicUI : MonoBehaviour
             }
         }
     }
+
     public void LigarOuDesligarMusica()
     {
         estadoDomusica = !estadoDomusica;
-        fundoMusical.enabled = estadoDomusica;
-
+        if (fundoMusical != null)
+        {
+            fundoMusical.enabled = estadoDomusica;
+        }
     }
 
     public void LigarOuDesligarSom()
