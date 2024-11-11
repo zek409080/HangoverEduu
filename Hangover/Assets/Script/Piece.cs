@@ -34,7 +34,6 @@ public class Piece : MonoBehaviour
         this.board = board;
     }
 
-
     void Update()
     {
 

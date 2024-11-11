@@ -12,7 +12,7 @@ public class Board : MonoBehaviour
     private binaryArrayBoard binaryArray;
     [SerializeField] int jogadas;
     public GameObject[] piecePrefab;
-    public GameObject[] powerUpPrefab;
+    public GameObject[] powerUpprefab;
     public Piece[,] pieces;
     public Piece selectedPiece;
     private bool canSwap = true;
@@ -244,58 +244,64 @@ public class Board : MonoBehaviour
 
 
     IEnumerator RefillBoard()
+{
+    yield return new WaitForSeconds(0.5f);
+
+    bool boardRefilled = false;
+    bool[] initialBools = binaryArray.GetInitialBools();
+
+    // Movendo as peças para baixo onde há espaços vazios, mas sem mover power-ups
+    for (int x = 0; x < width; x++)
     {
-        yield return new WaitForSeconds(0.5f);
-
-        bool boardRefilled = false;
-        bool[] initialBools = binaryArray.GetInitialBools();
-
-        for (int x = 0; x < width; x++)
+        for (int y = 0; y < height; y++)
         {
-            for (int y = 0; y < height; y++)
+            int index = x + y * width;
+            if (pieces[x, y] == null && (index >= initialBools.Length || !initialBools[index]))
             {
-                int index = x + y * width;
-                if (pieces[x, y] == null && (index >= initialBools.Length || !initialBools[index]))
+                // Verifica se a célula não contém um PowerUp antes de mover peças para baixo
+                for (int k = y + 1; k < height; k++)
                 {
-                    for (int k = y + 1; k < height; k++)
+                    if (pieces[x, k] != null && !IsPowerUp(x, k)) // Não mover PowerUps
                     {
-                        if (pieces[x, k] != null)
-                        {
-                            MovePiece(pieces[x, k], new Vector3(x, y, 0), 0.3f);
-                            pieces[x, k].Init(x, y, this);
-                            pieces[x, y] = pieces[x, k];
-                            pieces[x, k] = null;
-                            boardRefilled = true;
-                            break;
-                        }
+                        // Mover a peça normalmente
+                        MovePiece(pieces[x, k], new Vector3(x, y, 0), 0.3f);
+                        pieces[x, k].Init(x, y, this);
+                        pieces[x, y] = pieces[x, k];
+                        pieces[x, k] = null;
+                        boardRefilled = true;
+                        break;
                     }
                 }
             }
         }
+    }
 
-        for (int x = 0; x < width; x++)
+    // Instanciando novas peças onde houveram espaços vazios, mas sem preencher onde há PowerUp
+    for (int x = 0; x < width; x++)
+    {
+        for (int y = 0; y < height; y++)
         {
-            for (int y = 0; y < height; y++)
+            int index = x + y * width;
+            if (pieces[x, y] == null && (index >= initialBools.Length || !initialBools[index]) && !IsPowerUp(x, y)) // Verifica se não é um PowerUp
             {
-                int index = x + y * width;
-                if (pieces[x, y] == null && (index >= initialBools.Length || !initialBools[index]))
-                {
-                    GameObject newPiece = Instantiate(piecePrefab[RandomFrut()], new Vector3(x, height, 0), Quaternion.identity);
-                    pieces[x, y] = newPiece.GetComponent<Piece>();
-                    pieces[x, y]?.Init(x, y, this);
-                    pieces[x, y].StartMoveAnimation(new Vector3(x, y, 0), 0.3f);
-                    boardRefilled = true;
-                }
+                GameObject newPiece = Instantiate(piecePrefab[RandomFrut()], new Vector3(x, height, 0), Quaternion.identity);
+                pieces[x, y] = newPiece.GetComponent<Piece>();
+                pieces[x, y]?.Init(x, y, this);
+                pieces[x, y].StartMoveAnimation(new Vector3(x, y, 0), 0.3f);
+                boardRefilled = true;
             }
-        }
-
-        if (boardRefilled)
-        {
-            yield return new WaitForSeconds(0.3f); // Aguarda animações
-            List<Piece> piecesDestroyed = CheckForMatches(out int totalDestroyed);
-            CheckObjective(piecesDestroyed);
+            DestroyPieceAtPosition(x, y);
         }
     }
+
+    if (boardRefilled)
+    {
+        yield return new WaitForSeconds(0.3f); // Aguarda animações
+        List<Piece> piecesDestroyed = CheckForMatches(out int totalDestroyed);
+        CheckObjective(piecesDestroyed);
+    }
+}
+
 
 
     bool CheckMatchHorizontal(int x, int y)
@@ -370,28 +376,34 @@ public class Board : MonoBehaviour
     {
         List<Piece> piecesToDestroy = new List<Piece>();
         totalDestroyed = 0;
+
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
                 if (pieces[x, y] == null) continue;
+
                 List<Piece> matchPieces = GetMatchPieces(x, y);
 
                 if (matchPieces.Count >= 3)
                 {
                     piecesToDestroy.AddRange(matchPieces);
                     totalDestroyed += matchPieces.Count;
-                    GameManager.instance.AddScore(10);
 
+                    if (matchPieces.Count >= 4)
+                    {
+                        // Cria um Power-Up em uma posição aleatória da combinação
+                        int randomIndex = Random.Range(0, matchPieces.Count);
+                        Piece powerUpPosition = matchPieces[randomIndex];
+                        pieces[powerUpPosition.x, powerUpPosition.y] = null;
+                        InstantiateRandomPowerUp(powerUpPosition.x, powerUpPosition.y);
+                        Debug.Log("Tentando instanciar Power-Up");
+                    }
+
+                    GameManager.instance.AddScore(10);
                     if (MusicUI.instance.estadoDoSom)
                     {
                         audiopop.Play();
-                    }
-
-                    // Instancia um power-up se o match for de 4 ou mais peças
-                    if (matchPieces.Count >= 4)
-                    {
-                        InstantiateRandomPowerUp(x, y);
                     }
                 }
             }
@@ -432,6 +444,32 @@ public class Board : MonoBehaviour
     }
 
 
+    public List<Piece> allPieces;  // Lista de todas as peças no tabuleiro
+
+    // Método para verificar e destruir uma peça no mesmo local
+    public void DestroyPieceAtPosition(int x, int y)
+    {
+        // Encontrar todas as peças na posição (x, y)
+        Piece pieceToDestroy = null;
+
+        foreach (var piece in allPieces)
+        {
+            if (piece.x == x && piece.y == y)
+            {
+                // Se já encontrar uma peça, marque-a para destruição
+                if (pieceToDestroy == null)
+                {
+                    pieceToDestroy = piece;
+                }
+                else
+                {
+                    // Se já existe uma peça na posição, destrua uma delas
+                    Destroy(piece.gameObject);
+                    break;  // Se destruiu uma peça, saia do loop
+                }
+            }
+        }
+    }
 
 
 
@@ -449,6 +487,7 @@ public class Board : MonoBehaviour
             }
         }
         Destroy(amora.gameObject);
+        StartCoroutine(RefillBoard());
     }
 
     // Power-up que destrói peças em formato de +
@@ -480,6 +519,7 @@ public class Board : MonoBehaviour
         }
 
         Destroy(roma.gameObject);
+        StartCoroutine(RefillBoard());
     }
 
     // Power-up que explode uma área de 3x3
@@ -507,23 +547,39 @@ public class Board : MonoBehaviour
         }
 
         Destroy(cereja.gameObject);
+        StartCoroutine(RefillBoard());
     }
+
+    bool IsPowerUp(int x, int y)
+    {
+        // Verifica se a peça no grid é um PowerUp baseado no frutType
+        if (pieces[x, y] != null &&
+            (pieces[x, y].frutType == FrutType.Roma ||
+             pieces[x, y].frutType == FrutType.Cereja ||
+             pieces[x, y].frutType == FrutType.Franboesa))
+        {
+            return true; // Se for Roma, Cereja ou Framboesa, é PowerUp
+        }
+        return false;
+    }
+
     void InstantiateRandomPowerUp(int x, int y)
     {
-        // Seleciona um power-up aleatório
-        GameObject powerUp = powerUpPrefab[Random.Range(0, powerUpPrefab.Length)];
+        // Verifica se a posição está vazia
+        if (pieces[x, y] != null) return;
 
-        // Define uma posição próxima ao match para o power-up
-        Vector3 spawnPosition = new Vector3(x + Random.Range(-1, 2), y + Random.Range(-1, 2), 0);
+        // Escolhe aleatoriamente um tipo de PowerUp
+        FrutType selectedPowerUp = (FrutType)Random.Range((int)FrutType.Roma, (int)FrutType.Franboesa + 1);
 
-        // Garante que a posição está dentro dos limites do tabuleiro e não sobreponha outra peça
-        while (!IsWithinBounds((int)spawnPosition.x, (int)spawnPosition.y) || pieces[(int)spawnPosition.x, (int)spawnPosition.y] != null)
-        {
-            spawnPosition = new Vector3(x + Random.Range(-1, 2), y + Random.Range(-1, 2), 0);
-        }
+        GameObject powerUpPrefab = powerUpprefab[Random.Range(0, powerUpprefab.Length)];
+        GameObject powerUp = Instantiate(powerUpPrefab, new Vector3(x, y, 0), Quaternion.identity);
 
-        // Instancia o power-up na posição definida
-        Instantiate(powerUp, spawnPosition, Quaternion.identity);
+        Piece powerUpPiece = powerUp.GetComponent<Piece>();
+        powerUpPiece.Init(x, y, this);
+        powerUpPiece.frutType = selectedPowerUp; // Define o tipo de PowerUp como Roma, Cereja ou Framboesa
+
+        // Atribui a peça PowerUp à posição na matriz de peças
+        pieces[x, y] = powerUpPiece;
     }
 
     bool IsWithinBounds(int x, int y)

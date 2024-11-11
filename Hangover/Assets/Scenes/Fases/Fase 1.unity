@@ -3572,21 +3572,25 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5653086171243154531, guid: db76c244efaf5044f97e47d9be74a612, type: 3}
+      propertyPath: powerUpprefab.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5653086171243154531, guid: db76c244efaf5044f97e47d9be74a612, type: 3}
       propertyPath: piecePrefab.Array.data[3]
       value: 
       objectReference: {fileID: 6874434505175374339, guid: 48f4979ab729d1440b4d083e886c57ad, type: 3}
     - target: {fileID: 5653086171243154531, guid: db76c244efaf5044f97e47d9be74a612, type: 3}
       propertyPath: piecePrefab.Array.data[4]
       value: 
-      objectReference: {fileID: 3612017322786362154, guid: a87420bb18f88f0418b1b9e9962e1b44, type: 3}
+      objectReference: {fileID: 371608522373280429, guid: 33438289ef110354f811ec80f239ab3b, type: 3}
     - target: {fileID: 5653086171243154531, guid: db76c244efaf5044f97e47d9be74a612, type: 3}
       propertyPath: piecePrefab.Array.data[5]
       value: 
-      objectReference: {fileID: 6319861555613119749, guid: 256254138fe544c43a21812514f9b104, type: 3}
+      objectReference: {fileID: 766435143265915206, guid: d0fbc25096c6a174e96451be5c7bc14c, type: 3}
     - target: {fileID: 5653086171243154531, guid: db76c244efaf5044f97e47d9be74a612, type: 3}
       propertyPath: piecePrefab.Array.data[6]
       value: 
-      objectReference: {fileID: 5018873714049314917, guid: 70931bad00c870d4b90dd5d3d3de209a, type: 3}
+      objectReference: {fileID: 9066069773785717412, guid: 9b9a69d38d1db8f4dbffcaa6f81ee268, type: 3}
     - target: {fileID: 5653086171243154531, guid: db76c244efaf5044f97e47d9be74a612, type: 3}
       propertyPath: powerUpPrefab.Array.data[0]
       value: 
@@ -3597,6 +3601,18 @@ PrefabInstance:
       objectReference: {fileID: 766435143265915206, guid: d0fbc25096c6a174e96451be5c7bc14c, type: 3}
     - target: {fileID: 5653086171243154531, guid: db76c244efaf5044f97e47d9be74a612, type: 3}
       propertyPath: powerUpPrefab.Array.data[2]
+      value: 
+      objectReference: {fileID: 9066069773785717412, guid: 9b9a69d38d1db8f4dbffcaa6f81ee268, type: 3}
+    - target: {fileID: 5653086171243154531, guid: db76c244efaf5044f97e47d9be74a612, type: 3}
+      propertyPath: powerUpprefab.Array.data[0]
+      value: 
+      objectReference: {fileID: 371608522373280429, guid: 33438289ef110354f811ec80f239ab3b, type: 3}
+    - target: {fileID: 5653086171243154531, guid: db76c244efaf5044f97e47d9be74a612, type: 3}
+      propertyPath: powerUpprefab.Array.data[1]
+      value: 
+      objectReference: {fileID: 766435143265915206, guid: d0fbc25096c6a174e96451be5c7bc14c, type: 3}
+    - target: {fileID: 5653086171243154531, guid: db76c244efaf5044f97e47d9be74a612, type: 3}
+      propertyPath: powerUpprefab.Array.data[2]
       value: 
       objectReference: {fileID: 9066069773785717412, guid: 9b9a69d38d1db8f4dbffcaa6f81ee268, type: 3}
     - target: {fileID: 5832218963569578393, guid: db76c244efaf5044f97e47d9be74a612, type: 3}
