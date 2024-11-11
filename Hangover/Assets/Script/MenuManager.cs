@@ -8,20 +8,23 @@ public class MenuManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI highScoreText;
     private string selectedFase;
 
-    private readonly string[] faseNames = new string[]
+    void FindButtonFase()
     {
-        "Fase1_button", "Fase2_button", "Fase3_button", "Fase4_button", 
-        "Fase5_button", "Fase6_button", "Fase7_button", "Fase8_button", 
-        "Fase9_button", "Fase10_button", "Fase11_button", "Fase12_button", 
-        "Fase13_button", "Fase14_button"
-    };
-
-    private readonly string[] faseSceneNames = new string[]
-    {
-        "Fase 1", "Fase 2", "Fase 3", "Fase 4", "Fase 5", 
-        "Fase 6", "Fase 7", "Fase 8", "Fase 9", "Fase 10", 
-        "Fase 11", "Fase 12", "Fase 13", "Fase 14"
-    };
+        GameObject.Find("Fase1_button").GetComponent<Button>().onClick.AddListener(() => SetSelectedFase(true, "Fase 1"));
+        GameObject.Find("Fase2_button").GetComponent<Button>().onClick.AddListener(() => SetSelectedFase(true, "Fase 2"));
+        GameObject.Find("Fase3_button").GetComponent<Button>().onClick.AddListener(() => SetSelectedFase(true, "Fase 3"));
+        GameObject.Find("Fase4_button").GetComponent<Button>().onClick.AddListener(() => SetSelectedFase(true, "Fase 4"));
+        GameObject.Find("Fase5_button").GetComponent<Button>().onClick.AddListener(() => SetSelectedFase(true, "Fase 5"));
+        GameObject.Find("Fase6_button").GetComponent<Button>().onClick.AddListener(() => SetSelectedFase(true, "Fase 6"));
+        GameObject.Find("Fase7_button").GetComponent<Button>().onClick.AddListener(() => SetSelectedFase(true, "Fase 7"));
+        GameObject.Find("Fase8_button").GetComponent<Button>().onClick.AddListener(() => SetSelectedFase(true, "Fase 8"));
+        GameObject.Find("Fase9_button").GetComponent<Button>().onClick.AddListener(() => SetSelectedFase(true, "Fase 9"));
+        GameObject.Find("Fase10_button").GetComponent<Button>().onClick.AddListener(() => SetSelectedFase(true, "Fase 10"));
+        GameObject.Find("Fase11_button").GetComponent<Button>().onClick.AddListener(() => SetSelectedFase(true, "Fase 11"));
+        GameObject.Find("Fase12_button").GetComponent<Button>().onClick.AddListener(() => SetSelectedFase(true, "Fase 12"));
+        GameObject.Find("Fase13_button").GetComponent<Button>().onClick.AddListener(() => SetSelectedFase(true, "Fase 13"));
+        GameObject.Find("Fase14_button").GetComponent<Button>().onClick.AddListener(() => SetSelectedFase(true, "Fase 14"));
+    }
 
     private void Start()
     {
@@ -43,32 +46,6 @@ public class MenuManager : MonoBehaviour
         if (!string.IsNullOrEmpty(selectedFase))
         {
             GameManager.instance.LoadScene(selectedFase);
-        }
-    }
-
-    private void FindButtonFase()
-    {
-        for (int i = 0; i < faseNames.Length; i++)
-        {
-            GameObject buttonObject = GameObject.Find(faseNames[i]);
-            if (buttonObject != null)
-            {
-                string faseSceneName = faseSceneNames[i];
-                Button button = buttonObject.GetComponent<Button>();
-                if (LevelManager.instance.IsLevelUnlocked(faseSceneName))
-                {
-                    button.onClick.AddListener(() => SetSelectedFase(true, faseSceneName));
-                    button.interactable = true;
-                }
-                else
-                {
-                    button.interactable = false;
-                }
-            }
-            else
-            {
-                Debug.LogWarning($"Button '{faseNames[i]}' not found");
-            }
         }
     }
 }
