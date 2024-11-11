@@ -28,6 +28,17 @@ public class MenuManager : MonoBehaviour
         FindButtonFase();
     }
 
+    public void LoadCena(string cena)
+    {
+        GameManager.instance.LoadScene(cena);
+    }
+
+    public void OpenSite(string url)
+    {
+        Application.OpenURL(url);
+    }
+
+
     private void SetSelectedFase(bool set, string fase)
     {
         panelselectedFase.SetActive(set);
