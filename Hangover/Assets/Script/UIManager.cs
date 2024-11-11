@@ -1,8 +1,9 @@
-using System.Text;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
+using System.Collections.Generic;
+using System.Text;
 
 public class UIManager : MonoBehaviour
 {
@@ -19,14 +20,14 @@ public class UIManager : MonoBehaviour
     private GameManager gameManager;
     [SerializeField] private TextMeshProUGUI objectivesText;
     private ObjectiveManager objectiveManager;
+    [SerializeField] private GameObject objectiveCompletedPopup;
+    [SerializeField] private TextMeshProUGUI objectiveCompletedText;
 
     private StringBuilder _stringBuilder;
 
     private void Awake()
     {
         _stringBuilder = new StringBuilder();
-
-        // Garantir que os painéis estejam desativados ao iniciar o jogo.
         menuPanel.SetActive(false);
         victoryPanel.SetActive(false);
     }
@@ -47,32 +48,20 @@ public class UIManager : MonoBehaviour
 
     private void OnObjectivesCompleted()
     {
-        ShowVictory("Victory");
+        // Podemos adicionar alguma lógica adicional se necessário
     }
 
     public void UpdateObjectivesText()
     {
         if (objectiveManager != null)
         {
-            objectivesText.text = "";
+            List<string> objectivesStatus = new List<string>();
             foreach (var objective in objectiveManager.objectives)
             {
-                if (!objective.isCompleted)
-                {
-                    if (objective.type == ObjectiveManager.ObjectiveType.Score)
-                    {
-                        objectivesText.text = $"Alcance {objective.targetValue} pontos.";
-                        HideFruitImage();
-                    }
-                    else if (objective.type == ObjectiveManager.ObjectiveType.PieceCount)
-                    {
-                        int remaining = objective.targetValue - objectiveManager.pieceCounts[objective.targetPiece];
-                        objectivesText.text = $"Colete mais {remaining} frutas.";
-                        ShowFruitImage(objective.targetPiece);
-                    }
-                    break;
-                }
+                string status = objective.isCompleted ? "Completo" : "Em Progresso";
+                objectivesStatus.Add($"{objective.type}: {objective.targetValue} ({status})");
             }
+            objectivesText.text = string.Join("\n", objectivesStatus);
         }
     }
 
@@ -94,7 +83,6 @@ public class UIManager : MonoBehaviour
         victoryPanel.SetActive(false);
         ResumeGame();
         GameManager.instance.LoadScene(sceneName);
-        GameManager.instance.StartJogadas();
     }
 
     public void QuitGame(string sceneName)
@@ -119,14 +107,15 @@ public class UIManager : MonoBehaviour
     {
         victoryText.text = victoryTextMessage;
         victoryPanel.SetActive(true);
-        menuPanel.SetActive(false); // Assegura que o menu de pause não está visível
+        menuPanel.SetActive(false);
         PauseGame();
         buttonClose.enabled = false;
 
-        // Atualizar pontuação final e high score
         int finalScore = GameManager.GetScore();
-        int highScore = HighScoresManager.instance.GetHighScore(SceneManager.GetActiveScene().name);
+        string currentLevel = SceneManager.GetActiveScene().name;
+        HighScoresManager.instance.SetHighScore(currentLevel, finalScore);
 
+        int highScore = HighScoresManager.instance.GetHighScore(currentLevel);
         finalScoreText.text = "Final Score: " + finalScore;
         finalHighScoreText.text = "High Score: " + highScore;
     }
@@ -134,15 +123,16 @@ public class UIManager : MonoBehaviour
     public void ShowGameOver(string textGameOver)
     {
         gameoverText.text = textGameOver;
-        menuPanel.SetActive(true);
-        victoryPanel.SetActive(false); // Assegura que o painel de vitória não está visível
+        victoryPanel.SetActive(true);  // Ativar o painel de vitória ao invés do menu de pausa
+        menuPanel.SetActive(false);    // Certifique-se de desativar o menu de pausa
         PauseGame();
         buttonClose.enabled = false;
 
-        // Atualizar pontuação final e high score
         int finalScore = GameManager.GetScore();
-        int highScore = HighScoresManager.instance.GetHighScore(SceneManager.GetActiveScene().name);
+        string currentLevel = SceneManager.GetActiveScene().name;
+        HighScoresManager.instance.SetHighScore(currentLevel, finalScore);
 
+        int highScore = HighScoresManager.instance.GetHighScore(currentLevel);
         finalScoreText.text = "Final Score: " + finalScore;
         finalHighScoreText.text = "High Score: " + highScore;
     }
@@ -152,6 +142,12 @@ public class UIManager : MonoBehaviour
         _stringBuilder.Clear();
         _stringBuilder.Append(jogadas);
         jogadasText.text = _stringBuilder.ToString();
+
+        // Verifica se as jogadas terminaram
+        if (jogadas <= 0)
+        {
+            CheckEndGame();
+        }
     }
 
     public void UpdateScore(int score)
@@ -170,6 +166,18 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    private void CheckEndGame()
+    {
+        if (objectiveManager.AllObjectivesCompleted())
+        {
+            ShowGameOver("Parabéns! Você completou todos os objetivos.");
+        }
+        else
+        {
+            ShowGameOver("Game Over! Você não completou todos os objetivos.");
+        }
+    }
+
     private void PauseGame()
     {
         Time.timeScale = 0f;
@@ -180,20 +188,33 @@ public class UIManager : MonoBehaviour
         Time.timeScale = 1f;
     }
 
-    private void HideFruitImage()
+    public void ShowObjectiveCompletedPopup(string message)
     {
-        if (objectiveManager.fruitImage != null)
+        if (objectiveCompletedPopup != null && objectiveCompletedText != null)
         {
-            objectiveManager.fruitImage.gameObject.SetActive(false);
+            objectiveCompletedPopup.SetActive(true);
+            objectiveCompletedText.text = message;
+            Invoke("HideObjectiveCompletedPopup", 2.0f); // Esconder o pop-up após 2 segundos
         }
     }
 
-    private void ShowFruitImage(FrutType frutType)
+    private void HideObjectiveCompletedPopup()
     {
-        if (objectiveManager.fruitImage != null)
+        if (objectiveCompletedPopup != null)
         {
-            objectiveManager.fruitImage.gameObject.SetActive(true);
-            objectiveManager.UpdateFruitImage(frutType);
+            objectiveCompletedPopup.SetActive(false);
         }
+    }
+
+    public void ResetUI()
+    {
+        scoreText.text = "0";
+        jogadasText.text = GameManager.GetJogadas().ToString();
+        objectivesText.text = "";
+        UpdateObjectivesText();
+        finalScoreText.text = "";
+        finalHighScoreText.text = "";
+        victoryText.text = "";
+        gameoverText.text = "";
     }
 }

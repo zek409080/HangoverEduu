@@ -17,12 +17,12 @@ public class ObjectiveManager : MonoBehaviour
         public ObjectiveType type;
         public int targetValue;
         public FrutType targetPiece; // Usado para o objetivo de contagem de peças
-        public bool isCompleted; // Campo para marcar objetivos como completos
+        public bool isCompleted;
     }
 
     public Objective[] objectives;
     private int currentScore;
-    public Dictionary<FrutType, int> pieceCounts;
+    private Dictionary<FrutType, int> pieceCounts;
 
     public UnityEvent onObjectivesCompleted;
 
@@ -93,13 +93,22 @@ public class ObjectiveManager : MonoBehaviour
         objective.isCompleted = true;
         Debug.Log($"Objetivo completado! Tipo: {objective.type}, Valor Alvo: {objective.targetValue}");
 
+        // Mostrar um pop-up para o jogador indicando que o objetivo foi completado
+        UIManager uiManager = FindObjectOfType<UIManager>();
+        if (uiManager != null)
+        {
+            uiManager.ShowObjectiveCompletedPopup($"Objetivo completado: {objective.type} {objective.targetValue}");
+        }
+
+        // Verifica se todos os objetivos foram concluídos
         if (AllObjectivesCompleted())
         {
-            onObjectivesCompleted.Invoke();
+            Debug.Log("Todos os objetivos foram cumpridos!");
+            onObjectivesCompleted?.Invoke();
         }
     }
 
-    private bool AllObjectivesCompleted()
+    public bool AllObjectivesCompleted()
     {
         foreach (var objective in objectives)
         {
@@ -138,5 +147,23 @@ public class ObjectiveManager : MonoBehaviour
         {
             piecesLeftText.text = $"Faltam {piecesLeft} peças de {frutType}";
         }
+    }
+
+    public void ResetObjectives()
+    {
+        foreach (var objective in objectives)
+        {
+            objective.isCompleted = false;
+        }
+
+        // Reiniciar as contagens de peças
+        currentScore = 0;
+        foreach (FrutType frutType in System.Enum.GetValues(typeof(FrutType)))
+        {
+            pieceCounts[frutType] = 0;
+        }
+
+        // Atualizar a UI para refletir o estado reiniciado
+        UpdateUIForNextObjective();
     }
 }
