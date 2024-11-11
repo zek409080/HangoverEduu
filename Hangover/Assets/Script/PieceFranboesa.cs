@@ -9,7 +9,6 @@ public class PieceFranboesa : MonoBehaviour
     {
         board = GameObject.Find("GridManager").GetComponent<Board>();
     }
-
     private void OnMouseDown()
     {
         // Chama o power-up passando a peça atual como amora e uma peça alvo (por exemplo, outra selecionada).

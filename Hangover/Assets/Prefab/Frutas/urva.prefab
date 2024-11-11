@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: -6788621184468282573}
   - component: {fileID: 4256119314808537848}
   - component: {fileID: 7502054899402111148}
+  - component: {fileID: -598270433109414365}
   m_Layer: 0
   m_Name: urva
   m_TagString: Untagged
@@ -118,7 +119,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -151,6 +152,7 @@ MonoBehaviour:
   y: 0
   board: {fileID: 0}
   isInvisible: 0
+  isPowerUp: 0
   audioSelect: {fileID: 0}
 --- !u!95 &4256119314808537848
 Animator:
@@ -269,6 +271,33 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!50 &-598270433109414365
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5018873714049314917}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!1 &6336036430423996463
 GameObject:
   m_ObjectHideFlags: 0

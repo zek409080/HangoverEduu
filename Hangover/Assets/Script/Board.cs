@@ -12,8 +12,8 @@ public class Board : MonoBehaviour
     private binaryArrayBoard binaryArray;
     [SerializeField] int jogadas;
     public GameObject[] piecePrefab;
-    public GameObject[] powerUpprefab;
-    public Piece[,] pieces;
+    public GameObject[] powerupPrefab;
+    public Piece[,] pieces, powerUp;
     public Piece selectedPiece;
     private bool canSwap = true;
     public Transform cam;
@@ -25,7 +25,7 @@ public class Board : MonoBehaviour
     public TextMeshProUGUI obejectiveText;
 
     [Header("Particle de exploção e o funda da fruta")]
-    [SerializeField] GameObject particle_popMagic, caixaDaGrid;
+    [SerializeField] public GameObject particle_popMagic, caixaDaGrid;
     
 
     [Header("Audio")]
@@ -99,9 +99,13 @@ public class Board : MonoBehaviour
 
     void SpawnPiece(int x, int y)
     {
-        GameObject newPiece = Instantiate(piecePrefab[RandomFrut()], new Vector3(x, y, 0), Quaternion.identity);
-        pieces[x, y] = newPiece.GetComponent<Piece>();
-        pieces[x, y]?.Init(x, y, this);
+        // Verifica se a posição está vazia antes de instanciar uma nova peça
+        if (IsPositionEmpty(x, y))
+        {
+            GameObject newPiece = Instantiate(piecePrefab[RandomFrut()], new Vector3(x, y, 0), Quaternion.identity);
+            pieces[x, y] = newPiece.GetComponent<Piece>();
+            pieces[x, y]?.Init(x, y, this);
+        }
     }
 
     int RandomFrut()
@@ -244,68 +248,65 @@ public class Board : MonoBehaviour
 
 
     IEnumerator RefillBoard()
-{
-    yield return new WaitForSeconds(0.5f);
-
-    bool boardRefilled = false;
-    bool[] initialBools = binaryArray.GetInitialBools();
-
-    // Movendo as peças para baixo onde há espaços vazios, mas sem mover power-ups
-    for (int x = 0; x < width; x++)
     {
-        for (int y = 0; y < height; y++)
+        yield return new WaitForSeconds(0.5f);
+        bool boardRefilled = false;
+        bool[] initialBools = binaryArray.GetInitialBools();
+
+        // Movendo as peças para baixo onde há espaços vazios, incluindo `PowerUps`
+        for (int x = 0; x < width; x++)
         {
-            int index = x + y * width;
-            if (pieces[x, y] == null && (index >= initialBools.Length || !initialBools[index]))
+            for (int y = 0; y < height; y++)
             {
-                // Verifica se a célula não contém um PowerUp antes de mover peças para baixo
-                for (int k = y + 1; k < height; k++)
+                int index = x + y * width;
+                if (pieces[x, y] == null && (index >= initialBools.Length || !initialBools[index]))
                 {
-                    if (pieces[x, k] != null && !IsPowerUp(x, k)) // Não mover PowerUps
+                    for (int k = y + 1; k < height; k++)
                     {
-                        // Mover a peça normalmente
-                        MovePiece(pieces[x, k], new Vector3(x, y, 0), 0.3f);
-                        pieces[x, k].Init(x, y, this);
-                        pieces[x, y] = pieces[x, k];
-                        pieces[x, k] = null;
-                        boardRefilled = true;
-                        break;
+                        if (pieces[x, k] != null)
+                        {
+                            // Move tanto `PowerUps` quanto peças normais para baixo
+                            MovePiece(pieces[x, k], new Vector3(x, y, 0), 0.3f);
+                            pieces[x, k].Init(x, y, this);
+                            pieces[x, y] = pieces[x, k];
+                            pieces[x, k] = null;
+                            boardRefilled = true;
+                            break;
+                        }
                     }
                 }
             }
         }
-    }
 
-    // Instanciando novas peças onde houveram espaços vazios, mas sem preencher onde há PowerUp
-    for (int x = 0; x < width; x++)
-    {
-        for (int y = 0; y < height; y++)
+        // Preenchendo os espaços vazios com novas peças, sem sobrescrever `PowerUps`
+        for (int x = 0; x < width; x++)
         {
-            int index = x + y * width;
-            if (pieces[x, y] == null && (index >= initialBools.Length || !initialBools[index]) && !IsPowerUp(x, y)) // Verifica se não é um PowerUp
+            for (int y = 0; y < height; y++)
             {
-                GameObject newPiece = Instantiate(piecePrefab[RandomFrut()], new Vector3(x, height, 0), Quaternion.identity);
-                pieces[x, y] = newPiece.GetComponent<Piece>();
-                pieces[x, y]?.Init(x, y, this);
-                pieces[x, y].StartMoveAnimation(new Vector3(x, y, 0), 0.3f);
-                boardRefilled = true;
+                int index = x + y * width;
+                if (pieces[x, y] == null && (index >= initialBools.Length || !initialBools[index]))
+                {
+                    GameObject newPiece = Instantiate(piecePrefab[RandomFrut()], new Vector3(x, height, 0), Quaternion.identity);
+                    pieces[x, y] = newPiece.GetComponent<Piece>();
+                    pieces[x, y]?.Init(x, y, this);
+                    pieces[x, y].StartMoveAnimation(new Vector3(x, y, 0), 0.3f);
+                    boardRefilled = true;
+                }
             }
-            DestroyPieceAtPosition(x, y);
+        }
+
+        if (boardRefilled)
+        {
+            yield return new WaitForSeconds(0.3f);
+            List<Piece> piecesDestroyed = CheckForMatches(out int totalDestroyed);
+            CheckObjective(piecesDestroyed);
         }
     }
-
-    if (boardRefilled)
-    {
-        yield return new WaitForSeconds(0.3f); // Aguarda animações
-        List<Piece> piecesDestroyed = CheckForMatches(out int totalDestroyed);
-        CheckObjective(piecesDestroyed);
-    }
-}
-
 
 
     bool CheckMatchHorizontal(int x, int y)
     {
+        if (x < 0 || x >= width || y < 0 || y >= height || pieces[x, y] == null) return false;
         FrutType currentType = pieces[x, y].frutType;
         int count = 1;
         for (int i = x + 1; i < width && pieces[i, y]?.frutType == currentType; i++)
@@ -317,6 +318,7 @@ public class Board : MonoBehaviour
 
     bool CheckMatchVertical(int x, int y)
     {
+        if (x < 0 || x >= width || y < 0 || y >= height || pieces[x, y] == null) return false;
         FrutType currentType = pieces[x, y].frutType;
         int count = 1;
         for (int i = y + 1; i < height && pieces[x, i]?.frutType == currentType; i++)
@@ -326,20 +328,31 @@ public class Board : MonoBehaviour
         return count >= 3;
     }
 
+
     List<Piece> CheckMatchLine(int x, int y, int dx, int dy)
     {
         List<Piece> matched = new List<Piece>();
+
+        if (!IsWithinBounds(x, y) || pieces[x, y] == null)
+        {
+            return matched;
+        }
+
         FrutType type = pieces[x, y].frutType;
         matched.Add(pieces[x, y]);
-        for (int i = 1; i < width && i < height; i++) // Varre a linha na direção dada
+
+        for (int i = 1; i < Mathf.Max(width, height); i++) // Certifica-se de não ultrapassar a matriz
         {
             int newX = x + dx * i;
             int newY = y + dy * i;
-            // Verifica se a posição é válida e se o tipo da fruta corresponde
-            if (newX >= width || newY >= height || pieces[newX, newY]?.frutType != type) break;
+
+            if (!IsWithinBounds(newX, newY) || pieces[newX, newY] == null || pieces[newX, newY].frutType != type)
+            {
+                break;
+            }
             matched.Add(pieces[newX, newY]);
         }
-        // Retorna somente se houver 3 ou mais peças na combinação
+
         return matched.Count >= 3 ? matched : new List<Piece>();
     }
 
@@ -347,10 +360,12 @@ public class Board : MonoBehaviour
     {
         List<Piece> matchPieces = new List<Piece>();
 
-        List<Piece> horizontalMatches = CheckMatchLine(x, y, 1, 0); // Horizontal
+        if (x < 0 || x >= width || y < 0 || y >= height || pieces[x, y] == null) return matchPieces;
+
+        List<Piece> horizontalMatches = CheckMatchLine(x, y, 1, 0);
         if (horizontalMatches.Count >= 3) matchPieces.AddRange(horizontalMatches);
 
-        List<Piece> verticalMatches = CheckMatchLine(x, y, 0, 1); // Vertical
+        List<Piece> verticalMatches = CheckMatchLine(x, y, 0, 1);
         if (verticalMatches.Count >= 3) matchPieces.AddRange(verticalMatches);
 
         return matchPieces;
@@ -381,23 +396,27 @@ public class Board : MonoBehaviour
         {
             for (int y = 0; y < height; y++)
             {
-                if (pieces[x, y] == null) continue;
+                if (!IsWithinBounds(x, y) || pieces[x, y] == null) continue;
 
                 List<Piece> matchPieces = GetMatchPieces(x, y);
 
-                if (matchPieces.Count >= 3)
+                if (matchPieces.Count >= 3) // Só pega os matches de 3 ou mais
                 {
                     piecesToDestroy.AddRange(matchPieces);
                     totalDestroyed += matchPieces.Count;
 
-                    if (matchPieces.Count >= 4)
+                    // Verifique se deve instanciar um PowerUp
+                    if (matchPieces.Count >= 4) // Quando a combinação for de 4 ou mais peças
                     {
-                        // Cria um Power-Up em uma posição aleatória da combinação
                         int randomIndex = Random.Range(0, matchPieces.Count);
-                        Piece powerUpPosition = matchPieces[randomIndex];
-                        pieces[powerUpPosition.x, powerUpPosition.y] = null;
-                        InstantiateRandomPowerUp(powerUpPosition.x, powerUpPosition.y);
-                        Debug.Log("Tentando instanciar Power-Up");
+                        Piece powerUpPosition = matchPieces[randomIndex]; // Escolhe uma posição aleatória
+
+                        // Verifique se a posição do PowerUp está dentro dos limites
+                        if (IsWithinBounds(powerUpPosition.x, powerUpPosition.y))
+                        {
+                            pieces[powerUpPosition.x, powerUpPosition.y] = null; // Limpa a posição
+                            InstantiateRandomPowerUp(powerUpPosition.x, powerUpPosition.y); // Instancia o PowerUp
+                        }
                     }
 
                     GameManager.instance.AddScore(10);
@@ -411,7 +430,7 @@ public class Board : MonoBehaviour
 
         foreach (Piece piece in piecesToDestroy)
         {
-            if (piece != null && piece.gameObject != null)
+            if (piece != null && piece.gameObject != null && IsWithinBounds(piece.x, piece.y))
             {
                 pieces[piece.x, piece.y] = null;
                 if (piece.frutType != FrutType.Vazio)
@@ -425,6 +444,9 @@ public class Board : MonoBehaviour
         StartCoroutine(RefillBoard());
         return piecesToDestroy;
     }
+
+    
+
 
     IEnumerator GameOver()
     {
@@ -440,37 +462,13 @@ public class Board : MonoBehaviour
 
     void MovePiece(Piece piece, Vector3 newPosition, float duration)
     {
-        piece?.StartMoveAnimation(newPosition, duration);
-    }
-
-
-    public List<Piece> allPieces;  // Lista de todas as peças no tabuleiro
-
-    // Método para verificar e destruir uma peça no mesmo local
-    public void DestroyPieceAtPosition(int x, int y)
-    {
-        // Encontrar todas as peças na posição (x, y)
-        Piece pieceToDestroy = null;
-
-        foreach (var piece in allPieces)
+        if (piece != null)
         {
-            if (piece.x == x && piece.y == y)
-            {
-                // Se já encontrar uma peça, marque-a para destruição
-                if (pieceToDestroy == null)
-                {
-                    pieceToDestroy = piece;
-                }
-                else
-                {
-                    // Se já existe uma peça na posição, destrua uma delas
-                    Destroy(piece.gameObject);
-                    break;  // Se destruiu uma peça, saia do loop
-                }
-            }
+            piece.StartMoveAnimation(newPosition, duration);
+            piece.x = (int)newPosition.x;
+            piece.y = (int)newPosition.y;
         }
     }
-
 
 
     public void ActivateFranboesa(Piece amora, Piece targetPiece)
@@ -550,38 +548,30 @@ public class Board : MonoBehaviour
         StartCoroutine(RefillBoard());
     }
 
-    bool IsPowerUp(int x, int y)
-    {
-        // Verifica se a peça no grid é um PowerUp baseado no frutType
-        if (pieces[x, y] != null &&
-            (pieces[x, y].frutType == FrutType.Roma ||
-             pieces[x, y].frutType == FrutType.Cereja ||
-             pieces[x, y].frutType == FrutType.Franboesa))
-        {
-            return true; // Se for Roma, Cereja ou Framboesa, é PowerUp
-        }
-        return false;
-    }
 
     void InstantiateRandomPowerUp(int x, int y)
     {
-        // Verifica se a posição está vazia
-        if (pieces[x, y] != null) return;
+        // Verifica se a posição está dentro dos limites e se está vazia
+        if (!IsWithinBounds(x, y) || pieces[x, y] != null) return;
 
-        // Escolhe aleatoriamente um tipo de PowerUp
-        FrutType selectedPowerUp = (FrutType)Random.Range((int)FrutType.Roma, (int)FrutType.Franboesa + 1);
-
-        GameObject powerUpPrefab = powerUpprefab[Random.Range(0, powerUpprefab.Length)];
+        // Seleciona um PowerUp aleatório do array `powerupPrefab`
+        GameObject powerUpPrefab = powerupPrefab[Random.Range(0, powerupPrefab.Length)];
         GameObject powerUp = Instantiate(powerUpPrefab, new Vector3(x, y, 0), Quaternion.identity);
 
+        // Configura o `PowerUp` para agir como uma peça
         Piece powerUpPiece = powerUp.GetComponent<Piece>();
         powerUpPiece.Init(x, y, this);
-        powerUpPiece.frutType = selectedPowerUp; // Define o tipo de PowerUp como Roma, Cereja ou Framboesa
+        powerUpPiece.isPowerUp = true;
+        pieces[x, y] = powerUpPiece;  // Adiciona o `PowerUp` à matriz `pieces`
 
-        // Atribui a peça PowerUp à posição na matriz de peças
-        pieces[x, y] = powerUpPiece;
+        // Inicia a animação de movimento do `PowerUp`
+        powerUpPiece.StartMoveAnimation(new Vector3(x, y, 0), 0.3f);
     }
-
+    bool IsPositionEmpty(int x, int y)
+    {
+        // Verifica se a posição está dentro dos limites e se não há peça na posição
+        return IsWithinBounds(x, y) && pieces[x, y] == null;
+    }
     bool IsWithinBounds(int x, int y)
     {
         return x >= 0 && x < width && y >= 0 && y < height;

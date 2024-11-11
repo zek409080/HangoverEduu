@@ -8,15 +8,14 @@ public class UIManager : MonoBehaviour
 {
     [Header("Panel De Pause")]
     [SerializeField] TextMeshProUGUI scoreText, jogadasText;
-    [SerializeField]Button  buttonclose;
-    [SerializeField]GameObject menuPanel;
+    
 
     [Header("Panel De vitoria ou derrota")]
     [SerializeField] TextMeshProUGUI gameoverText;
+    [SerializeField] GameObject panel_GameOver;
 
-    public void RedtartScene()
+    public void RestartScene()
     {
-        menuPanel.SetActive(false);
         GameManager.instance.RestartGame();
     }
 
@@ -24,26 +23,11 @@ public class UIManager : MonoBehaviour
     {
         GameManager.instance.LoadScene(sceneName);
     }
-
-    public void ActiveMenu(bool ativo)
-    {
-        if (ativo)
-        {
-          menuPanel.SetActive(true);
-          Time.timeScale = 0f;
-        }
-        else
-        {
-          menuPanel.SetActive(false);
-          Time.timeScale = 1f;
-        }
-    }
     public void UpdateTextGameOver(string textGameover)
     {
         gameoverText.text = textGameover;
-        menuPanel.SetActive(true);
+        panel_GameOver.SetActive(true);
         Time.timeScale = 0f;
-        buttonclose.enabled = false;
     }
     public void UpdateJogadas(int jogadas)
     {

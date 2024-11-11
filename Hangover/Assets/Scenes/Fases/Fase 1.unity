@@ -1000,7 +1000,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1209041557}
         m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
         m_MethodName: QuitGame
         m_Mode: 5
@@ -1009,7 +1009,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: "Sele\xE7aoDeFase"
+          m_StringArgument: "sele\xE7\xE3oDeFase"
           m_BoolArgument: 0
         m_CallState: 1
 --- !u!114 &735899859
@@ -1693,10 +1693,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 910266460}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.041251794, y: 0.06253039}
-  m_AnchorMax: {x: 0.4625036, y: 0.32058072}
-  m_AnchoredPosition: {x: -1.5, y: -1.5}
-  m_SizeDelta: {x: 3.0950012, y: -3.4533005}
+  m_AnchorMin: {x: 0.037501197, y: 0.06253039}
+  m_AnchorMax: {x: 0.5, y: 0.33744195}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1134550995
 MonoBehaviour:
@@ -1742,10 +1742,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1209041557}
         m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: RestartGame
-        m_Mode: 5
+        m_MethodName: RestartScene
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1823,9 +1823,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scoreText: {fileID: 2123501548}
   jogadasText: {fileID: 785472551}
-  buttonclose: {fileID: 0}
-  menuPanel: {fileID: 0}
   gameoverText: {fileID: 113432530}
+  panel_GameOver: {fileID: 1255472552}
 --- !u!4 &1209041558
 Transform:
   m_ObjectHideFlags: 0
@@ -2405,10 +2404,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1209041557}
         m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: RestartGame
-        m_Mode: 5
+        m_MethodName: RestartScene
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -2844,10 +2843,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 910266460}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.043176044}
-  m_AnchorMax: {x: 0.95220613, y: 0.33744195}
-  m_AnchoredPosition: {x: -0.000015258789, y: 0}
-  m_SizeDelta: {x: -58.103, y: -59.7907}
+  m_AnchorMin: {x: 0.5, y: 0.06253039}
+  m_AnchorMax: {x: 0.9734989, y: 0.33744195}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1584150670
 MonoBehaviour:
@@ -2893,7 +2892,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1209041557}
         m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
         m_MethodName: QuitGame
         m_Mode: 5
@@ -2902,7 +2901,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: "Sele\xE7aoDeFase"
+          m_StringArgument: "sele\xE7\xE3oDeFase"
           m_BoolArgument: 0
         m_CallState: 1
 --- !u!114 &1584150671
@@ -3576,6 +3575,10 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5653086171243154531, guid: db76c244efaf5044f97e47d9be74a612, type: 3}
+      propertyPath: powerupPrefab.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5653086171243154531, guid: db76c244efaf5044f97e47d9be74a612, type: 3}
       propertyPath: piecePrefab.Array.data[3]
       value: 
       objectReference: {fileID: 6874434505175374339, guid: 48f4979ab729d1440b4d083e886c57ad, type: 3}
@@ -3613,6 +3616,18 @@ PrefabInstance:
       objectReference: {fileID: 766435143265915206, guid: d0fbc25096c6a174e96451be5c7bc14c, type: 3}
     - target: {fileID: 5653086171243154531, guid: db76c244efaf5044f97e47d9be74a612, type: 3}
       propertyPath: powerUpprefab.Array.data[2]
+      value: 
+      objectReference: {fileID: 9066069773785717412, guid: 9b9a69d38d1db8f4dbffcaa6f81ee268, type: 3}
+    - target: {fileID: 5653086171243154531, guid: db76c244efaf5044f97e47d9be74a612, type: 3}
+      propertyPath: powerupPrefab.Array.data[0]
+      value: 
+      objectReference: {fileID: 371608522373280429, guid: 33438289ef110354f811ec80f239ab3b, type: 3}
+    - target: {fileID: 5653086171243154531, guid: db76c244efaf5044f97e47d9be74a612, type: 3}
+      propertyPath: powerupPrefab.Array.data[1]
+      value: 
+      objectReference: {fileID: 766435143265915206, guid: d0fbc25096c6a174e96451be5c7bc14c, type: 3}
+    - target: {fileID: 5653086171243154531, guid: db76c244efaf5044f97e47d9be74a612, type: 3}
+      propertyPath: powerupPrefab.Array.data[2]
       value: 
       objectReference: {fileID: 9066069773785717412, guid: 9b9a69d38d1db8f4dbffcaa6f81ee268, type: 3}
     - target: {fileID: 5832218963569578393, guid: db76c244efaf5044f97e47d9be74a612, type: 3}

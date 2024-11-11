@@ -9,6 +9,7 @@ public class Piece : MonoBehaviour
     public int y;
     public Board board;
     public bool isInvisible;
+    public bool isPowerUp = false;
     public AudioSource audioSelect;
 
 
@@ -69,6 +70,25 @@ public class Piece : MonoBehaviour
             board.SelectPiece(this);
         }
     }
+    public void MoveToPosition(Vector3 targetPosition, float duration)
+    {
+        StartCoroutine(MoveCoroutine(targetPosition, duration));
+    }
+
+    private IEnumerator MoveCoroutine(Vector3 targetPosition, float duration)
+    {
+        Vector3 startPosition = transform.position;
+        float timeElapsed = 0;
+
+        while (timeElapsed < duration)
+        {
+            transform.position = Vector3.Lerp(startPosition, targetPosition, timeElapsed / duration);
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.position = targetPosition; // Garante que a peça chegue à posição final
+    }
 
     public void StartMoveAnimation(Vector3 newPosition, float duration)
     {
@@ -94,8 +114,6 @@ public class Piece : MonoBehaviour
         isMoving = false;
     }
 
-
-
     public void StartScaleAnimation(Vector3 newScale, float duration)
     {
         targetScale = newScale;
@@ -113,8 +131,9 @@ public enum FrutType
     Melancia,
     Pinha,
     Uva,
-    Roma,//poder
-    Cereja,//poder
-    Franboesa, //poder
+    Roma,     // Poder
+    Cereja,   // Poder
+    Franboesa, // Poder
+    PowerUp,  // Novo tipo para `PowerUps`
     Vazio
 }
