@@ -18,6 +18,7 @@ public class CerejaPiece : Piece
     {
         if (!isInvisible && gridManager != null)
         {
+            Debug.Log("Cereja clicada!");
             gridManager.powerUpManager.ActivateCereja(this);  // Ativar PowerUp cereja ao clicar
             gridManager.DestroyPiece(this);    // Destruir a peça cereja após o uso
         }

@@ -10,14 +10,18 @@ public class AmoraPiece : Piece
 
     public override void AnimateDestruction()
     {
-        // Primeiro ativa o PowerUp Amora
-        gridManager.powerUpManager.ActivateAmora(this, null); // Nenhuma peça alvo necessária para a amora
         base.AnimateDestruction();
+        gridManager.powerUpManager.ActivateAmora(this, null); // Especifique null se não houver peça alvo
     }
 
     void OnMouseDown()
     {
-       
+        if (!isInvisible && gridManager != null)
+        {
+            Debug.Log("Amora clicada!");
+            gridManager.powerUpManager.ActivateAmora(this, null);  // Ativar PowerUp amora ao clicar
+            gridManager.DestroyPiece(this);  // Destruir a peça amora após o uso
+        }
     }
 
     public override void OnSwap(Piece targetPiece)
@@ -28,7 +32,6 @@ public class AmoraPiece : Piece
         }
         base.OnSwap(targetPiece);
         gridManager.powerUpManager.ActivateAmora(this, targetPiece);
-        gridManager.DestroyPiece(this); // 
-        gridManager.DestroyPiece(this); // Destruir a própria Amora após o uso
+        gridManager.DestroyPiece(this);  // Destruir a própria Amora após o uso
     }
 }

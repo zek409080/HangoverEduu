@@ -21,11 +21,12 @@ public class PowerUpManager : MonoBehaviour
         Debug.Log("Ativando PowerUp Cereja");
 
         // Instanciar efeito de explosão
-        GameObject explosionEffect = Instantiate(destructionEffectPrefab, cereja.transform.position, Quaternion.identity);
-        Destroy(explosionEffect, 2.0f);
+        Instantiate(destructionEffectPrefab, cereja.transform.position, Quaternion.identity);
 
-        int explosionRadius = 2;
+        // Definindo o raio da explosão como 1, o que resulta em uma área 3x3
+        int explosionRadius = 1;
 
+        // Percorrendo em torno da peça Cereja
         for (int dx = -explosionRadius; dx <= explosionRadius; dx++)
         {
             for (int dy = -explosionRadius; dy <= explosionRadius; dy++)

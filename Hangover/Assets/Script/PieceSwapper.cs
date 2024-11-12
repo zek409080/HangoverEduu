@@ -73,8 +73,11 @@ public class PieceSwapper : MonoBehaviour
 
         _gridManager.SwapPieces(piece1, piece2);
 
-        if (!_gridManager.CheckAndProcessMatches(piece1, piece2))
+        bool matchesResolved = _gridManager.CheckAndProcessMatches(piece1, piece2);
+
+        if (!matchesResolved)
         {
+            // Swap back if no matches
             piece1.transform.DOMove(pos1, _gridManager.moveDuration);
             piece2.transform.DOMove(pos2, _gridManager.moveDuration);
 

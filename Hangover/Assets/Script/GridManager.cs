@@ -232,11 +232,48 @@ public class GridManager : MonoBehaviour
         {
             GameManager.AddScore(10);
             match.MarkForDestruction();
-            
+
             objectiveManager.AddScore(10);
             objectiveManager.AddPieceCount(match.frutType);
         }
         yield return StartCoroutine(ClearAndFillBoard());
         GameManager.DecrementJogadas();
+
+        // Resolva continuadamente até que não haja mais matches
+        yield return StartCoroutine(ResolveAllMatches());
+    }
+
+    private IEnumerator ResolveAllMatches()
+    {
+        bool hasMatches = true;
+        while (hasMatches)
+        {
+            hasMatches = false;
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    if (grid[x, y] != null)
+                    {
+                        List<Piece> matches = matchManager.GetAllMatchesForPiece(grid[x, y]);
+                        if (matches.Count >= 3)
+                        {
+                            foreach (var match in matches)
+                            {
+                                match.MarkForDestruction();
+                            }
+                            GameManager.AddScore(10 * matches.Count);
+                            objectiveManager.AddScore(10 * matches.Count);
+                            foreach (var match in matches)
+                            {
+                                objectiveManager.AddPieceCount(match.frutType);
+                            }
+                            hasMatches = true;
+                        }
+                    }
+                }
+            }
+            yield return StartCoroutine(ClearAndFillBoard());
+        }
     }
 }
