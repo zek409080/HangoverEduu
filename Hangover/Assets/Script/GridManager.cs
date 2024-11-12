@@ -11,7 +11,7 @@ public class GridManager : MonoBehaviour
     public GameObject[] fruitPrefabs;
     public Piece[,] grid;
     public GameObject destructionEffectPrefab;
-
+    [SerializeField] GameObject caixaFundo;
     private UIManager uiManager;
     private MatchManager matchManager;
     public PowerUpManager powerUpManager;
@@ -68,6 +68,7 @@ public class GridManager : MonoBehaviour
             {
                 Piece newPiece = CreateNewPiece(x, y, true);
                 grid[x, y] = newPiece;
+                Instantiate(caixaFundo, new Vector3(x, y, 0), Quaternion.identity);
             }
         }
     }
