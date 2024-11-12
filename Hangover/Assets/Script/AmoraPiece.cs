@@ -6,12 +6,13 @@ public class AmoraPiece : Piece
     {
         base.Init(x, y, gridManager);
         frutType = FrutType.Amora;
+        SetVisibility(true); // Garanta que a peça é visível ao inicializar
     }
 
     public override void AnimateDestruction()
     {
         base.AnimateDestruction();
-        gridManager.powerUpManager.ActivateAmora(this, null); // Especifique null se não houver peça alvo
+        gridManager.powerUpManager.ActivateAmora(this, null); // Null se não houver peça alvo
     }
 
     void OnMouseDown()
@@ -19,8 +20,8 @@ public class AmoraPiece : Piece
         if (!isInvisible && gridManager != null)
         {
             Debug.Log("Amora clicada!");
-            gridManager.powerUpManager.ActivateAmora(this, null);  // Ativar PowerUp amora ao clicar
-            gridManager.DestroyPiece(this);  // Destruir a peça amora após o uso
+            gridManager.powerUpManager.ActivateAmora(this, null); // Ativar PowerUp amora ao clicar
+            gridManager.DestroyPiece(this); // Destruir a peça amora após o uso
         }
     }
 
@@ -32,6 +33,6 @@ public class AmoraPiece : Piece
         }
         base.OnSwap(targetPiece);
         gridManager.powerUpManager.ActivateAmora(this, targetPiece);
-        gridManager.DestroyPiece(this);  // Destruir a própria Amora após o uso
+        gridManager.DestroyPiece(this); // Destruir a própria Amora após o uso
     }
 }
