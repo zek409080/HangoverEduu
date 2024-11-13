@@ -16,10 +16,6 @@ public class GameManager : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject);
         }
-        else if (instance != this)
-        {
-            Destroy(gameObject);
-        }
     }
 
     #endregion
@@ -65,6 +61,8 @@ public class GameManager : MonoBehaviour
     {
         FindFaderCanvasGroup();
         Time.timeScale = 1;
+
+        
     }
 
     public static void DecrementJogadas()
@@ -232,6 +230,7 @@ public class GameManager : MonoBehaviour
     public void ExitGame()
     {
         Application.Quit();
+        Debug.Log("saiu");
     }
 
     public void ResetScore()

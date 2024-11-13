@@ -471,12 +471,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 100
+  m_fontSize: 75
   m_fontSizeBase: 100
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 75.66
-  m_fontSizeMax: 75.66
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 25
+  m_fontSizeMax: 75
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -985,12 +985,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 270
+  m_fontSize: 200
   m_fontSizeBase: 270
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 241
-  m_fontSizeMax: 256.02
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 35
+  m_fontSizeMax: 200
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -1221,9 +1221,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectives:
-  - type: 0
+  - type: 1
     targetValue: 20
-    targetPiece: 4
+    targetPiece: 3
     isCompleted: 0
   onObjectivesCompleted:
     m_PersistentCalls:
@@ -1588,12 +1588,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 100
+  m_fontSize: 75
   m_fontSizeBase: 100
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 75.66
-  m_fontSizeMax: 75.66
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 25
+  m_fontSizeMax: 75
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -2008,7 +2008,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75343e08bc8d39340b35cf8e6393f6a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  delayDuringSwap: 0.2
+  delayDuringSwap: 0.1
 --- !u!4 &1234618947
 Transform:
   m_ObjectHideFlags: 0
@@ -2345,12 +2345,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 100
+  m_fontSize: 75
   m_fontSizeBase: 100
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 75.66
-  m_fontSizeMax: 75.66
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 25
+  m_fontSizeMax: 75
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -3469,7 +3469,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 5
   size: 30
-  initialBools: 000000000000000000000000000000000000000000000000000000000000
+  initialBools: 000000000000000000000001000100000100010000000000000000000000
 --- !u!4 &1854424051
 Transform:
   m_ObjectHideFlags: 0
@@ -3786,12 +3786,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 100
+  m_fontSize: 75
   m_fontSizeBase: 100
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 75.66
-  m_fontSizeMax: 75.66
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 25
+  m_fontSizeMax: 75
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -3920,12 +3920,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 270
+  m_fontSize: 240.85
   m_fontSizeBase: 270
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 241
-  m_fontSizeMax: 256.02
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 35
+  m_fontSizeMax: 241
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -4106,6 +4106,7 @@ MonoBehaviour:
   - {fileID: 5766391664119410148, guid: e36370fc2ccd85442bb8ad08917eaed8, type: 3}
   - {fileID: 8838499904282740777, guid: 88339dc5501b1df4bbf8f2cbcb692b92, type: 3}
   - {fileID: 6874434505175374339, guid: 48f4979ab729d1440b4d083e886c57ad, type: 3}
+  - {fileID: 5018873714049314917, guid: 70931bad00c870d4b90dd5d3d3de209a, type: 3}
   destructionEffectPrefab: {fileID: 5653956943498294196, guid: d741206eb23cda94fb1dc6acffbfa15c, type: 3}
   caixaFundo: {fileID: 6062328014917619854, guid: 4c0c87430f0efd94fa2b98191b0c2f67, type: 3}
   powerUpManager: {fileID: 0}

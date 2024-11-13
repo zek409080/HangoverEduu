@@ -157,9 +157,32 @@ public class GridManager : MonoBehaviour
                 }
             }
         }
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(moveDuration);
+        yield return StartCoroutine(CheckAllMatches());
     }
+    private IEnumerator CheckAllMatches()
+    {
+        bool matchFound = false;
 
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                List<Piece> match = matchManager.GetAllMatchesForPiece(grid[x, y]);
+                if (match.Count >= 3)
+                {
+                    matchFound = true;
+                    yield return StartCoroutine(HandleMatches(match));
+                }
+            }
+        }
+
+        // Se houverem novos matches, refaça o refill
+        if (matchFound)
+        {
+            yield return StartCoroutine(ClearAndFillBoard());
+        }
+    }
     private IEnumerator FillEmptySpaces()
     {
         for (int x = 0; x < width; x++)
