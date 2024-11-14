@@ -55,6 +55,11 @@ public class ObjectiveManager : MonoBehaviour
         currentScore += score;
         CheckObjectives();
     }
+    
+    public bool AreAllObjectivesCompleted()
+    {
+        return AllObjectivesCompleted();
+    }
 
     public void AddPieceCount(FrutType frutType)
     {

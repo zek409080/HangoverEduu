@@ -82,9 +82,18 @@ public class GameManager : MonoBehaviour
     private void TriggerGameOver()
     {
         UIManager uiManager = FindObjectOfType<UIManager>();
+        ObjectiveManager objectiveManager = FindObjectOfType<ObjectiveManager>();
+    
         if (uiManager != null)
         {
-            uiManager.ShowVictory("GameOver");
+            if(objectiveManager != null && objectiveManager.AreAllObjectivesCompleted())
+            {
+                uiManager.ShowVictory("Victory!");
+            }
+            else
+            {
+                uiManager.ShowVictory("Game Over! Você não completou todos os objetivos.");
+            }
         }
     }
 
