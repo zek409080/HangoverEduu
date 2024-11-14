@@ -1,8 +1,7 @@
 using UnityEngine;
+using TMPro;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using TMPro;
-using System.Collections.Generic;
 using System.Text;
 
 public class UIManager : MonoBehaviour
@@ -21,7 +20,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI objectivesText;
     [SerializeField] private GameObject objectiveCompletedPopup;
     [SerializeField] private TextMeshProUGUI objectiveCompletedText;
-    private GameManager gameManager;
+
     private ObjectiveManager objectiveManager;
     private StringBuilder _stringBuilder;
 
@@ -60,7 +59,7 @@ public class UIManager : MonoBehaviour
     {
         GameManager.instance.RestartCurrentLevel();
     }
-    
+
     public void UpdateObjectivesText()
     {
         if (objectiveManager != null)
@@ -180,19 +179,13 @@ public class UIManager : MonoBehaviour
         {
             int highScore = HighScoresManager.instance.GetHighScore(SceneManager.GetActiveScene().name);
             highScoreText.text = "High Score: " + highScore;
+            HighScoresManager.instance.SetHighScore(SceneManager.GetActiveScene().name, score); // Atualização do High Score em tempo real
         }
     }
 
     private void CheckEndGame()
     {
-        if (objectiveManager.AllObjectivesCompleted())
-        {
-            ShowGameOver("Parabéns! Você completou todos os objetivos.");
-        }
-        else
-        {
-            ShowGameOver("Game Over! Você não completou todos os objetivos.");
-        }
+        ShowVictory("Game Over! Você não completou todos os objetivos.");
     }
 
     private void PauseGame()

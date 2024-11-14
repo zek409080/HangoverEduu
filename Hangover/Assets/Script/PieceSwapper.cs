@@ -33,6 +33,10 @@ public class PieceSwapper : MonoBehaviour
         }
         else if (_gridManager.AreAdjacent(_selectedPiece, piece))
         {
+            // Decrementar a jogada aqui
+            GameManager.DecrementJogadas();
+            
+            // Iniciar a coroutine para trocar as peças
             StartCoroutine(SwapPieces(_selectedPiece, piece));
         }
         else
@@ -77,7 +81,7 @@ public class PieceSwapper : MonoBehaviour
 
         if (!matchesResolved)
         {
-            // Swap back if no matches
+            // Zero matches script, swap back
             piece1.transform.DOMove(pos1, _gridManager.moveDuration);
             piece2.transform.DOMove(pos2, _gridManager.moveDuration);
 

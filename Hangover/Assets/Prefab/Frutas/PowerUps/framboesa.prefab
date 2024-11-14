@@ -75,7 +75,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 21
   m_Sprite: {fileID: 21300000, guid: 424b768a2d3d01a4fa9d291f9e8efc2b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -147,9 +147,10 @@ MonoBehaviour:
   frutType: 12
   x: 0
   y: 0
-  isInvisible: 0
+  isInvisible: 1
   isMarkedForDestruction: 0
   somSelect: {fileID: 0}
+  amoraSprite: {fileID: 21300000, guid: 424b768a2d3d01a4fa9d291f9e8efc2b, type: 3}
 --- !u!82 &-8295547313286864857
 AudioSource:
   m_ObjectHideFlags: 0

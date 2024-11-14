@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PowerUpManager : MonoBehaviour
@@ -20,13 +19,10 @@ public class PowerUpManager : MonoBehaviour
         if (cereja == null || cereja.isMarkedForDestruction) return;
         Debug.Log("Ativando PowerUp Cereja");
 
-        // Instanciar efeito de explosão
         Instantiate(destructionEffectPrefab, cereja.transform.position, Quaternion.identity);
 
-        // Definindo o raio da explosão como 1, o que resulta em uma área 3x3
         int explosionRadius = 1;
 
-        // Percorrendo em torno da peça Cereja
         for (int dx = -explosionRadius; dx <= explosionRadius; dx++)
         {
             for (int dy = -explosionRadius; dy <= explosionRadius; dy++)
@@ -41,6 +37,7 @@ public class PowerUpManager : MonoBehaviour
                     {
                         neighbor.MarkForDestruction();
                         neighbor.AnimateDestruction();
+                        GameManager.AddScore(10); // Adiciona pontos para cada peça destruída
                     }
                 }
             }
@@ -60,6 +57,7 @@ public class PowerUpManager : MonoBehaviour
                 Instantiate(destructionEffectPrefab, gridManager.grid[x, roma.y].transform.position, Quaternion.identity);
                 gridManager.grid[x, roma.y].MarkForDestruction();
                 gridManager.grid[x, roma.y].AnimateDestruction();
+                GameManager.AddScore(10); // Adiciona pontos para cada peça destruída
             }
         }
 
@@ -70,6 +68,7 @@ public class PowerUpManager : MonoBehaviour
                 Instantiate(destructionEffectPrefab, gridManager.grid[roma.x, y].transform.position, Quaternion.identity);
                 gridManager.grid[roma.x, y].MarkForDestruction();
                 gridManager.grid[roma.x, y].AnimateDestruction();
+                GameManager.AddScore(10); // Adiciona pontos para cada peça destruída
             }
         }
 
@@ -88,10 +87,14 @@ public class PowerUpManager : MonoBehaviour
                 Instantiate(destructionEffectPrefab, piece.transform.position, Quaternion.identity);
                 piece.MarkForDestruction();
                 piece.AnimateDestruction();
+                GameManager.AddScore(10); // Adiciona pontos para cada peça destruída
             }
         }
 
         gridManager.DestroyPiece(amora);
+
+        // Iniciando a reinicialização e preenchimento do tabuleiro após a destruição das peças
+        StartCoroutine(gridManager.ResetMatching());
     }
 
     private bool IsWithinBounds(int x, int y)
