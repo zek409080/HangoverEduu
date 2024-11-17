@@ -120,9 +120,9 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void ShowVictory(string message)
+    public void ShowVictory(string victoryTextMessage)
     {
-        victoryText.text = message;
+        victoryText.text = victoryTextMessage;
         victoryPanel.SetActive(true);
         menuPanel.SetActive(false);
         PauseGame();
