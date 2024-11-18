@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+
 public class MatchManager : MonoBehaviour
 {
     private GridManager gridManager;
@@ -20,22 +21,6 @@ public class MatchManager : MonoBehaviour
     {
         yield return new WaitForSeconds(0.5f);
         yield return StartCoroutine(gridManager.ClearAndFillBoard());
-        
-    }
-
-    private bool HasAnyMatches()
-    {
-        for (int x = 0; x < gridManager.width; x++)
-        {
-            for (int y = 0; y < gridManager.height; y++)
-            {
-                if (CheckForMatchAt(x, y))
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     public bool CheckForMatchAt(int x, int y)

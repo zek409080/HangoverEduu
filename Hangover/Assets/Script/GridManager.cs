@@ -136,7 +136,6 @@ public class GridManager : MonoBehaviour
     {
         yield return new WaitForSeconds(0.5f);
         yield return StartCoroutine(ClearAndFillBoard());
-        yield return StartCoroutine(ResolveAllMatches());
     }
 
     public IEnumerator ClearAndFillBoard()
@@ -144,7 +143,6 @@ public class GridManager : MonoBehaviour
         yield return StartCoroutine(ClearMatches());
         yield return new WaitForSeconds(0.5f);
         yield return StartCoroutine(FillEmptySpaces());
-        yield return StartCoroutine(ResolveAllMatches());
     }
 
     private IEnumerator ClearMatches()
@@ -239,6 +237,7 @@ public class GridManager : MonoBehaviour
             objectiveManager.AddPieceCount(match.frutType);
         }
         yield return StartCoroutine(ClearAndFillBoard());
+        GameManager.DecrementJogadas();
 
         // Resolva continuadamente até que não haja mais matches
         yield return StartCoroutine(ResolveAllMatches());
@@ -264,6 +263,11 @@ public class GridManager : MonoBehaviour
                                 match.MarkForDestruction();
                             }
                             GameManager.AddScore(10 * matches.Count);
+                            objectiveManager.AddScore(10 * matches.Count);
+                            foreach (var match in matches)
+                            {
+                                objectiveManager.AddPieceCount(match.frutType);
+                            }
                             hasMatches = true;
                         }
                     }

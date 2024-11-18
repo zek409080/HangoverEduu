@@ -452,7 +452,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   initialScore: 0
   fadeDuration: 1
-  initialJogadas: 3
+  initialJogadas: 15
   faderCanvasGroup: {fileID: 835175157}
 --- !u!1 &464750288
 GameObject:

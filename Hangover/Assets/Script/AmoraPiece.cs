@@ -2,55 +2,26 @@ using UnityEngine;
 
 public class AmoraPiece : Piece
 {
-    public Sprite amoraSprite;
-
     public override void Init(int x, int y, GridManager gridManager)
     {
         base.Init(x, y, gridManager);
         frutType = FrutType.Amora;
-        SetSprite();
-        SetVisibility(true);
-    }
-
-    private void SetSprite()
-    {
-        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-        if (spriteRenderer != null && amoraSprite != null)
-        {
-            spriteRenderer.sprite = amoraSprite;
-
-            Debug.Log($"Sprite da Amora configurado: {spriteRenderer.sprite.name}");
-
-            Color color = spriteRenderer.color;
-            color.a = 1f;
-            spriteRenderer.color = color;
-        }
-        else
-        {
-            Debug.LogWarning("SpriteRenderer ou amoraSprite não está configurado.");
-        }
+        SetVisibility(true); // Garanta que a peça é visível ao inicializar
     }
 
     public override void AnimateDestruction()
     {
         base.AnimateDestruction();
-        gridManager.powerUpManager.ActivateAmora(this, null);
+        gridManager.powerUpManager.ActivateAmora(this, null); // Null se não houver peça alvo
     }
 
-    private void OnMouseDown()
+    void OnMouseDown()
     {
         if (!isInvisible && gridManager != null)
         {
             Debug.Log("Amora clicada!");
-            PieceSwapper pieceSwapper = FindObjectOfType<PieceSwapper>();
-            if (pieceSwapper != null)
-            {
-                pieceSwapper.SelectPiece(this);
-            }
-            else
-            {
-                Debug.LogError("PieceSwapper não encontrado na cena.");
-            }
+            gridManager.powerUpManager.ActivateAmora(this, null); // Ativar PowerUp amora ao clicar
+            gridManager.DestroyPiece(this); // Destruir a peça amora após o uso
         }
     }
 
@@ -61,19 +32,7 @@ public class AmoraPiece : Piece
             somSelect.Play();
         }
         base.OnSwap(targetPiece);
-
-        if (targetPiece != null)
-        {
-            gridManager.powerUpManager.ActivateAmora(this, targetPiece);
-
-            foreach (Piece piece in gridManager.grid)
-            {
-                if (piece != null && piece.frutType == targetPiece.frutType)
-                {
-                    gridManager.DestroyPiece(piece);
-                }
-            }
-            gridManager.DestroyPiece(this);
-        }
+        gridManager.powerUpManager.ActivateAmora(this, targetPiece);
+        gridManager.DestroyPiece(this); // Destruir a própria Amora após o uso
     }
 }

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using System.Collections;
 
 public class GameManager : MonoBehaviour
@@ -84,7 +85,17 @@ public class GameManager : MonoBehaviour
         UIManager uiManager = FindObjectOfType<UIManager>();
         if (uiManager != null)
         {
-            uiManager.ShowVictory("GameOver");
+            ObjectiveManager objectiveManager = FindObjectOfType<ObjectiveManager>();
+            if (objectiveManager != null && objectiveManager.AllObjectivesCompleted())
+            {
+                uiManager.ShowVictory("Victory!");
+                LevelManager.instance.UnlockNextLevel(SceneManager.GetActiveScene().name);
+                Debug.Log("Level completed, attempting to unlock next level.");
+            }
+            else
+            {
+                uiManager.ShowGameOver("Game Over!");
+            }
         }
     }
 
@@ -236,6 +247,7 @@ public class GameManager : MonoBehaviour
     }
 
     // Método para recarregar a cena atual
+
     public void RestartCurrentLevel()
     {
         Debug.Log("Restarting current level: " + SceneManager.GetActiveScene().name);
