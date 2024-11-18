@@ -8,12 +8,9 @@ public class Piece : MonoBehaviour
     public int y;
     public bool isInvisible;
     public bool isMarkedForDestruction;
-    public AudioSource somSelect;
     public GridManager gridManager { get; private set; }
     private Renderer pieceRenderer;
     private PieceSwapper pieceSwapper;
-    private float idleTime;
-    private float idleThreshold = 5.0f;
 
     private Color originalColor;
     private static readonly Color selectedColor = Color.gray;
@@ -30,7 +27,6 @@ public class Piece : MonoBehaviour
     {
         gridManager = FindObjectOfType<GridManager>();
         pieceSwapper = FindObjectOfType<PieceSwapper>();
-        somSelect = GetComponent<AudioSource>();
 
         if (gridManager == null)
         {
@@ -45,35 +41,6 @@ public class Piece : MonoBehaviour
         if (pieceRenderer != null)
         {
             originalColor = pieceRenderer.material.color;
-        }
-    }
-
-    private void Update()
-    {
-        if (MusicUI.instance != null)
-        {
-            if (MusicUI.instance.estadoDoSom)
-            {
-                if (somSelect != null)
-                {
-                    somSelect.enabled = true;
-                }
-                else
-                {
-                    Debug.LogWarning("somSelect is null in Piece");
-                }
-            }
-            else
-            {
-                if (somSelect != null)
-                {
-                    somSelect.enabled = false;
-                }
-                else
-                {
-                    Debug.LogWarning("somSelect is null in Piece");
-                }
-            }
         }
     }
 
@@ -146,7 +113,6 @@ public class Piece : MonoBehaviour
     {
         if (!isInvisible && gridManager != null)
         {
-            somSelect.Play();
             Debug.Log("Piece clicked for selection: " + name);
             pieceSwapper.SelectPiece(this);
         }
