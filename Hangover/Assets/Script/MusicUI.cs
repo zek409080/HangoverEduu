@@ -87,7 +87,7 @@ public class MusicUI : MonoBehaviour
                 som = somOn.GetComponent<Toggle>();
                 if (som != null)
                 {
-                    som.isOn = estadoDomusica;
+                    som.isOn = estadoDoSom;
                     som.onValueChanged.AddListener(delegate { LigarOuDesligarSom(); });
                 }
             }

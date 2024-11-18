@@ -9,11 +9,12 @@ public class PieceSwapper : MonoBehaviour
     [SerializeField]
     private float delayDuringSwap = 0.2f;
     private bool isSwapping = false;
+    [SerializeField] AudioSource swapperSound;
 
     private void Start()
     {
         _gridManager = FindObjectOfType<GridManager>();
-
+        swapperSound = GetComponent<AudioSource>();
         if (_gridManager == null)
         {
             Debug.LogError("GridManager not found in the scene. Please ensure there is a GridManager object in the scene.");
@@ -82,6 +83,10 @@ public class PieceSwapper : MonoBehaviour
             yield return new WaitForSeconds(delayDuringSwap);
 
             _gridManager.SwapPieces(piece1, piece2);
+            if (MusicUI.instance.estadoDoSom == true)
+            {
+                swapperSound.Play();
+            }
         }
 
         piece1.SetSelected(false);

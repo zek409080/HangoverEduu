@@ -16,14 +16,17 @@ public class GridManager : MonoBehaviour
     private MatchManager matchManager;
     public PowerUpManager powerUpManager;
     private ObjectiveManager objectiveManager;
+    AudioSource popAudio;
 
     private void Start()
     {
         grid = new Piece[width, height];
         InitializeGrid();
+
         
         matchManager = GetComponent<MatchManager>();
         powerUpManager = GetComponent<PowerUpManager>();
+        popAudio = GetComponent<AudioSource>();
 
         matchManager.CheckAndClearMatchesAtStart();
         
@@ -125,6 +128,10 @@ public class GridManager : MonoBehaviour
         if (destructionEffectPrefab != null)
         {
             Instantiate(destructionEffectPrefab, piece.transform.position, Quaternion.identity);
+            if (MusicUI.instance.estadoDoSom == true)
+            {
+                popAudio.Play();
+            }
         }
 
         piece.AnimateDestruction();

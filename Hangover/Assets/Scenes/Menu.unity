@@ -2474,7 +2474,7 @@ MonoBehaviour:
   musicContainer: {fileID: 0}
   somContainer: {fileID: 0}
   estadoDomusica: 1
-  estadoDoSom: 0
+  estadoDoSom: 1
   fundoMusical: {fileID: 2034093972}
 --- !u!4 &2034093974
 Transform:
