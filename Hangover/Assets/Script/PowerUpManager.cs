@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using System.Collections;
+
 public class PowerUpManager : MonoBehaviour
 {
     public GameObject destructionEffectPrefab;
@@ -92,6 +94,7 @@ public class PowerUpManager : MonoBehaviour
         }
 
         gridManager.DestroyPiece(amora);
+        StartCoroutine(gridManager.ResetMatching());
     }
 
     private bool IsWithinBounds(int x, int y)
