@@ -30,11 +30,6 @@ public class UIManager : MonoBehaviour
         _stringBuilder = new StringBuilder();
         menuPanel.SetActive(false);
         victoryPanel.SetActive(false);
-        
-        if (restartButton != null)
-        {
-            restartButton.onClick.AddListener(RestartLevel);
-        }
     }
 
     private void Start()
@@ -56,10 +51,17 @@ public class UIManager : MonoBehaviour
         // Podemos adicionar alguma lógica adicional se necessário
     }
 
-    private void RestartLevel()
+
+    public void RestartGame()
     {
         GameManager.instance.RestartCurrentLevel();
     }
+
+    public void QuitGame(string scene)
+    {
+        GameManager.instance.LoadScene(scene);
+    }
+    
     
     public void UpdateObjectivesText()
     {
@@ -93,19 +95,6 @@ public class UIManager : MonoBehaviour
     {
         GameManager.onScoreChanged -= UpdateScore;
         GameManager.onJogadasChanged -= UpdateJogadas;
-    }
-
-    public void RestartGame(string sceneName)
-    {
-        menuPanel.SetActive(false);
-        victoryPanel.SetActive(false);
-        ResumeGame();
-        GameManager.instance.LoadScene(sceneName);
-    }
-
-    public void QuitGame(string sceneName)
-    {
-        GameManager.instance.LoadScene(sceneName);
     }
 
     public void ToggleMenu(bool isActive)

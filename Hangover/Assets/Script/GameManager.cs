@@ -249,14 +249,14 @@ public class GameManager : MonoBehaviour
 
     public void RestartCurrentLevel()
     {
-        Debug.Log("Restarting current level: " + SceneManager.GetActiveScene().name);
+        
         StartCoroutine(FadeAndReloadCurrentScene());
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     private IEnumerator FadeAndReloadCurrentScene()
     {
         yield return StartCoroutine(FadeOut());
         ResetGameStates();
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
