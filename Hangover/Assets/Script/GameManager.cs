@@ -65,7 +65,7 @@ public class GameManager : MonoBehaviour
         
     }
 
-    public static void DecrementJogadas()
+    public void DecrementJogadas()
     {
         if (instance == null) return;
 

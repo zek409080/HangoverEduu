@@ -110,6 +110,7 @@ public class GridManager : MonoBehaviour
 
         piece1.OnSwap(piece2);
         piece2.OnSwap(piece1);
+        GameManager.instance.DecrementJogadas();
     }
 
     public bool AreAdjacent(Piece piece1, Piece piece2)
@@ -267,6 +268,5 @@ public class GridManager : MonoBehaviour
             objectiveManager.AddPieceCount(match.frutType);
         }
         yield return StartCoroutine(ClearAndFillBoard());
-        GameManager.DecrementJogadas();
     }
 }

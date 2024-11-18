@@ -81,7 +81,7 @@ public class PieceSwapper : MonoBehaviour
 
             yield return new WaitForSeconds(_gridManager.moveDuration);
             yield return new WaitForSeconds(delayDuringSwap);
-
+            GameManager.instance.DecrementJogadas();
             _gridManager.SwapPieces(piece1, piece2);
             if (MusicUI.instance.estadoDoSom == true)
             {
