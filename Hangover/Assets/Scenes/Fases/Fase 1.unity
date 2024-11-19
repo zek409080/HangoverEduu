@@ -1222,7 +1222,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectives:
   - type: 0
-    targetValue: 20
+    targetValue: 100
     targetPiece: 4
     isCompleted: 0
   onObjectivesCompleted:

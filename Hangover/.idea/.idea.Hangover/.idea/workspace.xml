@@ -5,23 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8cd84c9d-24f4-49ac-af28-737b057b860e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Hangover/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Hangover/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Fase 1.unity" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Fase 1.unity.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Fases/Fase 2.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Fases/Fase 2.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Fases/Fase 2.unity.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Fases/Fase 2.unity.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Fases/Fase 3.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Fases/Fase 3.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Fases/Fase 3.unity.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Fases/Fase 3.unity.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Fases/Fase 4.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Fases/Fase 4.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Fases/Fase 4.unity.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Fases/Fase 4.unity.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Fases/Fase 5.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Fases/Fase 5.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Fases/Fase 5.unity.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Fases/Fase 5.unity.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Menu.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Menu.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Script/GameManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/GameManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Script/MenuManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/MenuManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Script/ObjectiveManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/ObjectiveManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Script/UIManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/UIManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/selecaoDeFase.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/selecaoDeFase.unity" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,6 +16,9 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />

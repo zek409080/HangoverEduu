@@ -82,20 +82,54 @@ public class GameManager : MonoBehaviour
 
     private void TriggerGameOver()
     {
+        ObjectiveManager objectiveManager = FindObjectOfType<ObjectiveManager>();
+        if (objectiveManager != null)
+        {
+            CheckEndGameConditions(objectiveManager);
+        }
+    }
+
+    public static void CheckEndGameConditions(ObjectiveManager objectiveManager)
+    {
+        if (objectiveManager.AllObjectivesCompleted())
+        {
+            HandleWin();
+        }
+        else
+        {
+            HandleGameOver();
+        }
+    }
+
+    public static void HandleWin()
+    {
         UIManager uiManager = FindObjectOfType<UIManager>();
         if (uiManager != null)
         {
-            ObjectiveManager objectiveManager = FindObjectOfType<ObjectiveManager>();
-            if (objectiveManager != null && objectiveManager.AllObjectivesCompleted())
-            {
-                uiManager.ShowVictory("Victory!");
-                LevelManager.instance.UnlockNextLevel(SceneManager.GetActiveScene().name);
-                Debug.Log("Level completed, attempting to unlock next level.");
-            }
-            else
-            {
-                uiManager.ShowGameOver("Game Over!");
-            }
+            uiManager.ShowVictory("Victory!");
+        }
+        
+        LevelManager.instance.UnlockNextLevel(SceneManager.GetActiveScene().name);
+        Debug.Log("Level completed, attempting to unlock next level.");
+    }
+
+    public static void HandleGameOver()
+    {
+        UIManager uiManager = FindObjectOfType<UIManager>();
+        if (uiManager != null)
+        {
+            uiManager.ShowGameOver("Game Over!");
+        }
+
+        if (EnergyManager.instance != null && EnergyManager.instance.HasEnergy())
+        {
+            // Aqui garantimos que a energia seja consumida apenas uma vez.
+            EnergyManager.instance.UseEnergy();
+            Debug.Log("Jogador falhou na fase e perdeu uma vida.");
+        }
+        else
+        {
+            Debug.LogWarning("Jogador tentou perder uma vida, mas não há energia disponível.");
         }
     }
 
@@ -260,4 +294,6 @@ public class GameManager : MonoBehaviour
         ResetGameStates();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
+    
+    
 }

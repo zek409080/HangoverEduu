@@ -276,4 +276,9 @@ public class GridManager : MonoBehaviour
             yield return StartCoroutine(ClearAndFillBoard());
         }
     }
+    
+    public void CheckEndGameConditions()
+    {
+        GameManager.CheckEndGameConditions(objectiveManager);
+    }
 }
