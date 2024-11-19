@@ -497,7 +497,6 @@ MonoBehaviour:
   maxEnergy: 5
   regenerationTime: 600
   energyText: {fileID: 0}
-  outOfEnergyPopup: {fileID: 1618290244}
   currentEnergy: 0
   currentTimeToNextRegeneration: 0
 --- !u!4 &60372051
@@ -2930,6 +2929,7 @@ MonoBehaviour:
   - {fileID: 1333677405}
   - {fileID: 254908206}
   regenerationTimeText: {fileID: 865184451}
+  energyPopUp: {fileID: 1618290244}
 --- !u!4 &578622608
 Transform:
   m_ObjectHideFlags: 0

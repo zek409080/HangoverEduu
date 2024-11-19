@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class EnergyManager : MonoBehaviour
 {
@@ -13,7 +14,7 @@ public class EnergyManager : MonoBehaviour
 
     [Header("UI Elements")]
     public TextMeshProUGUI energyText;
-    public GameObject energyPopUp; // Renomeado para EnergyPopUp
+    
 
     public delegate void EnergyChangedHandler(int currentEnergy);
     public event EnergyChangedHandler OnEnergyChanged;
@@ -41,11 +42,23 @@ public class EnergyManager : MonoBehaviour
     {
         LoadEnergy();
         StartCoroutine(RegenerateEnergy());
-        // Referenciar o EnergyPopUp
+        ReconfigurePopUp();
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        ReconfigurePopUp();
+    }
+
+    private void ReconfigurePopUp()
+    {
+        GameObject energyPopUp = GameObject.Find("EnergyPopUp");
+        
         if (energyPopUp != null)
         {
-            energyPopUp.SetActive(false); // Certifique-se de que está desativado inicialmente
+            energyPopUp.SetActive(false);
         }
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private void LoadEnergy()
@@ -100,20 +113,9 @@ public class EnergyManager : MonoBehaviour
             currentEnergy--;
             UpdateEnergyUI();
             SaveEnergy();
-
-            if (currentEnergy == 0 && energyPopUp != null)
-            {
-                StartCoroutine(ShowEnergyPopUp());
-            }
         }
     }
-
-    public IEnumerator ShowEnergyPopUp()
-    {
-        energyPopUp.SetActive(true);
-        yield return new WaitForSeconds(2f); // Tempo que o popup ficará visível
-        energyPopUp.SetActive(false);
-    }
+    
 
     [ContextMenu("ResetEnergy")]
     public void ResetEnergy()

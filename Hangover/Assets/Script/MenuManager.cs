@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 
 public class MenuManager : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI highScoreText;
     [SerializeField] GameObject[] energyIcons;  // Array de ícones de energia
     [SerializeField] TextMeshProUGUI regenerationTimeText;
+    [SerializeField] GameObject energyPopUp;
 
     private string selectedFase;
 
@@ -34,6 +36,7 @@ public class MenuManager : MonoBehaviour
 
         EnergyManager.instance.OnEnergyChanged += UpdateEnergyIcons;
         EnergyManager.instance.OnTimeToNextRegenerationChanged += UpdateRegenerationTime;
+        energyPopUp.SetActive(false);
     }
 
     private void OnDestroy()
@@ -59,15 +62,16 @@ public class MenuManager : MonoBehaviour
 
     public void LoadCena(string cena)
     {
-        if (EnergyManager.instance.currentEnergy > 0)
+        if (EnergyManager.instance.HasEnergy())
         {
             GameManager.instance.LoadScene(cena);
         }
         else
         {
-            StartCoroutine(EnergyManager.instance.ShowEnergyPopUp());
+            StartCoroutine(ShowEnergyPopUp());
         }
     }
+
 
     public void OpenSite(string url)
     {
@@ -117,4 +121,12 @@ public class MenuManager : MonoBehaviour
             }
         }
     }
+    
+    public IEnumerator ShowEnergyPopUp()
+    {
+        energyPopUp.SetActive(true);
+        yield return new WaitForSeconds(2f); // Tempo que o popup ficará visível
+        energyPopUp.SetActive(false);
+    }
+    
 }

@@ -53,6 +53,23 @@ public class GameManager : MonoBehaviour
     {
         InitializeScene();
         StartCoroutine(FadeIn());
+
+        if (scene.name == "Menu") 
+        {
+            ConfigureMenuScene();
+        }
+    }
+
+    private void ConfigureMenuScene()
+    {
+        Button startButton = GameObject.Find("PlayGame").GetComponent<Button>(); 
+        if (startButton != null)
+        {
+            startButton.onClick.AddListener(() =>
+            {
+                LoadScene("selecaoDeFase"); // Substitua pelo nome da sua cena de jogo
+            });
+        }
     }
 
     private void Initialize()
@@ -284,8 +301,23 @@ public class GameManager : MonoBehaviour
 
     public void RestartCurrentLevel()
     {
-        Debug.Log("Restarting current level: " + SceneManager.GetActiveScene().name);
-        StartCoroutine(FadeAndReloadCurrentScene());
+        // Verifica se há energia suficiente antes de reiniciar
+        if (EnergyManager.instance != null && EnergyManager.instance.HasEnergy())
+        {
+            // Consome uma unidade de energia
+            EnergyManager.instance.UseEnergy();
+            Debug.Log("Restarting current level: " + SceneManager.GetActiveScene().name);
+            StartCoroutine(FadeAndReloadCurrentScene());
+        }
+        else
+        {
+            Debug.LogWarning("Not enough energy to restart the level.");
+            UIManager uiManager = FindObjectOfType<UIManager>();
+            if (uiManager != null)
+            {
+                uiManager.ShowGameOver("Not enough energy to restart!");
+            }
+        }
     }
 
     private IEnumerator FadeAndReloadCurrentScene()
@@ -294,6 +326,4 @@ public class GameManager : MonoBehaviour
         ResetGameStates();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
-    
-    
 }
