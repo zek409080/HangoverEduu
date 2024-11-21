@@ -72,7 +72,6 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-
     public void OpenSite(string url)
     {
         Application.OpenURL(url);
@@ -105,13 +104,15 @@ public class MenuManager : MonoBehaviour
             {
                 string faseSceneName = faseSceneNames[i];
                 Button button = buttonObject.GetComponent<Button>();
-                if (LevelManager.instance.IsLevelUnlocked(faseSceneName))
+                if (LevelManager.instance.IsLevelUnlocked(i + 1))
                 {
+                    Debug.Log($"A fase {faseSceneName} está desbloqueada.");
                     button.onClick.AddListener(() => SetSelectedFase(true, faseSceneName));
                     button.interactable = true;
                 }
                 else
                 {
+                    Debug.Log($"A fase {faseSceneName} está bloqueada.");
                     button.interactable = false;
                 }
             }
@@ -121,12 +122,11 @@ public class MenuManager : MonoBehaviour
             }
         }
     }
-    
+
     public IEnumerator ShowEnergyPopUp()
     {
         energyPopUp.SetActive(true);
         yield return new WaitForSeconds(2f); // Tempo que o popup ficará visível
         energyPopUp.SetActive(false);
     }
-    
 }

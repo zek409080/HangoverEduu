@@ -54,7 +54,7 @@ public class GameManager : MonoBehaviour
         InitializeScene();
         StartCoroutine(FadeIn());
 
-        if (scene.name == "Menu") 
+        if (scene.name == "Menu")
         {
             ConfigureMenuScene();
         }
@@ -62,12 +62,12 @@ public class GameManager : MonoBehaviour
 
     private void ConfigureMenuScene()
     {
-        Button startButton = GameObject.Find("PlayGame").GetComponent<Button>(); 
+        Button startButton = GameObject.Find("PlayGame").GetComponent<Button>();
         if (startButton != null)
         {
             startButton.onClick.AddListener(() =>
             {
-                LoadScene("selecaoDeFase"); // Substitua pelo nome da sua cena de jogo
+                LoadScene("selecaoDeFase"); // Substitua pelo nome da sua cena de fase de seleção
             });
         }
     }
@@ -125,8 +125,9 @@ public class GameManager : MonoBehaviour
         {
             uiManager.ShowVictory("Victory!");
         }
-        
-        LevelManager.instance.UnlockNextLevel(SceneManager.GetActiveScene().name);
+
+        int currentLevel = GetCurrentLevel();
+        LevelManager.instance.UnlockNextLevel(currentLevel);
         Debug.Log("Level completed, attempting to unlock next level.");
     }
 
@@ -187,7 +188,7 @@ public class GameManager : MonoBehaviour
     {
         ResetScore();
         ResetJogadas();
-        
+
         ObjectiveManager objectiveManager = FindObjectOfType<ObjectiveManager>();
         if (objectiveManager != null)
         {
@@ -325,5 +326,17 @@ public class GameManager : MonoBehaviour
         yield return StartCoroutine(FadeOut());
         ResetGameStates();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    // Adiciona um método auxiliar para obter o número da fase atual
+    private static int GetCurrentLevel()
+    {
+        string sceneName = SceneManager.GetActiveScene().name;
+        int level;
+        if (int.TryParse(sceneName.Replace("Fase ", ""), out level))
+        {
+            return level;
+        }
+        return 1; // Retorna 1 se não conseguir parsear, como fallback
     }
 }

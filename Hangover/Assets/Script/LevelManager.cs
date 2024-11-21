@@ -1,10 +1,8 @@
 using UnityEngine;
-using System.Collections.Generic;
 
-  public class LevelManager : MonoBehaviour
+public class LevelManager : MonoBehaviour
 {
     public static LevelManager instance;
-    private List<string> unlockedLevels = new List<string>();
 
     private void Awake()
     {
@@ -12,7 +10,7 @@ using System.Collections.Generic;
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
-            LoadUnlockedLevels();
+            EnsureLevel1Unlocked();
         }
         else
         {
@@ -20,57 +18,41 @@ using System.Collections.Generic;
         }
     }
 
-    private void LoadUnlockedLevels()
+    // Garante que a fase 1 esteja sempre desbloqueada
+    private void EnsureLevel1Unlocked()
     {
-        unlockedLevels = new List<string>();
-        int totalLevels = 14; // Por exemplo, 14 níveis
-        for (int i = 1; i <= totalLevels; i++)
-        {
-            string key = $"Fase{i}_unlocked";
-            if (PlayerPrefs.GetInt(key, i == 1 ? 1 : 0) == 1)
-                unlockedLevels.Add($"Fase {i}");
-        }
-        Debug.Log("Loaded unlocked levels: " + string.Join(", ", unlockedLevels.ToArray()));
+        PlayerPrefs.SetInt("Level1_unlocked", 1);
+        PlayerPrefs.Save();
     }
 
-    public bool IsLevelUnlocked(string levelName)
+    // Verifica se a fase está desbloqueada
+    public bool IsLevelUnlocked(int level)
     {
-        return unlockedLevels.Contains(levelName);
+        return PlayerPrefs.GetInt($"Level{level}_unlocked", level == 1 ? 1 : 0) == 1;
     }
 
-    public void UnlockNextLevel(string completedLevelName)
+    // Desbloqueia a próxima fase
+    public void UnlockNextLevel(int completedLevel)
     {
-        Debug.Log($"Attempting to unlock next level after completing {completedLevelName}");
-
-        int index = unlockedLevels.IndexOf(completedLevelName);
-        if (index != -1)
-        {
-            string nextLevel = $"Fase {index + 2}";
-            if (!unlockedLevels.Contains(nextLevel))
-            {
-                unlockedLevels.Add(nextLevel);
-                PlayerPrefs.SetInt($"{nextLevel}_unlocked", 1);
-                PlayerPrefs.Save();
-                Debug.Log($"Unlocked level: {nextLevel}");
-            }
-        }
-        else
-        {
-            Debug.LogWarning($"Completed level {completedLevelName} not found in unlockedLevels.");
-        }
+        int nextLevel = completedLevel + 1;
+        PlayerPrefs.SetInt($"Level{nextLevel}_unlocked", 1);
+        PlayerPrefs.Save();
+        Debug.Log($"Nível {nextLevel} foi desbloqueado.");
     }
 
-    public void UnlockLevel(string levelName)
+    // Desbloqueia uma fase específica
+    public void UnlockLevel(int level)
     {
-        if (!unlockedLevels.Contains(levelName))
-        {
-            unlockedLevels.Add(levelName);
-            PlayerPrefs.SetInt($"{levelName}_unlocked", 1);
-            PlayerPrefs.Save();
-            Debug.Log($"Unlocked level: {levelName}");
-        }
+        PlayerPrefs.SetInt($"Level{level}_unlocked", 1);
+        PlayerPrefs.Save();
+        Debug.Log($"Nível {level} foi desbloqueado.");
     }
-    
-    
-    
+
+    // Reseta o progresso (utilizado para debug e testes)
+    public void ResetLevels()
+    {
+        PlayerPrefs.DeleteAll();
+        EnsureLevel1Unlocked();
+        Debug.Log("Progresso de fases foi resetado.");
+    }
 }

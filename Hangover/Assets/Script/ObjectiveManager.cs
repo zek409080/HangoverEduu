@@ -105,6 +105,10 @@ public class ObjectiveManager : MonoBehaviour
         {
             Debug.Log("Todos os objetivos foram cumpridos!");
             onObjectivesCompleted?.Invoke();
+
+            // Desbloqueia a próxima fase
+            int currentLevel = GetCurrentLevel();
+            LevelManager.instance.UnlockNextLevel(currentLevel);
         }
     }
 
@@ -175,6 +179,7 @@ public class ObjectiveManager : MonoBehaviour
         }
         return 0;
     }
+
     public void CheckGameOver(GridManager gridManager)
     {
         if (AllObjectivesCompleted())
@@ -185,5 +190,17 @@ public class ObjectiveManager : MonoBehaviour
         {
             GameManager.HandleGameOver();
         }
+    }
+
+    // Obtém o nível atual a partir da cena ativa
+    private int GetCurrentLevel()
+    {
+        string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        int level;
+        if (int.TryParse(sceneName.Replace("Fase ", ""), out level))
+        {
+            return level;
+        }
+        return 1; // Retorna 1 se não conseguir parsear, como fallback
     }
 }

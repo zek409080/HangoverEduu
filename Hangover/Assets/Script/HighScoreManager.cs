@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class HighScoresManager : MonoBehaviour
 {
@@ -34,6 +35,7 @@ public class HighScoresManager : MonoBehaviour
         {
             highScores[levelName] = score;
             PlayerPrefs.SetInt($"{levelName}_highscore", score);
+            PlayerPrefs.Save();
         }
     }
 
@@ -47,7 +49,25 @@ public class HighScoresManager : MonoBehaviour
 
     private IEnumerable<string> GetLevelNames()
     {
-        // Método para obter os nomes dos níveis. A ser implementado de acordo com seu projeto.
-        return new List<string> { "Level1", "Level2", "Level3" }; 
+        List<string> levelNames = new List<string>();
+        int sceneCount = SceneManager.sceneCountInBuildSettings;
+        for (int i = 0; i < sceneCount; i++)
+        {
+            string scenePath = SceneUtility.GetScenePathByBuildIndex(i);
+            string sceneName = System.IO.Path.GetFileNameWithoutExtension(scenePath);
+            levelNames.Add(sceneName);
+        }
+        return levelNames;
+    }
+
+    [ContextMenu("ResetHighScores")]
+    public void ResetHighScores()
+    {
+        foreach (string levelName in GetLevelNames())
+        {
+            PlayerPrefs.DeleteKey($"{levelName}_highscore");
+        }
+        PlayerPrefs.Save();
+        LoadHighScores();
     }
 }

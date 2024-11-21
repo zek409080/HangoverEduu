@@ -14,7 +14,6 @@ public class EnergyManager : MonoBehaviour
 
     [Header("UI Elements")]
     public TextMeshProUGUI energyText;
-    
 
     public delegate void EnergyChangedHandler(int currentEnergy);
     public event EnergyChangedHandler OnEnergyChanged;
@@ -115,7 +114,6 @@ public class EnergyManager : MonoBehaviour
             SaveEnergy();
         }
     }
-    
 
     [ContextMenu("ResetEnergy")]
     public void ResetEnergy()
