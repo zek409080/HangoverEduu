@@ -166,7 +166,7 @@ public class ObjectiveManager : MonoBehaviour
         // Atualizar a UI para refletir o estado reiniciado
         UpdateUIForNextObjective();
     }
-    
+
     public int GetPieceCount(FrutType frutType)
     {
         if (pieceCounts.ContainsKey(frutType))
@@ -175,5 +175,15 @@ public class ObjectiveManager : MonoBehaviour
         }
         return 0;
     }
-    
+    public void CheckGameOver(GridManager gridManager)
+    {
+        if (AllObjectivesCompleted())
+        {
+            GameManager.HandleWin();
+        }
+        else
+        {
+            GameManager.HandleGameOver();
+        }
+    }
 }

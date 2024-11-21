@@ -16,6 +16,10 @@ public class GameManager : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject);
         }
+        else if (instance != this)
+        {
+            Destroy(gameObject);
+        }
     }
 
     #endregion
@@ -61,11 +65,9 @@ public class GameManager : MonoBehaviour
     {
         FindFaderCanvasGroup();
         Time.timeScale = 1;
-
-        
     }
 
-    public void DecrementJogadas()
+    public static void DecrementJogadas()
     {
         if (instance == null) return;
 
@@ -80,20 +82,54 @@ public class GameManager : MonoBehaviour
 
     private void TriggerGameOver()
     {
+        ObjectiveManager objectiveManager = FindObjectOfType<ObjectiveManager>();
+        if (objectiveManager != null)
+        {
+            CheckEndGameConditions(objectiveManager);
+        }
+    }
+
+    public static void CheckEndGameConditions(ObjectiveManager objectiveManager)
+    {
+        if (objectiveManager.AllObjectivesCompleted())
+        {
+            HandleWin();
+        }
+        else
+        {
+            HandleGameOver();
+        }
+    }
+
+    public static void HandleWin()
+    {
         UIManager uiManager = FindObjectOfType<UIManager>();
         if (uiManager != null)
         {
-            ObjectiveManager objectiveManager = FindObjectOfType<ObjectiveManager>();
-            if (objectiveManager != null && objectiveManager.AllObjectivesCompleted())
-            {
-                uiManager.ShowVictory("Victory!");
-                LevelManager.instance.UnlockNextLevel(SceneManager.GetActiveScene().name);
-                Debug.Log("Level completed, attempting to unlock next level.");
-            }
-            else
-            {
-                uiManager.ShowGameOver("Game Over!");
-            }
+            uiManager.ShowVictory("Victory!");
+        }
+        
+        LevelManager.instance.UnlockNextLevel(SceneManager.GetActiveScene().name);
+        Debug.Log("Level completed, attempting to unlock next level.");
+    }
+
+    public static void HandleGameOver()
+    {
+        UIManager uiManager = FindObjectOfType<UIManager>();
+        if (uiManager != null)
+        {
+            uiManager.ShowGameOver("Game Over!");
+        }
+
+        if (EnergyManager.instance != null && EnergyManager.instance.HasEnergy())
+        {
+            // Aqui garantimos que a energia seja consumida apenas uma vez.
+            EnergyManager.instance.UseEnergy();
+            Debug.Log("Jogador falhou na fase e perdeu uma vida.");
+        }
+        else
+        {
+            Debug.LogWarning("Jogador tentou perder uma vida, mas não há energia disponível.");
         }
     }
 
@@ -230,7 +266,6 @@ public class GameManager : MonoBehaviour
     public void ExitGame()
     {
         Application.Quit();
-        Debug.Log("saiu");
     }
 
     public void ResetScore()
@@ -249,14 +284,16 @@ public class GameManager : MonoBehaviour
 
     public void RestartCurrentLevel()
     {
-        
+        Debug.Log("Restarting current level: " + SceneManager.GetActiveScene().name);
         StartCoroutine(FadeAndReloadCurrentScene());
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     private IEnumerator FadeAndReloadCurrentScene()
     {
         yield return StartCoroutine(FadeOut());
         ResetGameStates();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
+    
+    
 }

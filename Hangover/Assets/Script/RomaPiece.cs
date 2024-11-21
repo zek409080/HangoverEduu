@@ -18,6 +18,7 @@ public class RomaPiece : Piece
     {
         if (!isInvisible && gridManager != null)
         {
+            Debug.Log("Roma clicada!");
             gridManager.powerUpManager.ActivateRoma(this);  // Ativar PowerUp roma ao clicar
             gridManager.DestroyPiece(this);  // Destruir a peça roma após o uso
         }

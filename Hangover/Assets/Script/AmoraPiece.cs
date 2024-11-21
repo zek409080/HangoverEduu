@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class AmoraPiece : Piece
 {
+    PieceSwapper swapper;
+    
     public override void Init(int x, int y, GridManager gridManager)
     {
         base.Init(x, y, gridManager);
@@ -10,21 +12,26 @@ public class AmoraPiece : Piece
 
     public override void AnimateDestruction()
     {
-        // Primeiro ativa o PowerUp Amora
-        gridManager.powerUpManager.ActivateAmora(this, null); // Nenhuma peça alvo necessária para a amora
         base.AnimateDestruction();
+        gridManager.powerUpManager.ActivateAmora(this, null); // Especifique null se não houver peça alvo
     }
 
     void OnMouseDown()
     {
-       
-    }
+        if (!isInvisible && gridManager != null)
+        {
+            Debug.Log("Amora clicada!");
 
-    public override void OnSwap(Piece targetPiece)
-    {
-        base.OnSwap(targetPiece);
-        gridManager.powerUpManager.ActivateAmora(this, targetPiece);
-        gridManager.DestroyPiece(this); // 
-        gridManager.DestroyPiece(this); // Destruir a própria Amora após o uso
+            // Certifique-se de passar a responsabilidade para o PieceSwapper
+            if (pieceSwapper != null)
+            {
+                pieceSwapper.SelectPiece(this); // Seleciona a Amora para troca
+            }
+            else
+            {
+                Debug.LogError("pieceSwapper é null na AmoraPiece");
+            }
+        }
     }
+    
 }

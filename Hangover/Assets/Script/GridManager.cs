@@ -16,17 +16,14 @@ public class GridManager : MonoBehaviour
     private MatchManager matchManager;
     public PowerUpManager powerUpManager;
     private ObjectiveManager objectiveManager;
-    AudioSource popAudio;
 
     private void Start()
     {
         grid = new Piece[width, height];
         InitializeGrid();
-
         
         matchManager = GetComponent<MatchManager>();
         powerUpManager = GetComponent<PowerUpManager>();
-        popAudio = GetComponent<AudioSource>();
 
         matchManager.CheckAndClearMatchesAtStart();
         
@@ -110,7 +107,6 @@ public class GridManager : MonoBehaviour
 
         piece1.OnSwap(piece2);
         piece2.OnSwap(piece1);
-        GameManager.instance.DecrementJogadas();
     }
 
     public bool AreAdjacent(Piece piece1, Piece piece2)
@@ -129,10 +125,6 @@ public class GridManager : MonoBehaviour
         if (destructionEffectPrefab != null)
         {
             Instantiate(destructionEffectPrefab, piece.transform.position, Quaternion.identity);
-            if (MusicUI.instance.estadoDoSom == true)
-            {
-                popAudio.Play();
-            }
         }
 
         piece.AnimateDestruction();
@@ -165,32 +157,9 @@ public class GridManager : MonoBehaviour
                 }
             }
         }
-        yield return new WaitForSeconds(moveDuration);
-        yield return StartCoroutine(CheckAllMatches());
+        yield return new WaitForSeconds(0.5f);
     }
-    private IEnumerator CheckAllMatches()
-    {
-        bool matchFound = false;
 
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                List<Piece> match = matchManager.GetAllMatchesForPiece(grid[x, y]);
-                if (match.Count >= 3)
-                {
-                    matchFound = true;
-                    yield return StartCoroutine(HandleMatches(match));
-                }
-            }
-        }
-
-        // Se houverem novos matches, refa�a o refill
-        if (matchFound)
-        {
-            yield return StartCoroutine(ClearAndFillBoard());
-        }
-    }
     private IEnumerator FillEmptySpaces()
     {
         for (int x = 0; x < width; x++)
@@ -263,10 +232,53 @@ public class GridManager : MonoBehaviour
         {
             GameManager.AddScore(10);
             match.MarkForDestruction();
-            
+
             objectiveManager.AddScore(10);
             objectiveManager.AddPieceCount(match.frutType);
         }
         yield return StartCoroutine(ClearAndFillBoard());
+        GameManager.DecrementJogadas();
+
+        // Resolva continuadamente até que não haja mais matches
+        yield return StartCoroutine(ResolveAllMatches());
+    }
+
+    private IEnumerator ResolveAllMatches()
+    {
+        bool hasMatches = true;
+        while (hasMatches)
+        {
+            hasMatches = false;
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    if (grid[x, y] != null)
+                    {
+                        List<Piece> matches = matchManager.GetAllMatchesForPiece(grid[x, y]);
+                        if (matches.Count >= 3)
+                        {
+                            foreach (var match in matches)
+                            {
+                                match.MarkForDestruction();
+                            }
+                            GameManager.AddScore(10 * matches.Count);
+                            objectiveManager.AddScore(10 * matches.Count);
+                            foreach (var match in matches)
+                            {
+                                objectiveManager.AddPieceCount(match.frutType);
+                            }
+                            hasMatches = true;
+                        }
+                    }
+                }
+            }
+            yield return StartCoroutine(ClearAndFillBoard());
+        }
+    }
+    
+    public void CheckEndGameConditions()
+    {
+        GameManager.CheckEndGameConditions(objectiveManager);
     }
 }

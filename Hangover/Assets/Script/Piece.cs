@@ -8,12 +8,16 @@ public class Piece : MonoBehaviour
     public int y;
     public bool isInvisible;
     public bool isMarkedForDestruction;
+    public AudioSource somSelect;
     public GridManager gridManager { get; private set; }
     private Renderer pieceRenderer;
-    private PieceSwapper pieceSwapper;
+    protected PieceSwapper pieceSwapper;
+    private float idleTime;
+    private float idleThreshold = 5.0f;
 
     private Color originalColor;
     private static readonly Color selectedColor = Color.gray;
+    protected int scoreValue = 10;
 
     public delegate void PieceEventHandler(Piece piece);
     public event PieceEventHandler OnPieceDestruction;
@@ -27,6 +31,7 @@ public class Piece : MonoBehaviour
     {
         gridManager = FindObjectOfType<GridManager>();
         pieceSwapper = FindObjectOfType<PieceSwapper>();
+        somSelect = GetComponent<AudioSource>();
 
         if (gridManager == null)
         {
@@ -41,6 +46,35 @@ public class Piece : MonoBehaviour
         if (pieceRenderer != null)
         {
             originalColor = pieceRenderer.material.color;
+        }
+    }
+
+    private void Update()
+    {
+        if (MusicUI.instance != null)
+        {
+            if (MusicUI.instance.estadoDoSom)
+            {
+                if (somSelect != null)
+                {
+                    somSelect.enabled = true;
+                }
+                else
+                {
+                    Debug.LogWarning("somSelect is null in Piece");
+                }
+            }
+            else
+            {
+                if (somSelect != null)
+                {
+                    somSelect.enabled = false;
+                }
+                else
+                {
+                    Debug.LogWarning("somSelect is null in Piece");
+                }
+            }
         }
     }
 
@@ -95,6 +129,7 @@ public class Piece : MonoBehaviour
 
             transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBack).OnComplete(() =>
             {
+                GameManager.AddScore(GetScoreValue());  // Adicione esta linha para incrementar a pontuação
                 OnPieceDestruction?.Invoke(this);
                 Destroy(gameObject);
             });
@@ -113,6 +148,7 @@ public class Piece : MonoBehaviour
     {
         if (!isInvisible && gridManager != null)
         {
+            somSelect.Play();
             Debug.Log("Piece clicked for selection: " + name);
             pieceSwapper.SelectPiece(this);
         }
@@ -122,6 +158,13 @@ public class Piece : MonoBehaviour
     {
         // Método virtual para ser sobrescrito por subclasses específicas
     }
+    
+    // Adiciona pontuação para a destruição da peça
+    public virtual int GetScoreValue()
+    {
+        return scoreValue;
+    }
+    
 }
 
 public enum FrutType

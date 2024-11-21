@@ -6,6 +6,9 @@ public class MenuManager : MonoBehaviour
 {
     [SerializeField] GameObject panelselectedFase;
     [SerializeField] TextMeshProUGUI highScoreText;
+    [SerializeField] GameObject[] energyIcons;  // Array de ícones de energia
+    [SerializeField] TextMeshProUGUI regenerationTimeText;
+
     private string selectedFase;
 
     private readonly string[] faseNames = new string[]
@@ -26,18 +29,50 @@ public class MenuManager : MonoBehaviour
     private void Start()
     {
         FindButtonFase();
+        UpdateEnergyIcons(EnergyManager.instance.currentEnergy);
+        UpdateRegenerationTime(EnergyManager.instance.currentTimeToNextRegeneration);
+
+        EnergyManager.instance.OnEnergyChanged += UpdateEnergyIcons;
+        EnergyManager.instance.OnTimeToNextRegenerationChanged += UpdateRegenerationTime;
+    }
+
+    private void OnDestroy()
+    {
+        EnergyManager.instance.OnEnergyChanged -= UpdateEnergyIcons;
+        EnergyManager.instance.OnTimeToNextRegenerationChanged -= UpdateRegenerationTime;
+    }
+
+    private void UpdateEnergyIcons(int currentEnergy)
+    {
+        for (int i = 0; i < energyIcons.Length; i++)
+        {
+            energyIcons[i].SetActive(i < currentEnergy);
+        }
+    }
+
+    private void UpdateRegenerationTime(float time)
+    {
+        int minutes = Mathf.FloorToInt(time / 60);
+        int seconds = Mathf.FloorToInt(time % 60);
+        regenerationTimeText.text = $"Próxima Energia: {minutes:D2}:{seconds:D2}";
     }
 
     public void LoadCena(string cena)
     {
-        GameManager.instance.LoadScene(cena);
+        if (EnergyManager.instance.currentEnergy > 0)
+        {
+            GameManager.instance.LoadScene(cena);
+        }
+        else
+        {
+            StartCoroutine(EnergyManager.instance.ShowEnergyPopUp());
+        }
     }
 
     public void OpenSite(string url)
     {
         Application.OpenURL(url);
     }
-
 
     private void SetSelectedFase(bool set, string fase)
     {
@@ -53,7 +88,7 @@ public class MenuManager : MonoBehaviour
     {
         if (!string.IsNullOrEmpty(selectedFase))
         {
-            GameManager.instance.LoadScene(selectedFase);
+            LoadCena(selectedFase);
         }
     }
 
@@ -78,7 +113,7 @@ public class MenuManager : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning($"Button '{faseNames[i]}' not found");
+                Debug.LogWarning($"Botão '{faseNames[i]}' não encontrado");
             }
         }
     }
