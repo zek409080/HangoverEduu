@@ -78,10 +78,10 @@ public class PowerUpManager : MonoBehaviour
         StartCoroutine(gridManager.ResetMatching());
     }
 
-    public void ActivateAmora(Piece amora, Piece targetPiece)
+    public void ActivateAmora(AmoraPiece amora, Piece targetPiece)
     {
         if (amora == null || amora.isMarkedForDestruction || targetPiece == null) return;
-        Debug.Log("Ativando PowerUp Amora");
+        Debug.Log("Ativando PowerUp Amora para o tipo: " + targetPiece.frutType);
 
         foreach (Piece piece in gridManager.grid)
         {
@@ -94,7 +94,7 @@ public class PowerUpManager : MonoBehaviour
         }
 
         gridManager.DestroyPiece(amora);
-        StartCoroutine(gridManager.ResetMatching());
+        StartCoroutine(gridManager.ResetMatching()); // Reiniciando o matching após a ativação da Amora
     }
 
     private bool IsWithinBounds(int x, int y)

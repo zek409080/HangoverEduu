@@ -3,7 +3,7 @@ using UnityEngine;
 public class AmoraPiece : Piece
 {
     PieceSwapper swapper;
-    
+
     public override void Init(int x, int y, GridManager gridManager)
     {
         base.Init(x, y, gridManager);
@@ -13,7 +13,7 @@ public class AmoraPiece : Piece
     public override void AnimateDestruction()
     {
         base.AnimateDestruction();
-        gridManager.powerUpManager.ActivateAmora(this, null); // Especifique null se não houver peça alvo
+        gridManager.powerUpManager.ActivateAmora(this, null); // Esta linha provavelmente deve passar a peça alvo correta
     }
 
     void OnMouseDown()
@@ -22,7 +22,6 @@ public class AmoraPiece : Piece
         {
             Debug.Log("Amora clicada!");
 
-            // Certifique-se de passar a responsabilidade para o PieceSwapper
             if (pieceSwapper != null)
             {
                 pieceSwapper.SelectPiece(this); // Seleciona a Amora para troca
@@ -33,5 +32,4 @@ public class AmoraPiece : Piece
             }
         }
     }
-    
 }

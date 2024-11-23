@@ -29,34 +29,35 @@ public class PieceSwapper : MonoBehaviour
 
     public void SelectPiece(Piece piece)
     {
-        if (isSwapping) return;
+        if (isSwapping) return; // Exit if a swap is already in progress
+        
         if (_selectedPiece == null)
         {
-            SelectNewPiece(piece);
+            SetSelectedPiece(piece);
         }
         else if (_selectedPiece == piece)
         {
-            DeselectCurrentPiece();
+            DeselectPiece();
         }
-        else if (_gridManager != null && _gridManager.AreAdjacent(_selectedPiece, piece))
+        else if (_gridManager.AreAdjacent(_selectedPiece, piece))
         {
-            StartCoroutine(SwapAndCheckPowerUp(_selectedPiece, piece));
+            StartCoroutine(SwapPieces(_selectedPiece, piece));
         }
         else
         {
-            SelectNewPiece(piece);
+            SetSelectedPiece(piece);
         }
     }
 
-    private void SelectNewPiece(Piece piece)
+    private void SetSelectedPiece(Piece piece)
     {
-        DeselectCurrentPiece();
+        DeselectPiece();
         _selectedPiece = piece;
         _selectedPiece.SetSelected(true);
         Debug.Log("Piece Selected: " + piece.name);
     }
 
-    private void DeselectCurrentPiece()
+    private void DeselectPiece()
     {
         if (_selectedPiece != null)
         {
@@ -65,51 +66,58 @@ public class PieceSwapper : MonoBehaviour
         }
     }
 
-    private IEnumerator SwapAndCheckPowerUp(Piece piece1, Piece piece2)
+    private IEnumerator SwapPieces(Piece piece1, Piece piece2)
     {
         isSwapping = true;
 
         Vector3 pos1 = piece1.transform.position;
         Vector3 pos2 = piece2.transform.position;
-        
-        piece1.transform.DOMove(pos2, _gridManager.moveDuration);
-        piece2.transform.DOMove(pos1, _gridManager.moveDuration);
 
-        yield return new WaitForSeconds(_gridManager.moveDuration);
-        yield return new WaitForSeconds(delayDuringSwap);
+        piece1.transform.DOMove(pos2, _gridManager.moveDuration).SetEase(Ease.InOutQuad);
+        piece2.transform.DOMove(pos1, _gridManager.moveDuration).SetEase(Ease.InOutQuad);
+
+        yield return new WaitForSeconds(_gridManager.moveDuration + delayDuringSwap);
 
         _gridManager.SwapPieces(piece1, piece2);
 
-        bool matchesResolved = _gridManager.CheckAndProcessMatches(piece1, piece2);
-
-        if (!matchesResolved)
+        // Verificação especial para Amora
+        bool amoraActivated = false;
+        if (piece1 is AmoraPiece)
         {
-            // Revert swap if no matches
-            piece1.transform.DOMove(pos1, _gridManager.moveDuration);
-            piece2.transform.DOMove(pos2, _gridManager.moveDuration);
+            Debug.Log("Amora encontrada no piece1. Ativando PowerUp.");
+            _powerUpManager.ActivateAmora((AmoraPiece)piece1, piece2);
+            amoraActivated = true;
+        }
+        if (piece2 is AmoraPiece)
+        {
+            Debug.Log("Amora encontrada no piece2. Ativando PowerUp.");
+            _powerUpManager.ActivateAmora((AmoraPiece)piece2, piece1);
+            amoraActivated = true;
+        }
 
-            yield return new WaitForSeconds(_gridManager.moveDuration);
-            yield return new WaitForSeconds(delayDuringSwap);
-
-            _gridManager.SwapPieces(piece1, piece2);
+        if (amoraActivated)
+        {
+            yield return new WaitForSeconds(0.5f); // Aguardar um pouco para a animação do PowerUp
+            StartCoroutine(_gridManager.ResetMatching()); // Reiniciando o matching após a ativação da Amora
         }
         else
         {
-            // Checar se Amora foi envolvida na troca.
-            if (piece1 is AmoraPiece)
+            bool isMatch = _gridManager.CheckAndProcessMatches(piece1, piece2);
+
+            if (!isMatch)
             {
-                _powerUpManager.ActivateAmora(piece1, piece2);
-            }
-            else if (piece2 is AmoraPiece)
-            {
-                _powerUpManager.ActivateAmora(piece2, piece1);
+                piece1.transform.DOMove(pos1, _gridManager.moveDuration).SetEase(Ease.InOutQuad);
+                piece2.transform.DOMove(pos2, _gridManager.moveDuration).SetEase(Ease.InOutQuad);
+
+                yield return new WaitForSeconds(_gridManager.moveDuration + delayDuringSwap);
+
+                _gridManager.SwapPieces(piece1, piece2);
             }
         }
 
         piece1.SetSelected(false);
         piece2.SetSelected(false);
         _selectedPiece = null;
-
         isSwapping = false;
     }
 }
