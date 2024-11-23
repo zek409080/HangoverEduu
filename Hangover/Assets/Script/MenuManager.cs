@@ -41,8 +41,11 @@ public class MenuManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        EnergyManager.instance.OnEnergyChanged -= UpdateEnergyIcons;
-        EnergyManager.instance.OnTimeToNextRegenerationChanged -= UpdateRegenerationTime;
+        if (EnergyManager.instance != null)
+        {
+            EnergyManager.instance.OnEnergyChanged -= UpdateEnergyIcons;
+            EnergyManager.instance.OnTimeToNextRegenerationChanged -= UpdateRegenerationTime;
+        }
     }
 
     private void UpdateEnergyIcons(int currentEnergy)
@@ -71,6 +74,12 @@ public class MenuManager : MonoBehaviour
             StartCoroutine(ShowEnergyPopUp());
         }
     }
+
+    public void loadMenu()
+    {
+        GameManager.instance.LoadScene("Menu");
+    }
+    
 
     public void OpenSite(string url)
     {
@@ -128,5 +137,12 @@ public class MenuManager : MonoBehaviour
         energyPopUp.SetActive(true);
         yield return new WaitForSeconds(2f); // Tempo que o popup ficará visível
         energyPopUp.SetActive(false);
+    }
+
+    private void Update()
+    {
+        // Verifica e atualiza os ícones de energia no Update
+        UpdateEnergyIcons(EnergyManager.instance.currentEnergy);
+        UpdateRegenerationTime(EnergyManager.instance.currentTimeToNextRegeneration);
     }
 }

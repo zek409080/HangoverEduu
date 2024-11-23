@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -64,7 +65,44 @@ public class EnergyManager : MonoBehaviour
     {
         currentEnergy = PlayerPrefs.GetInt("CurrentEnergy", maxEnergy);
         currentTimeToNextRegeneration = PlayerPrefs.GetFloat("CurrentTimeToNextRegeneration", regenerationTime);
+
+        float elapsedTime = GetElapsedTimeInSeconds();
+
+        while (elapsedTime > 0 && currentEnergy < maxEnergy)
+        {
+            if (elapsedTime >= currentTimeToNextRegeneration)
+            {
+                currentEnergy++;
+                elapsedTime -= currentTimeToNextRegeneration;
+                currentTimeToNextRegeneration = regenerationTime;
+            }
+            else
+            {
+                currentTimeToNextRegeneration -= elapsedTime;
+                elapsedTime = 0;
+            }
+        }
+
+        if (currentEnergy == maxEnergy)
+        {
+            currentTimeToNextRegeneration = regenerationTime;
+        }
+
+        PlayerPrefs.DeleteKey("LastExitTime");
         UpdateEnergyUI();
+        OnEnergyChanged?.Invoke(currentEnergy);  // Garante atualização dos ícones ao carregar a energia
+    }
+
+    private float GetElapsedTimeInSeconds()
+    {
+        string lastExitTimeStr = PlayerPrefs.GetString("LastExitTime", "");
+        if (string.IsNullOrEmpty(lastExitTimeStr))
+        {
+            return 0;
+        }
+
+        DateTime lastExitTime = DateTime.Parse(lastExitTimeStr);
+        return (float)(DateTime.Now - lastExitTime).TotalSeconds;
     }
 
     private void SaveEnergy()
@@ -89,6 +127,7 @@ public class EnergyManager : MonoBehaviour
                 }
 
                 OnTimeToNextRegenerationChanged?.Invoke(currentTimeToNextRegeneration);
+                OnEnergyChanged?.Invoke(currentEnergy);  // Atualiza os ícones de energia
                 SaveEnergy();
             }
 
@@ -100,7 +139,14 @@ public class EnergyManager : MonoBehaviour
     {
         if (energyText != null)
         {
-            energyText.text = $"Energy: {currentEnergy}/{maxEnergy}";
+            if (currentEnergy == maxEnergy)
+            {
+                energyText.text = $"Energy: {currentEnergy}/{maxEnergy}";
+            }
+            else
+            {
+                energyText.text = $"Energy: {currentEnergy}/{maxEnergy}\nTime to next regeneration: {currentTimeToNextRegeneration:F0}s";
+            }
         }
         OnEnergyChanged?.Invoke(currentEnergy);
     }
@@ -127,5 +173,11 @@ public class EnergyManager : MonoBehaviour
     public bool HasEnergy()
     {
         return currentEnergy > 0;
+    }
+    
+    private void OnApplicationQuit()
+    {
+        PlayerPrefs.SetString("LastExitTime", DateTime.Now.ToString());
+        SaveEnergy();
     }
 }

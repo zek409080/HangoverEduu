@@ -5,11 +5,15 @@ using System.Linq;
 
 public class MatchManager : MonoBehaviour
 {
-    private GridManager gridManager;
+    private GridManager _gridManager;
 
     private void Start()
     {
-        gridManager = GetComponent<GridManager>();
+        _gridManager = GetComponent<GridManager>();
+        if (_gridManager == null)
+        {
+            Debug.LogError("GridManager not found on the GameObject. Please ensure the GridManager script is attached to the same GameObject as MatchManager.");
+        }
     }
 
     public void CheckAndClearMatchesAtStart()
@@ -19,18 +23,27 @@ public class MatchManager : MonoBehaviour
 
     private IEnumerator CheckAndClearMatchesCoroutine()
     {
-        yield return new WaitForSeconds(0.5f);
-        yield return StartCoroutine(gridManager.ClearAndFillBoard());
+        yield return new WaitForSeconds(0.5f); // Espera o tempo necessário para inicializar o grid
+        yield return StartCoroutine(_gridManager.ClearAndFillBoard());
     }
 
     public bool CheckForMatchAt(int x, int y)
     {
-        if (gridManager.grid[x, y] == null) return false;
+        if (!IsValidPosition(x, y) || _gridManager.grid[x, y] == null) 
+            return false;
 
-        return (CheckForMatchInDirection(gridManager.grid[x, y], Vector2.left, 2) ||
-                CheckForMatchInDirection(gridManager.grid[x, y], Vector2.right, 2) ||
-                CheckForMatchInDirection(gridManager.grid[x, y], Vector2.up, 2) ||
-                CheckForMatchInDirection(gridManager.grid[x, y], Vector2.down, 2));
+        return HasMatchInDirections(_gridManager.grid[x, y]);
+    }
+
+    private bool HasMatchInDirections(Piece piece)
+    {
+        Vector2[] directions = { Vector2.left, Vector2.right, Vector2.up, Vector2.down };
+        foreach (Vector2 dir in directions)
+        {
+            if (CheckForMatchInDirection(piece, dir, 2))
+                return true;
+        }
+        return false;
     }
 
     private bool CheckForMatchInDirection(Piece piece, Vector2 direction, int length)
@@ -40,47 +53,11 @@ public class MatchManager : MonoBehaviour
         {
             int checkX = piece.x + (int)direction.x * i;
             int checkY = piece.y + (int)direction.y * i;
-            if (checkX < 0 || checkX >= gridManager.width || checkY < 0 || checkY >= gridManager.height)
+
+            if (!IsValidPosition(checkX, checkY))
                 break;
-            if (gridManager.grid[checkX, checkY] != null && gridManager.grid[checkX, checkY].frutType == piece.frutType)
-                matchingPieces.Add(gridManager.grid[checkX, checkY]);
-            else
-                break;
-        }
-        return matchingPieces.Count > length;
-    }
 
-    public List<Piece> GetAllMatchesForPiece(Piece piece)
-    {
-        List<Piece> horizontalMatches = GetMatches(piece, +1, 0).ToList();
-        horizontalMatches.AddRange(GetMatches(piece, -1, 0).Where(p => p != piece));
-
-        List<Piece> verticalMatches = GetMatches(piece, 0, +1).ToList();
-        verticalMatches.AddRange(GetMatches(piece, 0, -1).Where(p => p != piece));
-
-        List<Piece> allMatches = new List<Piece>();
-
-        if (horizontalMatches.Count >= 3) allMatches.AddRange(horizontalMatches);
-        if (verticalMatches.Count >= 3) allMatches.AddRange(verticalMatches);
-
-        return allMatches.Distinct().ToList();
-    }
-
-    private List<Piece> GetMatches(Piece piece, int dx, int dy)
-    {
-        List<Piece> matchingPieces = new List<Piece> { piece };
-
-        int newX = piece.x;
-        int newY = piece.y;
-
-        while (true)
-        {
-            newX += dx;
-            newY += dy;
-
-            if (newX < 0 || newX >= gridManager.width || newY < 0 || newY >= gridManager.height) break;
-
-            Piece nextPiece = gridManager.grid[newX, newY];
+            Piece nextPiece = _gridManager.grid[checkX, checkY];
             if (nextPiece != null && nextPiece.frutType == piece.frutType)
             {
                 matchingPieces.Add(nextPiece);
@@ -89,6 +66,50 @@ public class MatchManager : MonoBehaviour
             {
                 break;
             }
+        }
+        return matchingPieces.Count > length;
+    }
+
+    private bool IsValidPosition(int x, int y)
+    {
+        return x >= 0 && x < _gridManager.width && y >= 0 && y < _gridManager.height;
+    }
+
+    public List<Piece> GetAllMatchesForPiece(Piece piece)
+    {
+        List<Piece> horizontalMatches = GetMatchesInDirection(piece, 1, 0);
+        horizontalMatches.AddRange(GetMatchesInDirection(piece, -1, 0).Where(p => p != piece));
+        
+        List<Piece> verticalMatches = GetMatchesInDirection(piece, 0, 1);
+        verticalMatches.AddRange(GetMatchesInDirection(piece, 0, -1).Where(p => p != piece));
+
+        List<Piece> allMatches = new List<Piece>();
+        if (horizontalMatches.Count >= 3) allMatches.AddRange(horizontalMatches);
+        if (verticalMatches.Count >= 3) allMatches.AddRange(verticalMatches);
+
+        return allMatches.Distinct().ToList();
+    }
+
+    private List<Piece> GetMatchesInDirection(Piece piece, int dx, int dy)
+    {
+        List<Piece> matchingPieces = new List<Piece> { piece };
+        int newX = piece.x + dx;
+        int newY = piece.y + dy;
+
+        while (IsValidPosition(newX, newY))
+        {
+            Piece nextPiece = _gridManager.grid[newX, newY];
+            if (nextPiece != null && nextPiece.frutType == piece.frutType)
+            {
+                matchingPieces.Add(nextPiece);
+            }
+            else
+            {
+                break;
+            }
+
+            newX += dx;
+            newY += dy;
         }
 
         return matchingPieces;

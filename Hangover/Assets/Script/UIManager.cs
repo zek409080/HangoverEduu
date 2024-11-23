@@ -24,6 +24,7 @@ public class UIManager : MonoBehaviour
     private GameManager gameManager;
     private ObjectiveManager objectiveManager;
     private StringBuilder _stringBuilder;
+    private EnergyManager energyManager;
 
     private void Awake()
     {
@@ -105,6 +106,12 @@ public class UIManager : MonoBehaviour
 
     public void QuitGame(string sceneName)
     {
+        GameManager.instance.LoadScene(sceneName);
+    }
+
+    public void QuitinGame(string sceneName)
+    {
+        EnergyManager.instance.UseEnergy();
         GameManager.instance.LoadScene(sceneName);
     }
 
