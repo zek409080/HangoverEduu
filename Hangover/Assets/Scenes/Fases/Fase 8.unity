@@ -1222,8 +1222,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectives:
   - type: 0
-    targetValue: 100
-    targetPiece: 4
+    targetValue: 900
+    targetPiece: 3
     isCompleted: 0
   onObjectivesCompleted:
     m_PersistentCalls:

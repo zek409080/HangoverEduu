@@ -8,7 +8,7 @@ public class Piece : MonoBehaviour
     public int y;
     public bool isInvisible;
     public bool isMarkedForDestruction;
-    public AudioSource somSelect;
+    private AudioSource somSelect;
     public GridManager gridManager { get; private set; }
     private Renderer pieceRenderer;
     protected PieceSwapper pieceSwapper;
@@ -25,13 +25,18 @@ public class Piece : MonoBehaviour
     private void Awake()
     {
         pieceRenderer = GetComponent<Renderer>();
+        somSelect = GetComponent<AudioSource>();
+
+        if (somSelect == null)
+        {
+            Debug.LogWarning("AudioSource not found in Piece. Please ensure an AudioSource component is attached.");
+        }
     }
 
     private void Start()
     {
         gridManager = FindObjectOfType<GridManager>();
         pieceSwapper = FindObjectOfType<PieceSwapper>();
-        somSelect = GetComponent<AudioSource>();
 
         if (gridManager == null)
         {
@@ -51,30 +56,14 @@ public class Piece : MonoBehaviour
 
     private void Update()
     {
-        if (MusicUI.instance != null)
+        UpdateSoundState();
+    }
+
+    private void UpdateSoundState()
+    {
+        if (PieceSoundManager.instance != null && somSelect != null)
         {
-            if (MusicUI.instance.estadoDoSom)
-            {
-                if (somSelect != null)
-                {
-                    somSelect.enabled = true;
-                }
-                else
-                {
-                    Debug.LogWarning("somSelect is null in Piece");
-                }
-            }
-            else
-            {
-                if (somSelect != null)
-                {
-                    somSelect.enabled = false;
-                }
-                else
-                {
-                    Debug.LogWarning("somSelect is null in Piece");
-                }
-            }
+            somSelect.enabled = PieceSoundManager.instance.estadoSom;
         }
     }
 
@@ -129,7 +118,7 @@ public class Piece : MonoBehaviour
 
             transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBack).OnComplete(() =>
             {
-                GameManager.AddScore(GetScoreValue());  // Adicione esta linha para incrementar a pontuação
+                GameManager.AddScore(GetScoreValue());
                 OnPieceDestruction?.Invoke(this);
                 Destroy(gameObject);
             });
@@ -148,7 +137,10 @@ public class Piece : MonoBehaviour
     {
         if (!isInvisible && gridManager != null)
         {
-            somSelect.Play();
+            if (somSelect != null && somSelect.enabled)
+            {
+                somSelect.Play();
+            }
             Debug.Log("Piece clicked for selection: " + name);
             pieceSwapper.SelectPiece(this);
         }
@@ -164,7 +156,6 @@ public class Piece : MonoBehaviour
     {
         return scoreValue;
     }
-    
 }
 
 public enum FrutType

@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 
+public delegate void OnFaseStarted();
 public class MenuManager : MonoBehaviour
 {
     [SerializeField] GameObject panelselectedFase;
@@ -11,6 +12,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI regenerationTimeText;
     [SerializeField] GameObject energyPopUp;
 
+    public static event OnFaseStarted onFaseStarted; // Evento para notificações de mudança de fase
     private string selectedFase;
 
     private readonly string[] faseNames = new string[]
@@ -67,6 +69,7 @@ public class MenuManager : MonoBehaviour
     {
         if (EnergyManager.instance.HasEnergy())
         {
+            onFaseStarted?.Invoke();
             GameManager.instance.LoadScene(cena);
         }
         else

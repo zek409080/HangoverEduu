@@ -1221,9 +1221,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectives:
-  - type: 0
-    targetValue: 100
-    targetPiece: 4
+  - type: 1
+    targetValue: 5
+    targetPiece: 3
     isCompleted: 0
   onObjectivesCompleted:
     m_PersistentCalls:

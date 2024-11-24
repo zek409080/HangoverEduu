@@ -54,7 +54,7 @@ public class UIManager : MonoBehaviour
 
     private void OnObjectivesCompleted()
     {
-        // Podemos adicionar alguma lógica adicional se necessário
+        // Podemos adicionar lógica adicional se necessário
     }
 
     private void RestartLevel()
@@ -70,6 +70,8 @@ public class UIManager : MonoBehaviour
             foreach (var objective in objectiveManager.objectives)
             {
                 string status = "";
+                string objectiveTypeText = objective.type == ObjectiveManager.ObjectiveType.PieceCount ? "Coletar" : objective.type.ToString();
+
                 if (objective.type == ObjectiveManager.ObjectiveType.Score)
                 {
                     status = $"{GameManager.GetScore()}/{objective.targetValue}";
@@ -78,7 +80,8 @@ public class UIManager : MonoBehaviour
                 {
                     status = $"{objectiveManager.GetPieceCount(objective.targetPiece)}/{objective.targetValue}";
                 }
-                _stringBuilder.AppendLine($"{objective.type}: {status} {(objective.isCompleted ? "(Completo)" : "")}");
+
+                _stringBuilder.AppendLine($"{objectiveTypeText}: {status} {(objective.isCompleted ? "(Completo)" : "")}");
             }
             objectivesText.text = _stringBuilder.ToString();
         }
