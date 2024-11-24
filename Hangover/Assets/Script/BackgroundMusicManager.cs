@@ -4,12 +4,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-[System.Serializable]
-public class MusicTrack
-{
-    public AudioClip clip;
-    public float volume = 1.0f;
-}
 public class BackgroundMusicManager : MonoBehaviour
 {
     #region Singleton
@@ -46,7 +40,6 @@ public class BackgroundMusicManager : MonoBehaviour
         SceneManager.sceneLoaded += OnSceneLoaded;
         InitializeToggles();
 
-        // Inscrever-se no evento para detectar quando uma fase começa
         MenuManager.onFaseStarted += OnFaseStarted;
 
         lastSceneName = SceneManager.GetActiveScene().name;
@@ -81,8 +74,6 @@ public class BackgroundMusicManager : MonoBehaviour
 
     private bool IsInGameScene(string sceneName)
     {
-        // Adicione lógica para determinar se a cena atual é uma cena de jogo
-        // Exemplo:
         return sceneName.StartsWith("Fase");
     }
 
@@ -104,9 +95,19 @@ public class BackgroundMusicManager : MonoBehaviour
 
         if (musicToggle != null)
         {
-            musicToggle.isOn = estadoMusica;
-            musicToggle.onValueChanged.AddListener(delegate { LigarOuDesligarMusica(); });
+            musicToggle.onValueChanged.RemoveAllListeners();
+            musicToggle.isOn = estadoMusica; // inicializar estado do toggle
+            musicToggle.onValueChanged.AddListener(OnMusicToggleChanged);
         }
+
+        // Garantir que a música esteja no estado correto ao inicializar
+        LigarOuDesligarMusica();
+    }
+
+    private void OnMusicToggleChanged(bool isOn)
+    {
+        estadoMusica = isOn;
+        LigarOuDesligarMusica();
     }
 
     private void OnFaseStarted()
@@ -140,9 +141,25 @@ public class BackgroundMusicManager : MonoBehaviour
         fundoMusical.clip = musicTrack.clip;
         fundoMusical.volume = musicTrack.volume;
 
-        if (!fundoMusical.isPlaying)
+        if (estadoMusica && !fundoMusical.isPlaying)
         {
             fundoMusical.Play();
+        }
+    }
+
+    public void LigarOuDesligarMusica()
+    {
+        if (estadoMusica)
+        {
+            fundoMusical.UnPause();
+            if (!fundoMusical.isPlaying)
+            {
+                fundoMusical.Play();
+            }
+        }
+        else
+        {
+            fundoMusical.Pause();
         }
     }
 
@@ -155,21 +172,6 @@ public class BackgroundMusicManager : MonoBehaviour
         }
     }
 
-    public void LigarOuDesligarMusica()
-    {
-        estadoMusica = !estadoMusica;
-        fundoMusical.enabled = estadoMusica;
-
-        if (estadoMusica && !fundoMusical.isPlaying)
-        {
-            fundoMusical.Play();
-        }
-        else if (!estadoMusica)
-        {
-            fundoMusical.Pause();
-        }
-    }
-
     private void OnDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
@@ -177,3 +179,9 @@ public class BackgroundMusicManager : MonoBehaviour
     }
 }
 
+[System.Serializable]
+public class MusicTrack
+{
+    public AudioClip clip;
+    public float volume = 1.0f;
+}

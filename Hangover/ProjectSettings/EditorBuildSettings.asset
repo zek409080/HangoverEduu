@@ -16,14 +16,41 @@ EditorBuildSettings:
     guid: 763b1f9f157053c468f491bd2098c317
   - enabled: 1
     path: Assets/Scenes/Fases/Fase 2.unity
-    guid: 26e6474e9e4b32e48a3cbed4bc7b2c5d
+    guid: 826df550851dcd4428bab1e386d18e1d
   - enabled: 1
     path: Assets/Scenes/Fases/Fase 3.unity
-    guid: 37c04236fb9642e46906b23512361363
+    guid: 29dc5feee0a339b4f902aa2e1dda1c04
   - enabled: 1
     path: Assets/Scenes/Fases/Fase 4.unity
-    guid: 4a5dc8188f5fd8f48b572422099376ff
+    guid: fc428dac0113cda4f92676a80ff22fac
   - enabled: 1
     path: Assets/Scenes/Fases/Fase 5.unity
-    guid: 5414682c4063fe943af61e8f9a912f56
+    guid: 289f72c321b3b1c4d928fd90ad0e766a
+  - enabled: 1
+    path: Assets/Scenes/Fases/Fase 6.unity
+    guid: ac40e78b16f3f434da17167f775354a1
+  - enabled: 1
+    path: Assets/Scenes/Fases/Fase 7.unity
+    guid: f14ae46a8683c694aadb433e5ae08a94
+  - enabled: 1
+    path: Assets/Scenes/Fases/Fase 8.unity
+    guid: 5b2b65c838964c743a90e8ef6ebda9d3
+  - enabled: 1
+    path: Assets/Scenes/Fases/Fase 9.unity
+    guid: 8a2525bd267ca8f48a21b3d862d63ab4
+  - enabled: 1
+    path: Assets/Scenes/Fases/Fase 10.unity
+    guid: 1e3038f864dc909468eef74bf1680ad5
+  - enabled: 1
+    path: Assets/Scenes/Fases/Fase 11.unity
+    guid: 74a2f26ccbeac9a4f9d51ab4d15b0942
+  - enabled: 1
+    path: Assets/Scenes/Fases/Fase 12.unity
+    guid: 8596b60a84150fd4ca921e64e8ca10e1
+  - enabled: 1
+    path: Assets/Scenes/Fases/Fase 13.unity
+    guid: fe792c5cfe783664e9246b8ff713425a
+  - enabled: 1
+    path: Assets/Scenes/Fases/Fase 14.unity
+    guid: cfc68b84d7e4c524e84ba7ebaa5ed722
   m_configObjects: {}
