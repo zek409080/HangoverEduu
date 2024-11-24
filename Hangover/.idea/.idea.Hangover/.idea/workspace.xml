@@ -6,21 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="8cd84c9d-24f4-49ac-af28-737b057b860e" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Hangover/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Hangover/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Fases/Fase 1.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Fases/Fase 1.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Menu.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Menu.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/selecaoDeFase.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/selecaoDeFase.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Script/BackgroundMusicManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/BackgroundMusicManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Script/BinaryInspector.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Script/BinaryInspector.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Script/CollisionDataInspector.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Script/CollisionDataInspector.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Script/PieceSoundManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/PieceSoundManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Script/binaryArray.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Script/binaryArray.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Script/interface/GameResetManagerEditor.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Script/interface/GameResetManagerEditor.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Script/GridManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/GridManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Script/MatchManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/MatchManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Script/PowerUpManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/PowerUpManager.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,6 +19,13 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///AIAssistantSnippet." root0="SKIP_HIGHLIGHTING" />
@@ -214,7 +209,7 @@
       <workItem from="1731278327163" duration="5919000" />
       <workItem from="1731295002219" duration="5348000" />
       <workItem from="1732395503908" duration="954000" />
-      <workItem from="1732396486476" duration="17946000" />
+      <workItem from="1732396486476" duration="19625000" />
     </task>
     <servers />
   </component>

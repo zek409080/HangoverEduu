@@ -232,14 +232,19 @@ public class GridManager : MonoBehaviour
         {
             GameManager.AddScore(10);
             match.MarkForDestruction();
-
             objectiveManager.AddScore(10);
             objectiveManager.AddPieceCount(match.frutType);
+            
+            // Criar power-up para matches de 4 peças
+            if (matches.Count >= 4)
+            {
+                powerUpManager.CreatePowerUp(match);
+            }
         }
         yield return StartCoroutine(ClearAndFillBoard());
         GameManager.DecrementJogadas();
 
-        // Resolva continuadamente até que não haja mais matches
+        // Verificar novas combinações depois que as peças caem
         yield return StartCoroutine(ResolveAllMatches());
     }
 
@@ -268,6 +273,13 @@ public class GridManager : MonoBehaviour
                             {
                                 objectiveManager.AddPieceCount(match.frutType);
                             }
+                            
+                            // Criar power-up para matches de 4 peças
+                            if (matches.Count >= 4)
+                            {
+                                powerUpManager.CreatePowerUp(matches[0]); // Usando a primeira peça do match
+                            }
+                            
                             hasMatches = true;
                         }
                     }

@@ -2,12 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using System.Collections;
-
 public class PowerUpManager : MonoBehaviour
 {
     public GameObject destructionEffectPrefab;
     private GridManager gridManager;
+    private ObjectiveManager objectiveManager;
     public GameObject cerejaPrefab;
     public GameObject romaPrefab;
     public GameObject amoraPrefab;
@@ -15,6 +14,7 @@ public class PowerUpManager : MonoBehaviour
     private void Start()
     {
         gridManager = GetComponent<GridManager>();
+        objectiveManager = FindObjectOfType<ObjectiveManager>(); // Encontrar o ObjectiveManager na cena
     }
 
     public void ActivateCereja(Piece cereja)
@@ -22,13 +22,11 @@ public class PowerUpManager : MonoBehaviour
         if (cereja == null || cereja.isMarkedForDestruction) return;
         Debug.Log("Ativando PowerUp Cereja");
 
-        // Instanciar efeito de explosão
         Instantiate(destructionEffectPrefab, cereja.transform.position, Quaternion.identity);
 
         // Definindo o raio da explosão como 1, o que resulta em uma área 3x3
         int explosionRadius = 1;
 
-        // Percorrendo em torno da peça Cereja
         for (int dx = -explosionRadius; dx <= explosionRadius; dx++)
         {
             for (int dy = -explosionRadius; dy <= explosionRadius; dy++)
@@ -41,6 +39,11 @@ public class PowerUpManager : MonoBehaviour
                     Piece neighbor = gridManager.grid[newX, newY];
                     if (neighbor != null && !neighbor.isMarkedForDestruction)
                     {
+                        if (objectiveManager != null)
+                        {
+                            objectiveManager.AddPieceCount(neighbor.frutType);
+                        }
+                        
                         neighbor.MarkForDestruction();
                         neighbor.AnimateDestruction();
                     }
@@ -60,6 +63,12 @@ public class PowerUpManager : MonoBehaviour
             if (gridManager.grid[x, roma.y] != null && !gridManager.grid[x, roma.y].isMarkedForDestruction)
             {
                 Instantiate(destructionEffectPrefab, gridManager.grid[x, roma.y].transform.position, Quaternion.identity);
+                
+                if (objectiveManager != null)
+                {
+                    objectiveManager.AddPieceCount(gridManager.grid[x, roma.y].frutType);
+                }
+                
                 gridManager.grid[x, roma.y].MarkForDestruction();
                 gridManager.grid[x, roma.y].AnimateDestruction();
             }
@@ -70,6 +79,12 @@ public class PowerUpManager : MonoBehaviour
             if (gridManager.grid[roma.x, y] != null && !gridManager.grid[roma.x, y].isMarkedForDestruction)
             {
                 Instantiate(destructionEffectPrefab, gridManager.grid[roma.x, y].transform.position, Quaternion.identity);
+                
+                if (objectiveManager != null)
+                {
+                    objectiveManager.AddPieceCount(gridManager.grid[roma.x, y].frutType);
+                }
+                
                 gridManager.grid[roma.x, y].MarkForDestruction();
                 gridManager.grid[roma.x, y].AnimateDestruction();
             }
@@ -88,6 +103,12 @@ public class PowerUpManager : MonoBehaviour
             if (piece != null && piece.frutType == targetPiece.frutType && !piece.isMarkedForDestruction)
             {
                 Instantiate(destructionEffectPrefab, piece.transform.position, Quaternion.identity);
+                
+                if (objectiveManager != null)
+                {
+                    objectiveManager.AddPieceCount(piece.frutType);
+                }
+                
                 piece.MarkForDestruction();
                 piece.AnimateDestruction();
             }

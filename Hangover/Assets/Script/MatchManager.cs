@@ -14,6 +14,10 @@ public class MatchManager : MonoBehaviour
         {
             Debug.LogError("GridManager not found on the GameObject. Please ensure the GridManager script is attached to the same GameObject as MatchManager.");
         }
+        else
+        {
+            CheckAndClearMatchesAtStart();
+        }
     }
 
     public void CheckAndClearMatchesAtStart()
@@ -25,11 +29,23 @@ public class MatchManager : MonoBehaviour
     {
         yield return new WaitForSeconds(0.5f); // Espera o tempo necessário para inicializar o grid
         yield return StartCoroutine(_gridManager.ClearAndFillBoard());
+        CheckMatchesOnBoard();
+    }
+
+    public void CheckMatchesOnBoard()
+    {
+        for (int x = 0; x < _gridManager.width; x++)
+        {
+            for (int y = 0; y < _gridManager.height; y++)
+            {
+                CheckForMatchAt(x, y);
+            }
+        }
     }
 
     public bool CheckForMatchAt(int x, int y)
     {
-        if (!IsValidPosition(x, y) || _gridManager.grid[x, y] == null) 
+        if (!IsValidPosition(x, y) || _gridManager.grid[x, y] == null)
             return false;
 
         return HasMatchInDirections(_gridManager.grid[x, y]);
@@ -79,7 +95,7 @@ public class MatchManager : MonoBehaviour
     {
         List<Piece> horizontalMatches = GetMatchesInDirection(piece, 1, 0);
         horizontalMatches.AddRange(GetMatchesInDirection(piece, -1, 0).Where(p => p != piece));
-        
+
         List<Piece> verticalMatches = GetMatchesInDirection(piece, 0, 1);
         verticalMatches.AddRange(GetMatchesInDirection(piece, 0, -1).Where(p => p != piece));
 
