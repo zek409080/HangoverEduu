@@ -119,6 +119,7 @@ public class GameManager : MonoBehaviour
         ResetScore();
         ResetJogadas();
         FindFaderCanvasGroup();
+        Time.timeScale = 1; // Garantir que o jogo está rodando no tempo normal
     }
 
     private void InitializeScene()
@@ -221,10 +222,16 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator FadeAndLoadScene(string sceneName)
     {
-        yield return StartCoroutine(FadeOut()); // FadeOut
+        Debug.Log("FadeAndLoadScene iniciado para " + sceneName);
+        yield return StartCoroutine(FadeOut());
+
+        Debug.Log("Cena está prestes a carregar: " + sceneName);
         ResetGameStates();
         SceneManager.LoadScene(sceneName);
-        yield return StartCoroutine(FadeIn()); // FadeIn
+        yield return StartCoroutine(FadeIn());
+
+        Time.timeScale = 1; // Garantir rodagem do jogo no tempo normal
+        Debug.Log("FadeAndLoadScene completado para " + sceneName);
     }
 
     private void ResetGameStates()
@@ -244,11 +251,13 @@ public class GameManager : MonoBehaviour
         FindFaderCanvasGroup();
         if (faderCanvasGroup == null)
         {
+            Debug.LogWarning("faderCanvasGroup não encontrado no FadeIn");
             yield break;
         }
 
-        faderCanvasGroup.alpha = 1f; // Certifique-se de que o painel está visível
-        faderCanvasGroup.blocksRaycasts = true;
+        Debug.Log("FadeIn iniciado.");
+        faderCanvasGroup.alpha = 1f;
+        faderCanvasGroup.blocksRaycasts = true; // Inicialmente bloquear interações
         float elapsedTime = 0f;
 
         while (elapsedTime < fadeDuration)
@@ -259,7 +268,8 @@ public class GameManager : MonoBehaviour
         }
 
         faderCanvasGroup.alpha = 0f;
-        faderCanvasGroup.blocksRaycasts = false;
+        faderCanvasGroup.blocksRaycasts = false; // Permitir interações
+        Debug.Log("FadeIn completado.");
     }
 
     private IEnumerator FadeOut()
@@ -267,11 +277,13 @@ public class GameManager : MonoBehaviour
         FindFaderCanvasGroup();
         if (faderCanvasGroup == null)
         {
+            Debug.LogWarning("faderCanvasGroup não encontrado no FadeOut");
             yield break;
         }
 
-        faderCanvasGroup.alpha = 0f; // Certifique-se de que o painel está invisível
-        faderCanvasGroup.blocksRaycasts = true;
+        Debug.Log("FadeOut iniciado.");
+        faderCanvasGroup.alpha = 0f;
+        faderCanvasGroup.blocksRaycasts = true; // Bloquear interações
         float elapsedTime = 0f;
 
         while (elapsedTime < fadeDuration)
@@ -282,6 +294,7 @@ public class GameManager : MonoBehaviour
         }
 
         faderCanvasGroup.alpha = 1f;
+        Debug.Log("FadeOut completado.");
     }
 
     private void FindFaderCanvasGroup()
@@ -368,10 +381,13 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator FadeAndReloadCurrentScene()
     {
-        yield return StartCoroutine(FadeOut()); // FadeOut
+        yield return StartCoroutine(FadeOut());
         ResetGameStates();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        yield return StartCoroutine(FadeIn()); // FadeIn
+        yield return StartCoroutine(FadeIn());
+        Time.timeScale = 1; // Garantir rodagem do jogo no tempo normal após reiniciar
+
+        Debug.Log("Cena recarregada: " + SceneManager.GetActiveScene().name);
     }
 
     // Adiciona um método auxiliar para obter o número da fase atual

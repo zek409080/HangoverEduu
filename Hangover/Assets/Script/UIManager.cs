@@ -1,8 +1,8 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
-using System.Collections.Generic;
 using System.Text;
 
 public class UIManager : MonoBehaviour
@@ -15,7 +15,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI gameoverText; 
     [SerializeField] private TextMeshProUGUI victoryText;
     [SerializeField] private Button buttonClose;
-    [SerializeField] private Button restartButton; // Adicionando referência ao botão de reinício
+    [SerializeField] private Button restartButton;
     [SerializeField] private GameObject menuPanel; 
     [SerializeField] private GameObject victoryPanel;
     [SerializeField] private TextMeshProUGUI objectivesText;
@@ -53,7 +53,6 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    
     private void OnObjectivesCompleted()
     {
         GameCompleted = true;
@@ -61,8 +60,9 @@ public class UIManager : MonoBehaviour
 
     private void RestartLevel()
     {
-        GameManager.instance.RestartCurrentLevel();
+        ResumeGame();
         GameCompleted = false;
+        GameManager.instance.RestartCurrentLevel();
     }
     
     public void UpdateObjectivesText()
@@ -104,32 +104,42 @@ public class UIManager : MonoBehaviour
 
     public void RestartGame(string sceneName)
     {
+        ResumeGame();
         menuPanel.SetActive(false);
         victoryPanel.SetActive(false);
-        ResumeGame();
         GameCompleted = false;
         GameManager.instance.RestartCurrentLevel();
     }
 
     public void QuitGame(string sceneName)
     {
-        if (sceneName == "Fase 7" && GameCompleted == true)
+        ResumeGame();
+        if (sceneName == "Fase 7" && GameCompleted)
         {
             GameManager.instance.LoadScene("Cutscene");
         }
-        else if (sceneName == "Fase 14" && GameCompleted == true)
+        else if (sceneName == "Fase 14" && GameCompleted)
         {
             GameManager.instance.LoadScene("Cutscene");
         }
         else
         {
-            GameManager.instance.LoadScene("selecaoDeFase");
+            Debug.Log("Saindo para " + sceneName);
+            GameManager.instance.LoadScene(sceneName);
         }
     }
 
     public void QuitinGame(string sceneName)
     {
+        Debug.Log("Saindo para " + sceneName);
+        ResumeGame();
         EnergyManager.instance.UseEnergy();
+        StartCoroutine(QuitAfterFade(sceneName));
+    }
+
+    private IEnumerator QuitAfterFade(string sceneName)
+    {
+        yield return GameManager.instance.StartCoroutine("FadeOut");
         GameManager.instance.LoadScene(sceneName);
     }
 
@@ -166,8 +176,8 @@ public class UIManager : MonoBehaviour
     public void ShowGameOver(string textGameOver)
     {
         gameoverText.text = textGameOver;
-        victoryPanel.SetActive(true);  
-        menuPanel.SetActive(false);   
+        victoryPanel.SetActive(true);
+        menuPanel.SetActive(false);
         PauseGame();
         buttonClose.enabled = false;
 
