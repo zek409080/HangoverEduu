@@ -4217,10 +4217,9 @@ MonoBehaviour:
   height: 6
   moveDuration: 0.5
   fruitPrefabs:
-  - {fileID: 5090536341604393258, guid: 9aa81cd871ed5b542b32e4c614621727, type: 3}
+  - {fileID: 6319861555613119749, guid: 256254138fe544c43a21812514f9b104, type: 3}
   - {fileID: 5766391664119410148, guid: e36370fc2ccd85442bb8ad08917eaed8, type: 3}
-  - {fileID: 8838499904282740777, guid: 88339dc5501b1df4bbf8f2cbcb692b92, type: 3}
-  - {fileID: 6874434505175374339, guid: 48f4979ab729d1440b4d083e886c57ad, type: 3}
+  - {fileID: 5090536341604393258, guid: 9aa81cd871ed5b542b32e4c614621727, type: 3}
   destructionEffectPrefab: {fileID: 5653956943498294196, guid: d741206eb23cda94fb1dc6acffbfa15c, type: 3}
   caixaFundo: {fileID: 6062328014917619854, guid: 4c0c87430f0efd94fa2b98191b0c2f67, type: 3}
   powerUpManager: {fileID: 0}
