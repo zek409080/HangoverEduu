@@ -26,9 +26,37 @@ public class DialogManager : MonoBehaviour
 
         // Obter cutscenes a partir do CutsceneConfiguration
         cutscenes = FindObjectOfType<CutsceneConfiguration>().cutscenes;
+        
+        // Descobrir qual cutscene tocar com base no estado salvo
+        LoadNextCutscene();
+    }
 
-        // Iniciar a cutscene 1 no início do jogo
-        LoadCutscene("Cutscene1");
+    // Carrega a próxima cutscene com base no estado salvo
+    private void LoadNextCutscene()
+    {
+        string nextCutsceneId = GetNextCutsceneId();
+        if (!string.IsNullOrEmpty(nextCutsceneId))
+        {
+            LoadCutscene(nextCutsceneId);
+        }
+        else
+        {
+            // Carregar a cena de seleção de fase se não houver mais cutscenes
+            SceneManager.LoadScene("selecaoDeFase");
+        }
+    }
+
+    // Descobre qual é a próxima cutscene a ser tocada
+    private string GetNextCutsceneId()
+    {
+        foreach (var cutscene in cutscenes)
+        {
+            if (!PlayerPrefs.HasKey(cutscene.id))
+            {
+                return cutscene.id;
+            }
+        }
+        return null;
     }
 
     public void LoadCutscene(string cutsceneId)
@@ -38,11 +66,6 @@ public class DialogManager : MonoBehaviour
         {
             if (cutscene.id == cutsceneId)
             {
-                if (PlayerPrefs.HasKey(cutsceneId))
-                {
-                    EndDialog();
-                    return;
-                }
                 PlayerPrefs.SetInt(cutsceneId, 1);
 
                 currentCutscene = cutscene;
@@ -125,6 +148,9 @@ public class DialogManager : MonoBehaviour
 
     private void EndDialog()
     {
+        // Salvar o estado atual da cutscene pode ser necessário
+        PlayerPrefs.SetInt(currentCutsceneId, 1);
+
         // Carregar a cena de seleção de mapa ao final da cutscene
         SceneManager.LoadScene("selecaoDeFase");
     }

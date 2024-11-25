@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class CutsceneConfiguration : MonoBehaviour
 {
-    public Sprite Faz1, Faz2;
+    public Sprite Faz1, Faz2, Faz3;
     public Sprite FLo;
-    public Sprite Cutscene1Background; // Adiciona referência ao fundo da Cutscene1
+    public Sprite Cutscene1Background, Cutscene2Background; // Adiciona referência ao fundo da Cutscene1
 
     public Cutscene[] cutscenes;
 
@@ -64,6 +64,81 @@ public class CutsceneConfiguration : MonoBehaviour
                         {
                             "Isso mesmo, Floquinho! Nosso primeiro passo é recolher essas frutas.",
                             "Assim, podemos começar a limpar e recuperar nossa fazenda. Vamos nessa!"
+                        }
+                    }
+                }
+            },
+            new Cutscene
+            {
+                id = "Cutscene2",
+                background = Cutscene2Background, // Define o fundo da cutscene 2
+                dialogs = new Dialog[]
+                {
+                    new Dialog
+                    {
+                        characterName = "Antônio",
+                        characterSprite = Faz2,
+                        lines = new string[]
+                        {
+                            "Ufaaa... Estamos indo bem, olha só essa área aqui!",
+                            "As frutas estão crescendo de novo, e o solo tá começando a respirar. É um bom começo."
+                        }
+                    },
+                    new Dialog
+                    {
+                        characterName = "Floquinho",
+                        characterSprite = FLo,
+                        lines = new string[]
+                        {
+                            "[Floquinho se deita perto de uma árvore saudável, dando um latido contente.]"
+                        }
+                    },
+                    new Dialog
+                    {
+                        characterName = "Antônio",
+                        characterSprite = Faz2,
+                        lines = new string[]
+                        {
+                            "Hehe! Até o Floquinho tá aliviado, mas não podemos relaxar agora.",
+                            "Ainda tem muita terra pra limpar, e as coisas vão ficando mais complicadas daqui pra frente."
+                        }
+                    },
+                    new Dialog
+                    {
+                        characterName = "Floquinho",
+                        characterSprite = FLo,
+                        lines = new string[]
+                        {
+                            "[Floquinho se levanta de repente, farejando algo e correndo até um monte de lixo tóxico.]"
+                        }
+                    },
+                    new Dialog
+                    {
+                        characterName = "Antônio",
+                        characterSprite = Faz3,
+                        lines = new string[]
+                        {
+                            "Tá vendo isso? Esses resíduos da empresa não vão sumir sozinhos.",
+                            "Precisamos continuar juntando frutas e mostrando pra essa terra que ainda há esperança!"
+                        }
+                    },
+                    new Dialog
+                    {
+                        characterName = "Floquinho",
+                        characterSprite = FLo,
+                        lines = new string[]
+                        {
+                            "[Floquinho olha para Antônio, balança o rabo, e volta para perto dele, trazendo um pequeno galho saudável entre os dentes.]"
+                        }
+                    },
+                    new Dialog
+                    {
+                        characterName = "Antônio",
+                        characterSprite = Faz2,
+                        lines = new string[]
+                        {
+                            "Hehe, Floquinho tá dizendo que a gente tem força pra superar qualquer coisa.",
+                            "E eu acredito nele. Vamos em frente, e não se esqueça: cada passo conta!"
                         }
                     }
                 }

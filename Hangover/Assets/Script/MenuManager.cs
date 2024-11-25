@@ -6,13 +6,13 @@ using System.Collections;
 public delegate void OnFaseStarted();
 public class MenuManager : MonoBehaviour
 {
-    [SerializeField] GameObject panelselectedFase;
-    [SerializeField] TextMeshProUGUI highScoreText;
-    [SerializeField] GameObject[] energyIcons;  // Array de ícones de energia
-    [SerializeField] TextMeshProUGUI regenerationTimeText;
-    [SerializeField] GameObject energyPopUp;
+    [SerializeField] private GameObject panelselectedFase;
+    [SerializeField] private TextMeshProUGUI highScoreText;
+    [SerializeField] private GameObject[] energyIcons;  // Array de ícones de energia
+    [SerializeField] private TextMeshProUGUI regenerationTimeText;
+    [SerializeField] private GameObject energyPopUp;
+    [SerializeField] private Button unlockAllLevelsButton; // Adicionar referência ao botão na UI
     
-
     public static event OnFaseStarted onFaseStarted; // Evento para notificações de mudança de fase
     private string selectedFase;
 
@@ -40,6 +40,9 @@ public class MenuManager : MonoBehaviour
         EnergyManager.instance.OnEnergyChanged += UpdateEnergyIcons;
         EnergyManager.instance.OnTimeToNextRegenerationChanged += UpdateRegenerationTime;
         energyPopUp.SetActive(false);
+
+        // Adicionar listener para desbloquear todas as fases
+        unlockAllLevelsButton.onClick.AddListener(UnlockAllLevels);
     }
 
     private void OnDestroy()
@@ -79,12 +82,11 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    public void loadMenu()
+    public void LoadMenu()
     {
         GameManager.instance.LoadScene("Menu");
     }
     
-
     public void OpenSite(string url)
     {
         Application.OpenURL(url);
@@ -148,5 +150,39 @@ public class MenuManager : MonoBehaviour
         // Verifica e atualiza os ícones de energia no Update
         UpdateEnergyIcons(EnergyManager.instance.currentEnergy);
         UpdateRegenerationTime(EnergyManager.instance.currentTimeToNextRegeneration);
+    }
+    
+    // Método para desbloquear todas as fases
+    public void UnlockAllLevels()
+    {
+        for (int i = 1; i <= faseNames.Length; i++)
+        {
+            LevelManager.instance.UnlockLevel(i);
+        }
+        // Atualiza o status dos botões das fases após desbloquear todas as fases
+        UpdateButtonStates();
+    }
+
+    // Método para atualizar os estados dos botões das fases
+    private void UpdateButtonStates()
+    {
+        for (int i = 0; i < faseNames.Length; i++)
+        {
+            GameObject buttonObject = GameObject.Find(faseNames[i]);
+            if (buttonObject != null)
+            {
+                string faseSceneName = faseSceneNames[i];
+                Button button = buttonObject.GetComponent<Button>();
+                if (LevelManager.instance.IsLevelUnlocked(i + 1))
+                {
+                    button.onClick.AddListener(() => SetSelectedFase(true, faseSceneName));
+                    button.interactable = true;
+                }
+                else
+                {
+                    button.interactable = false;
+                }
+            }
+        }
     }
 }

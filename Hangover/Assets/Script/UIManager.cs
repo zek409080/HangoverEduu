@@ -109,7 +109,14 @@ public class UIManager : MonoBehaviour
 
     public void QuitGame(string sceneName)
     {
-        GameManager.instance.LoadScene(sceneName);
+        if (sceneName == "Fase 7")
+        {
+            GameManager.instance.LoadScene("Cutscene");
+        }
+        else
+        {
+            GameManager.instance.LoadScene(sceneName);
+        }
     }
 
     public void QuitinGame(string sceneName)

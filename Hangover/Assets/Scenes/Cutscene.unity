@@ -815,11 +815,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Faz1: {fileID: 21300000, guid: bfc9556ca6b9f074c9c8410df7a250df, type: 3}
   Faz2: {fileID: 21300000, guid: f6fd387b7c25a484fa66088db36e525a, type: 3}
+  Faz3: {fileID: 21300000, guid: 377fe8380890b584b86a2e5b7b9610ef, type: 3}
   FLo: {fileID: 21300000, guid: 3b94015ba06d7c541beb8735a1fb4ecc, type: 3}
   Cutscene1Background: {fileID: 21300000, guid: 594833b42e5b6df42b212fe194be095c, type: 3}
+  Cutscene2Background: {fileID: 21300000, guid: c0e254a1c87e9a94cad9af2ac8bdd7f7, type: 3}
   cutscenes:
   - id: Cutscene1
     background: {fileID: 21300000, guid: 594833b42e5b6df42b212fe194be095c, type: 3}
+    dialogs: []
+  - id: Cutscene2
+    background: {fileID: 21300000, guid: c0e254a1c87e9a94cad9af2ac8bdd7f7, type: 3}
     dialogs: []
 --- !u!4 &1934306787
 Transform:
