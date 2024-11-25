@@ -25,6 +25,7 @@ public class UIManager : MonoBehaviour
     private ObjectiveManager objectiveManager;
     private StringBuilder _stringBuilder;
     private EnergyManager energyManager;
+    private bool GameCompleted = false;
 
     private void Awake()
     {
@@ -52,14 +53,16 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    
     private void OnObjectivesCompleted()
     {
-        // Podemos adicionar lógica adicional se necessário
+        GameCompleted = true;
     }
 
     private void RestartLevel()
     {
         GameManager.instance.RestartCurrentLevel();
+        GameCompleted = false;
     }
     
     public void UpdateObjectivesText()
@@ -104,22 +107,23 @@ public class UIManager : MonoBehaviour
         menuPanel.SetActive(false);
         victoryPanel.SetActive(false);
         ResumeGame();
+        GameCompleted = false;
         GameManager.instance.RestartCurrentLevel();
     }
 
     public void QuitGame(string sceneName)
     {
-        if (sceneName == "Fase 7")
+        if (sceneName == "Fase 7" && GameCompleted == true)
         {
             GameManager.instance.LoadScene("Cutscene");
         }
-        else if (sceneName == "Fase 14")
+        else if (sceneName == "Fase 14" && GameCompleted == true)
         {
             GameManager.instance.LoadScene("Cutscene");
         }
         else
         {
-            GameManager.instance.LoadScene(sceneName);
+            GameManager.instance.LoadScene("selecaoDeFase");
         }
     }
 
