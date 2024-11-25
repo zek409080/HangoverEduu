@@ -1095,9 +1095,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Concertar Framboesa(Amora)\nTirar energia ao voltar para sele\xE7\xE3o
-    de fase.\nCreditos.\nSalvar fase e HighScores.\nVer se a Energia est\xE1 funcionando
-    adequadamente.\nQualquer outra coisa que possa afetar a gameplay.\n\n"
+  m_text: "Ver pe\xE7as de todas as fases\nCreditos\nResolu\xE7\xE3o\nver se gostaram
+    das musicas\n\"conversa\"\n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1124,7 +1123,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 53.35
+  m_fontSize: 72
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1650,8 +1649,10 @@ MonoBehaviour:
   musicToggle: {fileID: 1592662883}
   fundoMusical: {fileID: 1117204605}
   menuMusics:
+  - clip: {fileID: 8300000, guid: daf7fa66660106c48959ffc2d9020a06, type: 3}
+    volume: 0.2
   - clip: {fileID: 8300000, guid: 84c5533d9a478af45b5ad0281a667cb5, type: 3}
-    volume: 0.3
+    volume: 0.33
   gameMusics:
   - clip: {fileID: 8300000, guid: 41914a4e6191112469f6a11509fd7c28, type: 3}
     volume: 0.2
@@ -2423,7 +2424,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: selecaoDeFase
+          m_StringArgument: DialogScene
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1365709039

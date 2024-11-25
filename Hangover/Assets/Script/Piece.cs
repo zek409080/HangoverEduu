@@ -52,6 +52,8 @@ public class Piece : MonoBehaviour
         {
             originalColor = pieceRenderer.material.color;
         }
+
+        UpdateSoundState(); // Certifique-se de que o estado do som seja atualizado no início
     }
 
     private void Update()

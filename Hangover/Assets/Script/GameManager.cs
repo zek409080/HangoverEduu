@@ -42,6 +42,9 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
         Initialize();
+
+        // Inicializa a aplicação na cena de Menu.
+        LoadScene("Menu");
     }
 
     private void OnDestroy()
@@ -67,8 +70,23 @@ public class GameManager : MonoBehaviour
         {
             startButton.onClick.AddListener(() =>
             {
-                LoadScene("selecaoDeFase"); // Substitua pelo nome da sua cena de fase de seleção
+                CheckAndLoadCutsceneOrSelection(); // Verifique se a cutscene foi vista antes de carregá-la ou não.
             });
+        }
+    }
+
+    private void CheckAndLoadCutsceneOrSelection()
+    {
+        // Verificar se a cutscene já foi vista
+        if (PlayerPrefs.HasKey("Cutscene1"))
+        {
+            // Se já foi vista, vá direto para a cena de seleção de fase
+            LoadScene("selecaoDeFase");
+        }
+        else
+        {
+            // Caso contrário, vá para a cutscene
+            LoadScene("Cutscene");
         }
     }
 
@@ -141,7 +159,6 @@ public class GameManager : MonoBehaviour
 
         if (EnergyManager.instance != null && EnergyManager.instance.HasEnergy())
         {
-            // Aqui garantimos que a energia seja consumida apenas uma vez.
             EnergyManager.instance.UseEnergy();
             Debug.Log("Jogador falhou na fase e perdeu uma vida.");
         }
@@ -299,7 +316,6 @@ public class GameManager : MonoBehaviour
     }
 
     // Método para recarregar a cena atual
-
     public void RestartCurrentLevel()
     {
         // Verifica se há energia suficiente antes de reiniciar

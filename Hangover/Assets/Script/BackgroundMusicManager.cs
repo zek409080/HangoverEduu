@@ -147,7 +147,7 @@ public class BackgroundMusicManager : MonoBehaviour
         }
     }
 
-    public void LigarOuDesligarMusica()
+    private void LigarOuDesligarMusica()
     {
         if (estadoMusica)
         {

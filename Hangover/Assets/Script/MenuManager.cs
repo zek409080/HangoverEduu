@@ -11,6 +11,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] GameObject[] energyIcons;  // Array de ícones de energia
     [SerializeField] TextMeshProUGUI regenerationTimeText;
     [SerializeField] GameObject energyPopUp;
+    
 
     public static event OnFaseStarted onFaseStarted; // Evento para notificações de mudança de fase
     private string selectedFase;

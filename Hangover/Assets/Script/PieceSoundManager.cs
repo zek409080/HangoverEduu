@@ -54,24 +54,10 @@ public class PieceSoundManager : MonoBehaviour
             soundToggle.isOn = estadoSom; // inicializar estado do toggle
             soundToggle.onValueChanged.AddListener(OnSoundToggleChanged);
         }
-
-        // Garantir que o som esteja no estado correto ao inicializar
-        LigarOuDesligarSom();
     }
 
     private void OnSoundToggleChanged(bool isOn)
     {
         estadoSom = isOn;
-        LigarOuDesligarSom();
-    }
-
-    public void LigarOuDesligarSom()
-    {
-        AudioListener.pause = !estadoSom;
-    }
-
-    private void OnDestroy()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 }
