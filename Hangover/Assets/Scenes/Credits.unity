@@ -309,6 +309,7 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 995903655}
   - {fileID: 1378427283}
   - {fileID: 1306774280}
   m_Father: {fileID: 0}
@@ -363,6 +364,112 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &995903654
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 329353737}
+    m_Modifications:
+    - target: {fileID: 8135365219275003002, guid: 77ff0229deda7ef4294b4a005578f900, type: 3}
+      propertyPath: m_Name
+      value: FadePanel
+      objectReference: {fileID: 0}
+    - target: {fileID: 8135365219275003002, guid: 77ff0229deda7ef4294b4a005578f900, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8277442614365744541, guid: 77ff0229deda7ef4294b4a005578f900, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8277442614365744541, guid: 77ff0229deda7ef4294b4a005578f900, type: 3}
+      propertyPath: m_Pivot.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8277442614365744541, guid: 77ff0229deda7ef4294b4a005578f900, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8277442614365744541, guid: 77ff0229deda7ef4294b4a005578f900, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8277442614365744541, guid: 77ff0229deda7ef4294b4a005578f900, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8277442614365744541, guid: 77ff0229deda7ef4294b4a005578f900, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8277442614365744541, guid: 77ff0229deda7ef4294b4a005578f900, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -1080
+      objectReference: {fileID: 0}
+    - target: {fileID: 8277442614365744541, guid: 77ff0229deda7ef4294b4a005578f900, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: -2160
+      objectReference: {fileID: 0}
+    - target: {fileID: 8277442614365744541, guid: 77ff0229deda7ef4294b4a005578f900, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8277442614365744541, guid: 77ff0229deda7ef4294b4a005578f900, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8277442614365744541, guid: 77ff0229deda7ef4294b4a005578f900, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8277442614365744541, guid: 77ff0229deda7ef4294b4a005578f900, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8277442614365744541, guid: 77ff0229deda7ef4294b4a005578f900, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8277442614365744541, guid: 77ff0229deda7ef4294b4a005578f900, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8277442614365744541, guid: 77ff0229deda7ef4294b4a005578f900, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8277442614365744541, guid: 77ff0229deda7ef4294b4a005578f900, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -540
+      objectReference: {fileID: 0}
+    - target: {fileID: 8277442614365744541, guid: 77ff0229deda7ef4294b4a005578f900, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -1080
+      objectReference: {fileID: 0}
+    - target: {fileID: 8277442614365744541, guid: 77ff0229deda7ef4294b4a005578f900, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8277442614365744541, guid: 77ff0229deda7ef4294b4a005578f900, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8277442614365744541, guid: 77ff0229deda7ef4294b4a005578f900, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 77ff0229deda7ef4294b4a005578f900, type: 3}
+--- !u!224 &995903655 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 8277442614365744541, guid: 77ff0229deda7ef4294b4a005578f900, type: 3}
+  m_PrefabInstance: {fileID: 995903654}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1306774279
 GameObject:
   m_ObjectHideFlags: 0
@@ -420,19 +527,11 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Game Designers -
-
-
-    Artistas -
-
-
-    Programadores -
-
-
-    Agradecimentos
-    Especiais-
-
-'
+  m_text: "Game Designers:\nAmanda Soethe Bento\nLet\xEDcia Beyer Mogk\nFrancielle
+    Reinicke da Silva\n\nArtistas: \nKau\xE3 Luciano\nVictor Cristian de Paulo\n\nProgramadores:\nKaw\xE3
+    Krutzsch\nEduardo Luiz Dos Santos Junior\nRodrigo Thewis Manchein\n\nAgradecimentos
+    Especiais:\nBruno Bordoli Dao Quimaia\nDaniel R\xE9gis\nVoc\xEA, por jogar nosso
+    projeto!\n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -459,7 +558,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 72
+  m_fontSize: 63.7
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -471,7 +570,7 @@ MonoBehaviour:
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
-  m_lineSpacing: 0
+  m_lineSpacing: 50
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0

@@ -31,7 +31,6 @@ public class DialogManager : MonoBehaviour
         LoadNextCutscene();
     }
 
-    // Carrega a próxima cutscene com base no estado salvo
     private void LoadNextCutscene()
     {
         string nextCutsceneId = GetNextCutsceneId();
@@ -41,12 +40,10 @@ public class DialogManager : MonoBehaviour
         }
         else
         {
-            // Carregar a cena de seleção de fase se não houver mais cutscenes
             SceneManager.LoadScene("selecaoDeFase");
         }
     }
 
-    // Descobre qual é a próxima cutscene a ser tocada
     private string GetNextCutsceneId()
     {
         foreach (var cutscene in cutscenes)
@@ -61,16 +58,13 @@ public class DialogManager : MonoBehaviour
 
     public void LoadCutscene(string cutsceneId)
     {
-        // Encontrar e carregar a cutscene correspondente ao ID fornecido
         foreach (var cutscene in cutscenes)
         {
             if (cutscene.id == cutsceneId)
             {
-                PlayerPrefs.SetInt(cutsceneId, 1); // Marcar a cutscene como vista
-
                 currentCutscene = cutscene;
                 currentCutsceneId = cutsceneId;
-                SetBackgroundForCutscene(cutscene); // Define a imagem de fundo para a cutscene
+                SetBackgroundForCutscene(cutscene); 
                 StartCutscene(cutscene.dialogs);
                 break;
             }
@@ -79,7 +73,7 @@ public class DialogManager : MonoBehaviour
 
     private void SetBackgroundForCutscene(Cutscene cutscene)
     {
-        background.sprite = cutscene.background; // Define o sprite do fundo a partir da cutscene
+        background.sprite = cutscene.background; 
     }
 
     private void StartCutscene(Dialog[] dialogs)
@@ -100,7 +94,7 @@ public class DialogManager : MonoBehaviour
             sentences.Enqueue(sentence);
         }
 
-        UpdateCharacterImages(); // Atualizar as imagens dos personagens ao iniciar um novo diálogo
+        UpdateCharacterImages();
 
         dialogText.text = "";
         DisplayNextSentence();
@@ -113,14 +107,14 @@ public class DialogManager : MonoBehaviour
             if (currentDialog.characterName == "Antônio")
             {
                 leftCharacter.sprite = currentDialog.characterSprite;
-                rightCharacter.color = new Color(1, 1, 1, 0.5f); // Deixa o personagem da direita transparente
-                leftCharacter.color = new Color(1, 1, 1, 1); // Personagem da esquerda totalmente opaco
+                rightCharacter.color = new Color(1, 1, 1, 0.5f); 
+                leftCharacter.color = new Color(1, 1, 1, 1); 
             }
             else if (currentDialog.characterName == "Floquinho")
             {
                 rightCharacter.sprite = currentDialog.characterSprite;
-                leftCharacter.color = new Color(1, 1, 1, 0.5f); // Deixa o personagem da esquerda transparente
-                rightCharacter.color = new Color(1, 1, 1, 1); // Personagem da direita totalmente opaco
+                leftCharacter.color = new Color(1, 1, 1, 0.5f); 
+                rightCharacter.color = new Color(1, 1, 1, 1);
             }
         }
     }
@@ -148,6 +142,9 @@ public class DialogManager : MonoBehaviour
 
     private void EndDialog()
     {
+        // Marcar a cutscene atual como vista
+        PlayerPrefs.SetInt(currentCutsceneId, 1);
+
         // Verificar se é a última cutscene
         if (currentCutsceneId == "Cutscene3")
         {
@@ -156,9 +153,6 @@ public class DialogManager : MonoBehaviour
         }
         else
         {
-            // Salvar o estado atual da cutscene
-            PlayerPrefs.SetInt(currentCutsceneId, 1);
-
             // Carregar a cena de seleção de mapa ao final da cutscene
             SceneManager.LoadScene("selecaoDeFase");
         }
@@ -176,7 +170,7 @@ public class Dialog
 [System.Serializable]
 public class Cutscene
 {
-    public string id; // ID único para identificar a cutscene
-    public Sprite background; // Fundo para a cutscene
-    public Dialog[] dialogs; // Array de diálogos que compõem a cutscene
+    public string id;
+    public Sprite background; 
+    public Dialog[] dialogs;
 }

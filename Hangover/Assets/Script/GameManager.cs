@@ -31,6 +31,7 @@ public class GameManager : MonoBehaviour
 
     [Header("UI Elements")]
     public CanvasGroup faderCanvasGroup;
+    public Image faderImage;
 
     public static event System.Action<int> onScoreChanged;
     public static event System.Action<int> onJogadasChanged;
@@ -41,10 +42,18 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
-        Initialize();
 
-        // Inicializa a aplicação na cena de Menu.
-        LoadScene("Menu");
+        // Verifique se devemos iniciar com o fade in
+        if (SceneManager.GetActiveScene().name == "Menu")
+        {
+            // Configurações iniciais para a primeira cena
+            Initialize();
+            StartCoroutine(FadeIn());
+        }
+        else
+        {
+            Initialize();
+        }
     }
 
     private void OnDestroy()
@@ -62,23 +71,11 @@ public class GameManager : MonoBehaviour
             ConfigureMenuScene();
         }
     }
-
-    private void ConfigureMenuScene()
+    
+    public void StartButtonClicked()
     {
-        Button startButton = GameObject.Find("PlayGame").GetComponent<Button>();
-        if (startButton != null)
-        {
-            startButton.onClick.AddListener(() =>
-            {
-                CheckAndLoadCutsceneOrSelection(); // Verifique se a cutscene foi vista antes de carregá-la ou não.
-            });
-        }
-    }
-
-    private void CheckAndLoadCutsceneOrSelection()
-    {
-        // Verificar se a cutscene já foi vista
-        if (PlayerPrefs.HasKey("Cutscene1"))
+        // Verificar se a cutscene 1 já foi vista
+        if (PlayerPrefs.GetInt("Cutscene1", 0) == 1)
         {
             // Se já foi vista, vá direto para a cena de seleção de fase
             LoadScene("selecaoDeFase");
@@ -90,10 +87,38 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void ConfigureMenuScene()
+    {
+        Button startButton = GameObject.Find("PlayGame").GetComponent<Button>();
+        if (startButton != null)
+        {
+            startButton.onClick.RemoveAllListeners(); // Remover listeners antigos se houver
+            startButton.onClick.AddListener(StartButtonClicked); // Adicionar o novo método
+        }
+    }
+
+    private void CheckAndLoadCutsceneOrSelection()
+    {
+        // Verificar se a cutscene 1 já foi vista
+        if (PlayerPrefs.GetInt("Cutscene1", 0) == 1)
+        {
+            // Se já foi vista, vá direto para a cena de seleção de fase
+            LoadScene("selecaoDeFase");
+        }
+        else
+        {
+            // Caso contrário, vá para a cutscene
+            LoadScene("Cutscene");
+        }
+    }
+
+    // Código restante do GameManager (desnecessário duplicar)
+
     private void Initialize()
     {
         ResetScore();
         ResetJogadas();
+        FindFaderCanvasGroup();
     }
 
     private void InitializeScene()
@@ -196,9 +221,10 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator FadeAndLoadScene(string sceneName)
     {
-        yield return StartCoroutine(FadeOut());
+        yield return StartCoroutine(FadeOut()); // FadeOut
         ResetGameStates();
         SceneManager.LoadScene(sceneName);
+        yield return StartCoroutine(FadeIn()); // FadeIn
     }
 
     private void ResetGameStates()
@@ -213,26 +239,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private IEnumerator FadeOut()
-    {
-        FindFaderCanvasGroup();
-        if (faderCanvasGroup == null)
-        {
-            yield break;
-        }
-
-        faderCanvasGroup.gameObject.SetActive(true);
-        faderCanvasGroup.blocksRaycasts = true;
-        float elapsedTime = 0f;
-
-        while (elapsedTime < fadeDuration)
-        {
-            elapsedTime += Time.deltaTime;
-            faderCanvasGroup.alpha = Mathf.Clamp01(elapsedTime / fadeDuration);
-            yield return null;
-        }
-    }
-
     private IEnumerator FadeIn()
     {
         FindFaderCanvasGroup();
@@ -241,8 +247,8 @@ public class GameManager : MonoBehaviour
             yield break;
         }
 
+        faderCanvasGroup.alpha = 1f; // Certifique-se de que o painel está visível
         faderCanvasGroup.blocksRaycasts = true;
-
         float elapsedTime = 0f;
 
         while (elapsedTime < fadeDuration)
@@ -252,29 +258,52 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
 
+        faderCanvasGroup.alpha = 0f;
         faderCanvasGroup.blocksRaycasts = false;
+    }
 
-        yield return new WaitForSeconds(fadeDuration);
+    private IEnumerator FadeOut()
+    {
+        FindFaderCanvasGroup();
+        if (faderCanvasGroup == null)
+        {
+            yield break;
+        }
 
-        faderCanvasGroup.gameObject.SetActive(false);
+        faderCanvasGroup.alpha = 0f; // Certifique-se de que o painel está invisível
+        faderCanvasGroup.blocksRaycasts = true;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < fadeDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            faderCanvasGroup.alpha = Mathf.Clamp01(elapsedTime / fadeDuration);
+            yield return null;
+        }
+
+        faderCanvasGroup.alpha = 1f;
     }
 
     private void FindFaderCanvasGroup()
     {
-        GameObject fadePanel = GameObject.Find("FadePainel");
-
-        if (fadePanel != null)
+        if (faderCanvasGroup == null)
         {
-            faderCanvasGroup = fadePanel.GetComponent<CanvasGroup>();
+            GameObject fadePanel = GameObject.Find("FadePanel");
 
-            if (faderCanvasGroup == null)
+            if (fadePanel != null)
             {
-                Debug.LogWarning("CanvasGroup component not found on FadePainel.");
+                faderCanvasGroup = fadePanel.GetComponent<CanvasGroup>();
+                faderImage = fadePanel.GetComponent<Image>();
+
+                if (faderCanvasGroup == null)
+                {
+                    Debug.LogWarning("CanvasGroup component not found on FadePanel.");
+                }
             }
-        }
-        else
-        {
-            Debug.LogWarning("FadePainel GameObject not found in the new scene!");
+            else
+            {
+                Debug.LogWarning("FadePanel GameObject not found in the new scene!");
+            }
         }
     }
 
@@ -339,9 +368,10 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator FadeAndReloadCurrentScene()
     {
-        yield return StartCoroutine(FadeOut());
+        yield return StartCoroutine(FadeOut()); // FadeOut
         ResetGameStates();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        yield return StartCoroutine(FadeIn()); // FadeIn
     }
 
     // Adiciona um método auxiliar para obter o número da fase atual
