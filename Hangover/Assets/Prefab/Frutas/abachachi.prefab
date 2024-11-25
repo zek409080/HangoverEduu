@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 6169865730132635611}
   - component: {fileID: -588156104160293229}
   - component: {fileID: 6486471328615224847}
-  - component: {fileID: 3080098423968204071}
+  - component: {fileID: -6564465135976226100}
   m_Layer: 0
   m_Name: abachachi
   m_TagString: Untagged
@@ -233,9 +233,9 @@ MonoBehaviour:
   frutType: 0
   x: 0
   y: 0
-  board: {fileID: 0}
   isInvisible: 0
-  audioSelect: {fileID: 0}
+  isMarkedForDestruction: 0
+  somSelect: {fileID: 0}
 --- !u!95 &6486471328615224847
 Animator:
   serializedVersion: 5
@@ -257,7 +257,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!82 &3080098423968204071
+--- !u!82 &-6564465135976226100
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

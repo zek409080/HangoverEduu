@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 902100658681117868}
   - component: {fileID: 3025542588555600849}
   - component: {fileID: -2255050652287258044}
-  - component: {fileID: 8882158600292573749}
+  - component: {fileID: 7521315097010157224}
   m_Layer: 0
   m_Name: bana
   m_TagString: Untagged
@@ -161,7 +161,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 5
+  m_SortingOrder: 3000
   m_Sprite: {fileID: 21300000, guid: edc10a9fc05a73045a91287d93ae3564, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -233,9 +233,9 @@ MonoBehaviour:
   frutType: 1
   x: 0
   y: 0
-  board: {fileID: 0}
   isInvisible: 0
-  audioSelect: {fileID: 0}
+  isMarkedForDestruction: 0
+  somSelect: {fileID: 0}
 --- !u!95 &-2255050652287258044
 Animator:
   serializedVersion: 5
@@ -257,7 +257,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!82 &8882158600292573749
+--- !u!82 &7521315097010157224
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

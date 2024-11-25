@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: -3325626259563534102}
   - component: {fileID: -8428039761401847911}
   - component: {fileID: 46649943153446709}
-  - component: {fileID: 2246049531281882182}
+  - component: {fileID: 6203277169514255091}
   m_Layer: 0
   m_Name: melanzia
   m_TagString: Untagged
@@ -77,7 +77,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 5
+  m_SortingOrder: 3000
   m_Sprite: {fileID: 21300000, guid: d297096a9942bfb4680d698e4145e77e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -149,9 +149,9 @@ MonoBehaviour:
   frutType: 4
   x: 0
   y: 0
-  board: {fileID: 0}
   isInvisible: 0
-  audioSelect: {fileID: 0}
+  isMarkedForDestruction: 0
+  somSelect: {fileID: 0}
 --- !u!95 &46649943153446709
 Animator:
   serializedVersion: 5
@@ -173,7 +173,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!82 &2246049531281882182
+--- !u!82 &6203277169514255091
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

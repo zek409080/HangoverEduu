@@ -1,144 +1,178 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using DG.Tweening;
 
 public class Piece : MonoBehaviour
 {
     public FrutType frutType;
     public int x;
     public int y;
-    public Board board;
     public bool isInvisible;
-    public AudioSource audioSelect;
-    private Vector3 targetPosition;
-    private float moveDuration;
-    private bool isMoving = false;
-    private Vector3 targetScale;
-    private bool isScaling = false;
-    private float scaleDuration;
-    public void Init(int x, int y, Board board)
+    public bool isMarkedForDestruction;
+    private AudioSource somSelect;
+    public GridManager gridManager { get; private set; }
+    private Renderer pieceRenderer;
+    protected PieceSwapper pieceSwapper;
+    private float idleTime;
+    private float idleThreshold = 5.0f;
+
+    private Color originalColor;
+    private static readonly Color selectedColor = Color.gray;
+    protected int scoreValue = 10;
+
+    public delegate void PieceEventHandler(Piece piece);
+    public event PieceEventHandler OnPieceDestruction;
+
+    private void Awake()
     {
-        audioSelect = GetComponent<AudioSource>();
-        this.x = x;
-        this.y = y;
-        this.board = board;
+        pieceRenderer = GetComponent<Renderer>();
+        somSelect = GetComponent<AudioSource>();
+
+        if (somSelect == null)
+        {
+            Debug.LogWarning("AudioSource not found in Piece. Please ensure an AudioSource component is attached.");
+        }
     }
 
-    void Update()
+    private void Start()
     {
-        if (isMoving)
+        gridManager = FindObjectOfType<GridManager>();
+        pieceSwapper = FindObjectOfType<PieceSwapper>();
+
+        if (gridManager == null)
         {
-            transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime / moveDuration);
-            if (Vector3.Distance(transform.position, targetPosition) < 0.01f)
+            Debug.LogError("GridManager not found in the scene. Please ensure there is a GridManager object in the scene.");
+        }
+
+        if (pieceSwapper == null)
+        {
+            Debug.LogError("PieceSwapper not found in the scene. Please ensure there is a PieceSwapper object in the scene.");
+        }
+
+        if (pieceRenderer != null)
+        {
+            originalColor = pieceRenderer.material.color;
+        }
+
+        UpdateSoundState(); // Certifique-se de que o estado do som seja atualizado no início
+    }
+
+    private void Update()
+    {
+        UpdateSoundState();
+    }
+
+    private void UpdateSoundState()
+    {
+        if (PieceSoundManager.instance != null && somSelect != null)
+        {
+            somSelect.enabled = PieceSoundManager.instance.estadoSom;
+        }
+    }
+
+    private void ProvideHint()
+    {
+        // Lógica para sugerir um movimento ao jogador
+    }
+
+    public virtual void Init(int x, int y, GridManager gridManager)
+    {
+        SetPosition(x, y);
+        this.gridManager = gridManager;
+        isMarkedForDestruction = false;
+        isInvisible = false;
+        SetVisibility(true);
+    }
+
+    public void SetPosition(int newX, int newY)
+    {
+        x = newX;
+        y = newY;
+    }
+
+    public Vector2 GetPosition()
+    {
+        return new Vector2(x, y);
+    }
+
+    public void SetVisibility(bool isVisible)
+    {
+        isInvisible = !isVisible;
+        if (pieceRenderer != null)
+        {
+            pieceRenderer.enabled = isVisible;
+        }
+    }
+
+    public void MarkForDestruction()
+    {
+        if (!isMarkedForDestruction)
+        {
+            isMarkedForDestruction = true;
+            SetVisibility(false);
+        }
+    }
+
+    public virtual void AnimateDestruction()
+    {
+        if (isMarkedForDestruction)
+        {
+            gridManager.grid[x, y] = null;
+
+            transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBack).OnComplete(() =>
             {
-                transform.position = targetPosition;
-                isMoving = false;
-            }
-        }
-    }
-    public void StartScaleAnimation(Vector3 newScale, float duration)
-    {
-        targetScale = newScale;
-        scaleDuration = duration;
-        isScaling = true;
-    }
-
-    void OnMouseDown()
-    {
-        if (!isInvisible && frutType != FrutType.Vazio)
-        {
-            audioSelect.Play();
-            board.SelectPiece(this);
+                GameManager.AddScore(GetScoreValue());
+                OnPieceDestruction?.Invoke(this);
+                Destroy(gameObject);
+            });
         }
     }
 
-    public void StartMoveAnimation(Vector3 newPosition, float duration)
+    public void SetSelected(bool isSelected)
     {
-        targetPosition = newPosition;
-        moveDuration = duration;
-        isMoving = true;
-        StartCoroutine(MoveToPosition());
-    }
-
-    private IEnumerator MoveToPosition()
-    {
-        float elapsedTime = 0;
-        Vector3 startingPos = transform.position;
-
-        while (elapsedTime < moveDuration)
+        if (pieceRenderer != null)
         {
-            transform.position = Vector3.Lerp(startingPos, targetPosition, (elapsedTime / moveDuration));
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-
-        transform.position = targetPosition;
-        isMoving = false;
-    }
-
-    public void ActivatePower()
-    {
-        switch (frutType)
-        {
-            case FrutType.Framboesa:
-                ExplodeHorizontal();
-                break;
-            case FrutType.Roma:
-                ExplodeVertical();
-                break;
-            case FrutType.Cereja:
-                ExplodeSquare();
-                break;
-            default:
-                break;
+            pieceRenderer.material.color = isSelected ? selectedColor : originalColor;
         }
     }
 
-    private void ExplodeHorizontal()
+    private void OnMouseDown()
     {
-        for (int i = 0; i < board.width; i++)
+        if (!isInvisible && gridManager != null)
         {
-            Piece piece = board.pieces[i, y];
-            
-        }
-    }
-
-    private void ExplodeVertical()
-    {
-        for (int j = 0; j < board.height; j++)
-        {
-            Piece piece = board.pieces[x, j];
-            
-        }
-    }
-
-    private void ExplodeSquare()
-    {
-        for (int i = x - 1; i <= x + 1; i++)
-        {
-            for (int j = y - 1; j <= y + 1; j++)
+            if (somSelect != null && somSelect.enabled)
             {
-                if (i >= 0 && i < board.width && j >= 0 && j < board.height)
-                {
-                    Piece piece = board.pieces[i, j];
-                }
+                somSelect.Play();
             }
+            Debug.Log("Piece clicked for selection: " + name);
+            pieceSwapper.SelectPiece(this);
         }
+    }
+
+    public virtual void OnSwap(Piece targetPiece)
+    {
+        // Método virtual para ser sobrescrito por subclasses específicas
+    }
+    
+    // Adiciona pontuação para a destruição da peça
+    public virtual int GetScoreValue()
+    {
+        return scoreValue;
     }
 }
 
-// Enumeração para os tipos de frutas disponíveis
 public enum FrutType
 {
-    Vazio,
-    Roma,      
-    Cereja,    
-    Framboesa, 
     Abacaxi,
     Banana,
     Manga,
     Maca,
     Melancia,
     Pinha,
-    Uva
+    Uva,
+    Poder,
+    Obstacle,
+    Vazio,
+    Cereja,
+    Roma,
+    Amora
 }
