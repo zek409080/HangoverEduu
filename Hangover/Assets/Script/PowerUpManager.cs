@@ -116,6 +116,7 @@ public class PowerUpManager : MonoBehaviour
 
         gridManager.DestroyPiece(amora);
         StartCoroutine(gridManager.ResetMatching()); // Reiniciando o matching após a ativação da Amora
+        StartCoroutine(gridManager.ResetMatching()); // Reiniciando o matching após a ativação da Amora
     }
 
     private bool IsWithinBounds(int x, int y)

@@ -104,12 +104,16 @@ public class UIManager : MonoBehaviour
         menuPanel.SetActive(false);
         victoryPanel.SetActive(false);
         ResumeGame();
-        GameManager.instance.LoadScene(sceneName);
+        GameManager.instance.RestartCurrentLevel();
     }
 
     public void QuitGame(string sceneName)
     {
         if (sceneName == "Fase 7")
+        {
+            GameManager.instance.LoadScene("Cutscene");
+        }
+        else if (sceneName == "Fase 14")
         {
             GameManager.instance.LoadScene("Cutscene");
         }

@@ -4,7 +4,9 @@ public class CutsceneConfiguration : MonoBehaviour
 {
     public Sprite Faz1, Faz2, Faz3;
     public Sprite FLo;
-    public Sprite Cutscene1Background, Cutscene2Background; // Adiciona referência ao fundo da Cutscene1
+
+    public Sprite
+        Cutscene1Background, Cutscene2Background, Cutscene3Background; // Adiciona referência ao fundo da Cutscene1
 
     public Cutscene[] cutscenes;
 
@@ -71,7 +73,7 @@ public class CutsceneConfiguration : MonoBehaviour
             new Cutscene
             {
                 id = "Cutscene2",
-                background = Cutscene2Background, // Define o fundo da cutscene 2
+                background = Cutscene2Background,
                 dialogs = new Dialog[]
                 {
                     new Dialog
@@ -139,6 +141,64 @@ public class CutsceneConfiguration : MonoBehaviour
                         {
                             "Hehe, Floquinho tá dizendo que a gente tem força pra superar qualquer coisa.",
                             "E eu acredito nele. Vamos em frente, e não se esqueça: cada passo conta!"
+                        }
+                    }
+                }
+            },
+            new Cutscene
+            {
+                id = "Cutscene3",
+                background = Cutscene3Background,
+                dialogs = new Dialog[]
+                {
+                    new Dialog
+                    {
+                        characterName = "Antônio",
+                        characterSprite = Faz2,
+                        lines = new string[]
+                        {
+                            "[Antônio e Floquinho estão no centro da fazenda completamente restaurada. O campo está cheio de árvores frutíferas, o céu limpo, e um riacho cristalino corre ao fundo.]",
+                            "Suspiro emocionado... Nós conseguimos! Olha só pra isso... ",
+                            "A Terra do Sol tá viva de novo! As frutas tão radiantes, a terra tá saudável, e até o ar parece mais leve"
+                        }
+                    },
+                    new Dialog
+                    {
+                        characterName = "Floquinho",
+                        characterSprite = FLo,
+                        lines = new string[]
+                        {
+                            "[Floquinho corre feliz pelo campo, latindo animadamente e pegando uma maçã que caiu do pé.]"
+                        }
+                    },
+                    new Dialog
+                    {
+                        characterName = "Antônio",
+                        characterSprite = Faz2,
+                        lines = new string[]
+                        {
+                            "Haha! Parece que até o Floquinho tá comemorando. E com razão!",
+                            " Você foi incrível. Se não fosse pela sua ajuda, essa fazenda nunca teria se recuperado.",
+                            "Agora eu sei... Essa terra não é só minha. Ela pertence a todos que cuidam dela e a respeitam.",
+                            "Nunca mais vou deixar algo assim acontecer. Essa fazenda é nosso legado, meu e seu, Obrigado, de coração"
+                        }
+                    },
+                    new Dialog
+                    {
+                        characterName = "Floquinho",
+                        characterSprite = FLo,
+                        lines = new string[]
+                        {
+                            "[Floquinho dá um latido forte, como se concordasse, e Antônio ri enquanto o abraça.]"
+                        }
+                    },
+                    new Dialog
+                    {
+                        characterName = "Antônio",
+                        characterSprite = Faz2,
+                        lines = new string[]
+                        {
+                            "Mas chega de conversa! Que tal um suco de frutas fresquinhas pra comemorar? Hehe! Você merece."
                         }
                     }
                 }

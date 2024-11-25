@@ -66,7 +66,7 @@ public class DialogManager : MonoBehaviour
         {
             if (cutscene.id == cutsceneId)
             {
-                PlayerPrefs.SetInt(cutsceneId, 1);
+                PlayerPrefs.SetInt(cutsceneId, 1); // Marcar a cutscene como vista
 
                 currentCutscene = cutscene;
                 currentCutsceneId = cutsceneId;
@@ -148,11 +148,20 @@ public class DialogManager : MonoBehaviour
 
     private void EndDialog()
     {
-        // Salvar o estado atual da cutscene pode ser necessário
-        PlayerPrefs.SetInt(currentCutsceneId, 1);
+        // Verificar se é a última cutscene
+        if (currentCutsceneId == "Cutscene3")
+        {
+            // Carregar a cena de créditos
+            SceneManager.LoadScene("Credits");
+        }
+        else
+        {
+            // Salvar o estado atual da cutscene
+            PlayerPrefs.SetInt(currentCutsceneId, 1);
 
-        // Carregar a cena de seleção de mapa ao final da cutscene
-        SceneManager.LoadScene("selecaoDeFase");
+            // Carregar a cena de seleção de mapa ao final da cutscene
+            SceneManager.LoadScene("selecaoDeFase");
+        }
     }
 }
 

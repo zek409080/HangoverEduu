@@ -819,12 +819,16 @@ MonoBehaviour:
   FLo: {fileID: 21300000, guid: 3b94015ba06d7c541beb8735a1fb4ecc, type: 3}
   Cutscene1Background: {fileID: 21300000, guid: 594833b42e5b6df42b212fe194be095c, type: 3}
   Cutscene2Background: {fileID: 21300000, guid: c0e254a1c87e9a94cad9af2ac8bdd7f7, type: 3}
+  Cutscene3Background: {fileID: 21300000, guid: 90c485f914bded44cb8e67dd52ad8f5c, type: 3}
   cutscenes:
   - id: Cutscene1
     background: {fileID: 21300000, guid: 594833b42e5b6df42b212fe194be095c, type: 3}
     dialogs: []
   - id: Cutscene2
     background: {fileID: 21300000, guid: c0e254a1c87e9a94cad9af2ac8bdd7f7, type: 3}
+    dialogs: []
+  - id: Cutscene3
+    background: {fileID: 21300000, guid: 90c485f914bded44cb8e67dd52ad8f5c, type: 3}
     dialogs: []
 --- !u!4 &1934306787
 Transform:
