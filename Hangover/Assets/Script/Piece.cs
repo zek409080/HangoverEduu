@@ -17,7 +17,7 @@ public class Piece : MonoBehaviour
 
     private Color originalColor;
     private static readonly Color selectedColor = Color.gray;
-    protected int scoreValue = 10;
+    protected int scoreValue = 15;
 
     public delegate void PieceEventHandler(Piece piece);
     public event PieceEventHandler OnPieceDestruction;

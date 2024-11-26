@@ -26,6 +26,9 @@ public class UIManager : MonoBehaviour
     private StringBuilder _stringBuilder;
     private EnergyManager energyManager;
     private bool GameCompleted = false;
+    
+    // Chave para PlayerPrefs para verificar se a cutscene já foi exibida
+    private const string CutsceneSeenKeyPrefix = "CutsceneSeen_";
 
     private void Awake()
     {
@@ -114,12 +117,9 @@ public class UIManager : MonoBehaviour
     public void QuitGame(string sceneName)
     {
         ResumeGame();
-        if (sceneName == "Fase 7" && GameCompleted)
+        if ((sceneName == "Fase 7" || sceneName == "Fase 14") && GameCompleted && !PlayerPrefs.HasKey(CutsceneSeenKeyPrefix + sceneName))
         {
-            GameManager.instance.LoadScene("Cutscene");
-        }
-        else if (sceneName == "Fase 14" && GameCompleted)
-        {
+            PlayerPrefs.SetInt(CutsceneSeenKeyPrefix + sceneName, 1); // Marca a cutscene como vista
             GameManager.instance.LoadScene("Cutscene");
         }
         else

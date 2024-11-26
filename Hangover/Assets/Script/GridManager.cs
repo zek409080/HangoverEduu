@@ -258,20 +258,31 @@ public class GridManager : MonoBehaviour
                 {
                     if (grid[x, y] != null)
                     {
+                        // Pegando todas as combinações (matches) na posição atual da grade
                         List<Piece> matches = matchManager.GetAllMatchesForPiece(grid[x, y]);
                         if (matches.Count >= 3)
                         {
                             hasMatches = true;
                             foreach (Piece match in matches)
                             {
+                                // Marca a peça para destruição
                                 match.MarkForDestruction();
+
+                                // Adiciona pontuação ao GameManager
+                                GameManager.AddScore(10);
+
+                                // Atualiza o objetivo
+                                objectiveManager.AddScore(10);
+                                objectiveManager.AddPieceCount(match.frutType);
                             }
 
+                            // Limpa o tabuleiro e preenche conforme os matchs são detectados
                             yield return StartCoroutine(ClearAndFillBoard());
                         }
                     }
                 }
             }
+            // Repetição do loop enquanto encontrarem matchs
         } while (hasMatches);
     }
     

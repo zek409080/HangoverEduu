@@ -70,21 +70,13 @@ public class GameManager : MonoBehaviour
         {
             ConfigureMenuScene();
         }
+
+        ConfigureQuitButton(); // Adiciona a configuração do botão QUITAR para cada cena carregada
     }
     
     public void StartButtonClicked()
     {
-        // Verificar se a cutscene 1 já foi vista
-        if (PlayerPrefs.GetInt("Cutscene1", 0) == 1)
-        {
-            // Se já foi vista, vá direto para a cena de seleção de fase
-            LoadScene("selecaoDeFase");
-        }
-        else
-        {
-            // Caso contrário, vá para a cutscene
-            LoadScene("Cutscene");
-        }
+        CheckAndLoadCutsceneOrSelection();
     }
 
     private void ConfigureMenuScene()
@@ -318,12 +310,29 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void ConfigureQuitButton()
+    {
+        Button quitButton = GameObject.Find("QUITAR")?.GetComponent<Button>();
+        if (quitButton != null)
+        {
+            quitButton.onClick.RemoveAllListeners(); // Remover listeners antigos se houver
+            quitButton.onClick.AddListener(ExitGame); // Adicionar o método de saída de jogo
+        }
+    }
+
     public static void AddScore(int points)
     {
         if (instance == null) return;
 
         instance.currentScore += points;
         GameManager.onScoreChanged?.Invoke(instance.currentScore);
+
+        // Atualiza a pontuação no ObjectiveManager
+        ObjectiveManager objectiveManager = FindObjectOfType<ObjectiveManager>();
+        if (objectiveManager != null)
+        {
+            objectiveManager.SetCurrentScore(instance.currentScore);
+        }
     }
 
     public static int GetScore()
@@ -342,7 +351,7 @@ public class GameManager : MonoBehaviour
     {
         Application.Quit();
     }
-
+    
     public void ResetScore()
     {
         currentScore = initialScore;

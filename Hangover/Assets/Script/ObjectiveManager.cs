@@ -57,6 +57,12 @@ public class ObjectiveManager : MonoBehaviour
         CheckObjectives();
     }
 
+    public void SetCurrentScore(int score)
+    {
+        currentScore = score;
+        CheckObjectives();
+    }
+
     public void AddPieceCount(FrutType frutType)
     {
         if (pieceCounts.ContainsKey(frutType))
@@ -106,7 +112,10 @@ public class ObjectiveManager : MonoBehaviour
         UIManager uiManager = FindObjectOfType<UIManager>();
         if (uiManager != null)
         {
-            uiManager.ShowObjectiveCompletedPopup($"Objetivo completado: {objective.type} {objective.targetValue}");
+            string objectiveMessage = objective.type == ObjectiveType.PieceCount
+                ? $"Objetivo completado: {objective.targetValue}"
+                : $"Objetivo completado: {objective.type} {objective.targetValue}";
+            uiManager.ShowObjectiveCompletedPopup(objectiveMessage);
         }
 
         // Verifica se todos os objetivos foram concluídos
