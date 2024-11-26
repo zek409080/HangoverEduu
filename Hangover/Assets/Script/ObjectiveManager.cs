@@ -53,6 +53,7 @@ public class ObjectiveManager : MonoBehaviour
     public void AddScore(int score)
     {
         currentScore += score;
+        Debug.Log($"Pontuação atual: {currentScore}");
         CheckObjectives();
     }
 
@@ -61,6 +62,7 @@ public class ObjectiveManager : MonoBehaviour
         if (pieceCounts.ContainsKey(frutType))
         {
             pieceCounts[frutType]++;
+            Debug.Log($"Contagem de {frutType}: {pieceCounts[frutType]}");
             CheckObjectives();
             UpdateUIForNextObjective();
         }
@@ -68,10 +70,12 @@ public class ObjectiveManager : MonoBehaviour
 
     private void CheckObjectives()
     {
+        bool allObjectivesCompleted = true;
         foreach (var objective in objectives)
         {
             if (!objective.isCompleted)
             {
+                allObjectivesCompleted = false;
                 if (objective.type == ObjectiveType.Score && currentScore >= objective.targetValue)
                 {
                     OnObjectiveCompleted(objective);
@@ -86,6 +90,11 @@ public class ObjectiveManager : MonoBehaviour
         // Atualiza a imagem da UI e notifica o UIManager depois de verificar os objetivos
         UpdateUIForNextObjective();
         FindObjectOfType<UIManager>()?.UpdateObjectivesText();
+
+        if (allObjectivesCompleted)
+        {
+            onObjectivesCompleted?.Invoke();
+        }
     }
 
     private void OnObjectiveCompleted(Objective objective)

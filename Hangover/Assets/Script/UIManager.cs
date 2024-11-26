@@ -49,7 +49,7 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("ObjectiveManager not found in the scene.");
+            Debug.LogError("ObjectiveManager não encontrado na cena.");
         }
     }
 
@@ -124,8 +124,8 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("Saindo para " + sceneName);
-            GameManager.instance.LoadScene(sceneName);
+            Debug.Log("Saindo para " + "selecaoDeFase");
+            GameManager.instance.LoadScene("selecaoDeFase");
         }
     }
 
@@ -169,8 +169,8 @@ public class UIManager : MonoBehaviour
         HighScoresManager.instance.SetHighScore(currentLevel, finalScore);
 
         int highScore = HighScoresManager.instance.GetHighScore(currentLevel);
-        finalScoreText.text = "Final Score: " + finalScore;
-        finalHighScoreText.text = "High Score: " + highScore;
+        finalScoreText.text = "Pontuação Final: " + finalScore;
+        finalHighScoreText.text = "Recorde: " + highScore;
     }
 
     public void ShowGameOver(string textGameOver)
@@ -186,8 +186,8 @@ public class UIManager : MonoBehaviour
         HighScoresManager.instance.SetHighScore(currentLevel, finalScore);
 
         int highScore = HighScoresManager.instance.GetHighScore(currentLevel);
-        finalScoreText.text = "Final Score: " + finalScore;
-        finalHighScoreText.text = "High Score: " + highScore;
+        finalScoreText.text = "Pontuação Final: " + finalScore;
+        finalHighScoreText.text = "Recorde: " + highScore;
     }
 
     public void UpdateJogadas(int jogadas)
@@ -214,7 +214,7 @@ public class UIManager : MonoBehaviour
         if (highScoreText != null && HighScoresManager.instance != null)
         {
             int highScore = HighScoresManager.instance.GetHighScore(SceneManager.GetActiveScene().name);
-            highScoreText.text = "High Score: " + highScore;
+            highScoreText.text = "Recorde: " + highScore;
         }
     }
 
@@ -226,7 +226,7 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            ShowGameOver("Game Over! Você não completou todos os objetivos.");
+            ShowGameOver("Fim de Jogo! Você não completou todos os objetivos.");
         }
     }
 

@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PowerUpManager : MonoBehaviour
@@ -50,7 +49,7 @@ public class PowerUpManager : MonoBehaviour
                 }
             }
         }
-        StartCoroutine(gridManager.ResetMatching());
+        StartCoroutine(HandleResetMatching());
     }
 
     public void ActivateRoma(Piece roma)
@@ -90,7 +89,7 @@ public class PowerUpManager : MonoBehaviour
             }
         }
 
-        StartCoroutine(gridManager.ResetMatching());
+        StartCoroutine(HandleResetMatching());
     }
 
     public void ActivateAmora(AmoraPiece amora, Piece targetPiece)
@@ -115,8 +114,7 @@ public class PowerUpManager : MonoBehaviour
         }
 
         gridManager.DestroyPiece(amora);
-        StartCoroutine(gridManager.ResetMatching()); // Reiniciando o matching após a ativação da Amora
-        StartCoroutine(gridManager.ResetMatching()); // Reiniciando o matching após a ativação da Amora
+        StartCoroutine(HandleResetMatching()); // Chamando a nova função para garantir que o matching ocorra
     }
 
     private bool IsWithinBounds(int x, int y)
@@ -150,5 +148,13 @@ public class PowerUpManager : MonoBehaviour
         Piece powerUpPiece = powerUpObject.GetComponent<Piece>();
         powerUpPiece.Init(x, y, gridManager);
         gridManager.grid[x, y] = powerUpPiece;
+    }
+
+    private IEnumerator HandleResetMatching()
+    {
+        yield return gridManager.ResetMatching();
+        
+        // Verificar novas combinações depois que as peças caem
+        yield return gridManager.ResolveAllMatches();
     }
 }

@@ -67,57 +67,65 @@ public class PieceSwapper : MonoBehaviour
     }
 
     private IEnumerator SwapPieces(Piece piece1, Piece piece2)
+{
+    isSwapping = true;
+
+    Vector3 pos1 = piece1.transform.position;
+    Vector3 pos2 = piece2.transform.position;
+
+    piece1.transform.DOMove(pos2, _gridManager.moveDuration).SetEase(Ease.InOutQuad);
+    piece2.transform.DOMove(pos1, _gridManager.moveDuration).SetEase(Ease.InOutQuad);
+
+    yield return new WaitForSeconds(_gridManager.moveDuration + delayDuringSwap);
+
+    _gridManager.SwapPieces(piece1, piece2);
+
+    // Verificação especial para Amora
+    bool amoraActivated = false;
+    if (piece1 is AmoraPiece)
     {
-        isSwapping = true;
+        Debug.Log("Amora encontrada no piece1. Ativando PowerUp.");
+        _powerUpManager.ActivateAmora((AmoraPiece)piece1, piece2);
+        amoraActivated = true;
+    }
+    if (piece2 is AmoraPiece)
+    {
+        Debug.Log("Amora encontrada no piece2. Ativando PowerUp.");
+        _powerUpManager.ActivateAmora((AmoraPiece)piece2, piece1);
+        amoraActivated = true;
+    }
 
-        Vector3 pos1 = piece1.transform.position;
-        Vector3 pos2 = piece2.transform.position;
+    if (amoraActivated)
+    {
+        yield return new WaitForSeconds(0.5f); // Aguardar um pouco para a animação do PowerUp
+        StartCoroutine(_gridManager.ResetMatching()); // Reiniciando o matching após a ativação da Amora
+    }
+    else
+    {
+        bool isMatch1 = _gridManager.CheckAndProcessMatches(piece1); // Modificado para checar um de cada vez
+        bool isMatch2 = _gridManager.CheckAndProcessMatches(piece2); // Modificado para checar um de cada vez
+        
+        bool isMatch = isMatch1 || isMatch2;
 
-        piece1.transform.DOMove(pos2, _gridManager.moveDuration).SetEase(Ease.InOutQuad);
-        piece2.transform.DOMove(pos1, _gridManager.moveDuration).SetEase(Ease.InOutQuad);
-
-        yield return new WaitForSeconds(_gridManager.moveDuration + delayDuringSwap);
-
-        _gridManager.SwapPieces(piece1, piece2);
-
-        // Verificação especial para Amora
-        bool amoraActivated = false;
-        if (piece1 is AmoraPiece)
+        if (!isMatch)
         {
-            Debug.Log("Amora encontrada no piece1. Ativando PowerUp.");
-            _powerUpManager.ActivateAmora((AmoraPiece)piece1, piece2);
-            amoraActivated = true;
-        }
-        if (piece2 is AmoraPiece)
-        {
-            Debug.Log("Amora encontrada no piece2. Ativando PowerUp.");
-            _powerUpManager.ActivateAmora((AmoraPiece)piece2, piece1);
-            amoraActivated = true;
-        }
+            piece1.transform.DOMove(pos1, _gridManager.moveDuration).SetEase(Ease.InOutQuad);
+            piece2.transform.DOMove(pos2, _gridManager.moveDuration).SetEase(Ease.InOutQuad);
 
-        if (amoraActivated)
-        {
-            yield return new WaitForSeconds(0.5f); // Aguardar um pouco para a animação do PowerUp
-            StartCoroutine(_gridManager.ResetMatching()); // Reiniciando o matching após a ativação da Amora
+            yield return new WaitForSeconds(_gridManager.moveDuration + delayDuringSwap);
+
+            _gridManager.SwapPieces(piece1, piece2);
         }
         else
         {
-            bool isMatch = _gridManager.CheckAndProcessMatches(piece1, piece2);
-
-            if (!isMatch)
-            {
-                piece1.transform.DOMove(pos1, _gridManager.moveDuration).SetEase(Ease.InOutQuad);
-                piece2.transform.DOMove(pos2, _gridManager.moveDuration).SetEase(Ease.InOutQuad);
-
-                yield return new WaitForSeconds(_gridManager.moveDuration + delayDuringSwap);
-
-                _gridManager.SwapPieces(piece1, piece2);
-            }
+            // Decrementar jogadas somente se houve algum match
+            GameManager.DecrementJogadas();
         }
-
-        piece1.SetSelected(false);
-        piece2.SetSelected(false);
-        _selectedPiece = null;
-        isSwapping = false;
     }
+
+    piece1.SetSelected(false);
+    piece2.SetSelected(false);
+    _selectedPiece = null;
+    isSwapping = false;
+}
 }

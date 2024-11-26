@@ -309,9 +309,9 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 995903655}
   - {fileID: 1378427283}
   - {fileID: 1306774280}
+  - {fileID: 995903655}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -348,7 +348,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c88f65b05807ba4cb0e9170a4489b88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  creditsDuration: 10
+  creditsDuration: 15
 --- !u!4 &832949793
 Transform:
   m_ObjectHideFlags: 0
@@ -467,7 +467,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 77ff0229deda7ef4294b4a005578f900, type: 3}
 --- !u!224 &995903655 stripped
 RectTransform:
-  m_CorrespondingSourceObject: {fileID: 8277442614365744541, guid: 77ff0229deda7ef4294b4a005578f900, type: 3}
+  m_CorrespondingSourceObject: {fileID: 5526249402352673999, guid: 77ff0229deda7ef4294b4a005578f900, type: 3}
   m_PrefabInstance: {fileID: 995903654}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1306774279

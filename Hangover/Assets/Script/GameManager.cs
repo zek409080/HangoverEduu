@@ -24,12 +24,12 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
-    [Header("Game Settings")]
+    [Header("Configurações do Jogo")]
     public int initialScore = 0;
     public float fadeDuration = 1f;
     public int initialJogadas = 10;
 
-    [Header("UI Elements")]
+    [Header("Elementos UI")]
     public CanvasGroup faderCanvasGroup;
     public Image faderImage;
 
@@ -112,8 +112,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Código restante do GameManager (desnecessário duplicar)
-
     private void Initialize()
     {
         ResetScore();
@@ -167,12 +165,12 @@ public class GameManager : MonoBehaviour
         UIManager uiManager = FindObjectOfType<UIManager>();
         if (uiManager != null)
         {
-            uiManager.ShowVictory("Victory!");
+            uiManager.ShowVictory("Vitória!");
         }
 
         int currentLevel = GetCurrentLevel();
         LevelManager.instance.UnlockNextLevel(currentLevel);
-        Debug.Log("Level completed, attempting to unlock next level.");
+        Debug.Log("Fase concluída, tentando desbloquear a próxima fase.");
     }
 
     public static void HandleGameOver()
@@ -180,7 +178,7 @@ public class GameManager : MonoBehaviour
         UIManager uiManager = FindObjectOfType<UIManager>();
         if (uiManager != null)
         {
-            uiManager.ShowGameOver("Game Over!");
+            uiManager.ShowGameOver("Fim de Jogo!");
         }
 
         if (EnergyManager.instance != null && EnergyManager.instance.HasEnergy())
@@ -202,7 +200,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError($"Scene '{sceneName}' could not be found in the Build Settings.");
+            Debug.LogError($"Cena '{sceneName}' não pode ser encontrada nas Configurações de Build.");
         }
     }
 
@@ -310,12 +308,12 @@ public class GameManager : MonoBehaviour
 
                 if (faderCanvasGroup == null)
                 {
-                    Debug.LogWarning("CanvasGroup component not found on FadePanel.");
+                    Debug.LogWarning("Componente CanvasGroup não encontrado no FadePanel.");
                 }
             }
             else
             {
-                Debug.LogWarning("FadePanel GameObject not found in the new scene!");
+                Debug.LogWarning("GameObject FadePanel não encontrado na nova cena!");
             }
         }
     }
@@ -365,16 +363,16 @@ public class GameManager : MonoBehaviour
         {
             // Consome uma unidade de energia
             EnergyManager.instance.UseEnergy();
-            Debug.Log("Restarting current level: " + SceneManager.GetActiveScene().name);
+            Debug.Log("Reiniciando a fase atual: " + SceneManager.GetActiveScene().name);
             StartCoroutine(FadeAndReloadCurrentScene());
         }
         else
         {
-            Debug.LogWarning("Not enough energy to restart the level.");
+            Debug.LogWarning("Sem Energia!");
             UIManager uiManager = FindObjectOfType<UIManager>();
             if (uiManager != null)
             {
-                uiManager.ShowGameOver("Not enough energy to restart!");
+                uiManager.ShowGameOver("Sem Energia!");
             }
         }
     }

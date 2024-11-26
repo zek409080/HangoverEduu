@@ -134,7 +134,7 @@ public class GridManager : MonoBehaviour
 
     public IEnumerator ResetMatching()
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.5f); // Temporizador para animações intermediárias
         yield return StartCoroutine(ClearAndFillBoard());
     }
 
@@ -145,7 +145,7 @@ public class GridManager : MonoBehaviour
         yield return StartCoroutine(FillEmptySpaces());
     }
 
-    private IEnumerator ClearMatches()
+    public IEnumerator ClearMatches()
     {
         for (int x = 0; x < width; x++)
         {
@@ -157,7 +157,7 @@ public class GridManager : MonoBehaviour
                 }
             }
         }
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.5f); // Temporizador para animações intermediárias
     }
 
     private IEnumerator FillEmptySpaces()
@@ -209,18 +209,15 @@ public class GridManager : MonoBehaviour
         grid[newX, newY] = piece;
     }
 
-    public bool CheckAndProcessMatches(Piece piece1, Piece piece2)
+    public bool CheckAndProcessMatches(Piece piece)
     {
-        List<Piece> match1 = matchManager.GetAllMatchesForPiece(piece1);
-        List<Piece> match2 = matchManager.GetAllMatchesForPiece(piece2);
+        List<Piece> matches = matchManager.GetAllMatchesForPiece(piece);
 
-        if (match1.Count >= 3 || match2.Count >= 3)
+        if (matches.Count >= 3)
         {
-            if (match1.Count >= 4) powerUpManager.CreatePowerUp(piece1);
-            if (match2.Count >= 4) powerUpManager.CreatePowerUp(piece2);
+            if (matches.Count >= 4) powerUpManager.CreatePowerUp(piece);
 
-            if (match1.Count >= 3) StartCoroutine(HandleMatches(match1));
-            if (match2.Count >= 3) StartCoroutine(HandleMatches(match2));
+            StartCoroutine(HandleMatches(matches));
             return true;
         }
         return false;
@@ -234,7 +231,7 @@ public class GridManager : MonoBehaviour
             match.MarkForDestruction();
             objectiveManager.AddScore(10);
             objectiveManager.AddPieceCount(match.frutType);
-            
+        
             // Criar power-up para matches de 4 peças
             if (matches.Count >= 4)
             {
@@ -242,16 +239,17 @@ public class GridManager : MonoBehaviour
             }
         }
         yield return StartCoroutine(ClearAndFillBoard());
-        GameManager.DecrementJogadas();
+
+        // Não decrementa jogadas aqui: GameManager.DecrementJogadas();
 
         // Verificar novas combinações depois que as peças caem
         yield return StartCoroutine(ResolveAllMatches());
     }
 
-    private IEnumerator ResolveAllMatches()
+    public IEnumerator ResolveAllMatches()
     {
-        bool hasMatches = true;
-        while (hasMatches)
+        bool hasMatches = false;
+        do
         {
             hasMatches = false;
             for (int x = 0; x < width; x++)
@@ -263,30 +261,18 @@ public class GridManager : MonoBehaviour
                         List<Piece> matches = matchManager.GetAllMatchesForPiece(grid[x, y]);
                         if (matches.Count >= 3)
                         {
-                            foreach (var match in matches)
+                            hasMatches = true;
+                            foreach (Piece match in matches)
                             {
                                 match.MarkForDestruction();
                             }
-                            GameManager.AddScore(10 * matches.Count);
-                            objectiveManager.AddScore(10 * matches.Count);
-                            foreach (var match in matches)
-                            {
-                                objectiveManager.AddPieceCount(match.frutType);
-                            }
-                            
-                            // Criar power-up para matches de 4 peças
-                            if (matches.Count >= 4)
-                            {
-                                powerUpManager.CreatePowerUp(matches[0]); // Usando a primeira peça do match
-                            }
-                            
-                            hasMatches = true;
+
+                            yield return StartCoroutine(ClearAndFillBoard());
                         }
                     }
                 }
             }
-            yield return StartCoroutine(ClearAndFillBoard());
-        }
+        } while (hasMatches);
     }
     
     public void CheckEndGameConditions()
