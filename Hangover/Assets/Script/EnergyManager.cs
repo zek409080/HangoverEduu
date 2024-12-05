@@ -16,11 +16,8 @@ public class EnergyManager : MonoBehaviour
     [Header("UI Elements")]
     public TextMeshProUGUI energyText;
 
-    public delegate void EnergyChangedHandler(int currentEnergy);
-    public event EnergyChangedHandler OnEnergyChanged;
-
-    public delegate void TimeToNextRegenerationHandler(float time);
-    public event TimeToNextRegenerationHandler OnTimeToNextRegenerationChanged;
+    public event Action<int> OnEnergyChanged;
+    public event Action<float> OnTimeToNextRegenerationChanged;
 
     public int currentEnergy;
     public float currentTimeToNextRegeneration;
@@ -40,9 +37,20 @@ public class EnergyManager : MonoBehaviour
 
     private void Start()
     {
+        // Localiza o componente de texto se não estiver atribuído no Inspector
+        if (energyText == null)
+        {
+            var energyTextObj = GameObject.Find("EnergyText");
+            if (energyTextObj != null)
+            {
+                energyText = energyTextObj.GetComponent<TextMeshProUGUI>();
+            }
+        }
+
         LoadEnergy();
+        RecalculateEnergyOnReturn();
         StartCoroutine(RegenerateEnergy());
-        ReconfigurePopUp();
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -52,13 +60,11 @@ public class EnergyManager : MonoBehaviour
 
     private void ReconfigurePopUp()
     {
-        GameObject energyPopUp = GameObject.Find("EnergyPopUp");
-        
+        var energyPopUp = GameObject.Find("EnergyPopUp");
         if (energyPopUp != null)
         {
             energyPopUp.SetActive(false);
         }
-        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private void LoadEnergy()
@@ -66,43 +72,7 @@ public class EnergyManager : MonoBehaviour
         currentEnergy = PlayerPrefs.GetInt("CurrentEnergy", maxEnergy);
         currentTimeToNextRegeneration = PlayerPrefs.GetFloat("CurrentTimeToNextRegeneration", regenerationTime);
 
-        float elapsedTime = GetElapsedTimeInSeconds();
-
-        while (elapsedTime > 0 && currentEnergy < maxEnergy)
-        {
-            if (elapsedTime >= currentTimeToNextRegeneration)
-            {
-                currentEnergy++;
-                elapsedTime -= currentTimeToNextRegeneration;
-                currentTimeToNextRegeneration = regenerationTime;
-            }
-            else
-            {
-                currentTimeToNextRegeneration -= elapsedTime;
-                elapsedTime = 0;
-            }
-        }
-
-        if (currentEnergy == maxEnergy)
-        {
-            currentTimeToNextRegeneration = regenerationTime;
-        }
-
-        PlayerPrefs.DeleteKey("LastExitTime");
         UpdateEnergyUI();
-        OnEnergyChanged?.Invoke(currentEnergy);  // Garante atualização dos ícones ao carregar a energia
-    }
-
-    private float GetElapsedTimeInSeconds()
-    {
-        string lastExitTimeStr = PlayerPrefs.GetString("LastExitTime", "");
-        if (string.IsNullOrEmpty(lastExitTimeStr))
-        {
-            return 0;
-        }
-
-        DateTime lastExitTime = DateTime.Parse(lastExitTimeStr);
-        return (float)(DateTime.Now - lastExitTime).TotalSeconds;
     }
 
     private void SaveEnergy()
@@ -112,26 +82,68 @@ public class EnergyManager : MonoBehaviour
         PlayerPrefs.Save();
     }
 
+    private void RecalculateEnergyOnReturn()
+    {
+        string lastExitTimeStr = PlayerPrefs.GetString("LastExitTime", "");
+        if (!string.IsNullOrEmpty(lastExitTimeStr) && DateTime.TryParse(lastExitTimeStr, out DateTime lastExitTime))
+        {
+            float elapsedSeconds = (float)(DateTime.Now - lastExitTime).TotalSeconds;
+
+            while (elapsedSeconds > 0 && currentEnergy < maxEnergy)
+            {
+                if (elapsedSeconds >= currentTimeToNextRegeneration)
+                {
+                    currentEnergy++;
+                    elapsedSeconds -= currentTimeToNextRegeneration;
+                    currentTimeToNextRegeneration = regenerationTime;
+                }
+                else
+                {
+                    currentTimeToNextRegeneration -= elapsedSeconds;
+                    elapsedSeconds = 0;
+                }
+            }
+
+            if (currentEnergy >= maxEnergy)
+            {
+                currentEnergy = maxEnergy;
+                currentTimeToNextRegeneration = regenerationTime;
+            }
+
+            UpdateEnergyUI();
+        }
+    }
+
     private IEnumerator RegenerateEnergy()
     {
         while (true)
         {
             if (currentEnergy < maxEnergy)
             {
-                currentTimeToNextRegeneration -= Time.deltaTime;
-                if (currentTimeToNextRegeneration <= 0)
+                if (currentTimeToNextRegeneration > 0)
+                {
+                    currentTimeToNextRegeneration -= 1f;
+                }
+                else
                 {
                     currentEnergy++;
                     currentTimeToNextRegeneration = regenerationTime;
+
+                    if (currentEnergy >= maxEnergy)
+                    {
+                        currentEnergy = maxEnergy;
+                        currentTimeToNextRegeneration = regenerationTime;
+                    }
+
                     UpdateEnergyUI();
                 }
 
                 OnTimeToNextRegenerationChanged?.Invoke(currentTimeToNextRegeneration);
-                OnEnergyChanged?.Invoke(currentEnergy);  // Atualiza os ícones de energia
+                OnEnergyChanged?.Invoke(currentEnergy);
                 SaveEnergy();
             }
 
-            yield return null;
+            yield return new WaitForSeconds(1f); // Atualiza a cada segundo
         }
     }
 
@@ -139,15 +151,11 @@ public class EnergyManager : MonoBehaviour
     {
         if (energyText != null)
         {
-            if (currentEnergy == maxEnergy)
-            {
-                energyText.text = $"Energy: {currentEnergy}/{maxEnergy}";
-            }
-            else
-            {
-                energyText.text = $"Energy: {currentEnergy}/{maxEnergy}\nTime to next regeneration: {currentTimeToNextRegeneration:F0}s";
-            }
+            energyText.text = currentEnergy == maxEnergy
+                ? $"Energy: {currentEnergy}/{maxEnergy}"
+                : $"Energy: {currentEnergy}/{maxEnergy}\nTime to next regeneration: {Mathf.Ceil(currentTimeToNextRegeneration)}s";
         }
+
         OnEnergyChanged?.Invoke(currentEnergy);
     }
 
@@ -156,12 +164,14 @@ public class EnergyManager : MonoBehaviour
         if (currentEnergy > 0)
         {
             currentEnergy--;
+
+            // Atualiza a interface de energia e salva o estado
             UpdateEnergyUI();
             SaveEnergy();
         }
     }
 
-    [ContextMenu("ResetEnergy")]
+
     public void ResetEnergy()
     {
         currentEnergy = maxEnergy;
@@ -174,10 +184,11 @@ public class EnergyManager : MonoBehaviour
     {
         return currentEnergy > 0;
     }
-    
+
     private void OnApplicationQuit()
     {
         PlayerPrefs.SetString("LastExitTime", DateTime.Now.ToString());
         SaveEnergy();
+        PlayerPrefs.Save();
     }
 }
